@@ -1,3 +1,7 @@
 Title: Precipitation Data Sets from Generative Machine Learning
 
-Abstract: 
+Abstract: Generative Machine Learning methods have shown tremendous power to produce complex, realistic products from limited input. Such models can learn the spatial correlations characteristic of a human face, or the time-series correlations charateristic of english prose, and use them to generate plausible sample images, or sentences, from scratch.
+Correlation modelling is also key to weather data set generation: We need our datasets to be plausible samples, and also to be consistent with the available observations. This is a particular challenge for precipitation datasets, as precipitation correlations are notably short-range and difficult to model - so Generative ML might be an effective tool to make precipitation data sets.
+By training a Variational AutoEncoder on observed and reanalysis precipitation fields, we can learn a complete, continuous, low-dimensional embedding representing a precipitation field, and a fast model to generate a real-space precipitation field from that embedding. We can then match the generated field to observations of precipitation by searching the embedding space (so making an observed precipitation data set by assimilating precipitation observations). Also we can learn additional ML models that map the precipitation embedding to real space fields of other variables (surface pressure, SST, satelite radiances, ...) which lets us use ovservations of those other variables to estimate precipitation.
+This method combines many of the advantages of reanalysis (complete & consistent output, can assimilate many variables) and of traditional statistical modelling (fast, simple, can chose exactly which observations to use), into a single approach.
+
