@@ -3,10 +3,10 @@
 # Run all the data downloads
 
 echo 'CMORPH'
-(cd ./CMORPH/satellite+ && ./get_data_for_period.py  | parallel -j 1)
+(cd ./CMORPH/satellite && ./get_data_for_period.py  | parallel -j 1)
 
 echo 'CRU'
-(cd ./CRU/in-situ && ./get_data_for_period.py | parallel -j 1)
+(cd ./CRU/in_situ && ./get_data_for_period.py | parallel -j 1)
 
 echo 'ERA5'
 (cd ERA5 && ./get_data_for_period_ERA5.py | parallel -j 1)
