@@ -13,9 +13,9 @@ echo 'ERA5'
 
 echo -n 'GPCC: '
 echo -n 'In-situ, '
-(cd ./GPCC/in-situ && ./get_data_for_period.py | parallel -j 1)
+(cd ./GPCC/in_situ && ./get_data_for_period.py | parallel -j 1)
 echo 'Satellite'
-(cd ./GPCC/satellite+gauge && ./get_data_for_period.py | parallel -j 1)
+(cd ./GPCC/with_satellite && ./get_data_for_period.py | parallel -j 1)
 
 echo -n 'Copernicus: '
 echo -n 'Microwave, '
