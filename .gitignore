@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Figures
+*.png 
+
+# Apple crap
+Thumbs.db
