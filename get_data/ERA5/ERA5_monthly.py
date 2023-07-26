@@ -20,7 +20,7 @@ def add_coord_system(cbe):
     cbe.coord("longitude").coord_system = cs_ERA5
 
 
-def load(variable="total_precipitation", year=None, month=None):
+def load(variable="total_precipitation", year=None, month=None, constraint=None):
     if variable == "land_mask":
         varC = load("sea_surface_temperature", year=2020, month=3)
         lm_ERA5.data.data[np.where(lm_ERA5.data.mask == True)] = 0
@@ -28,7 +28,7 @@ def load(variable="total_precipitation", year=None, month=None):
         add_coord_system(varC)
         return varC
     if year is None or month is None:
-        raise Exception('Year and month must be specified')
+        raise Exception("Year and month must be specified")
     fname = "%s/ERA5/monthly/reanalysis/%04d/%s.nc" % (
         os.getenv("SCRATCH"),
         year,
@@ -37,6 +37,8 @@ def load(variable="total_precipitation", year=None, month=None):
     if not os.path.isfile(fname):
         raise Exception("No data file %s" % fname)
     ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
+    if constraint is not None:
+        ftt = ftt & constraint
     varC = iris.load_cube(fname, ftt)
     # Get rid of unnecessary height dimensions
     if len(varC.data.shape) == 3:
@@ -46,7 +48,7 @@ def load(variable="total_precipitation", year=None, month=None):
     return varC
 
 
-def load_climatology(variable, month):
+def load_climatology(variable, month, constraint=None):
     fname = "%s/ERA5/monthly/climatology/%s_%02d.nc" % (
         os.getenv("SCRATCH"),
         variable,
@@ -54,13 +56,16 @@ def load_climatology(variable, month):
     )
     if not os.path.isfile(fname):
         raise Exception("No climatology file %s" % fname)
-    c = iris.load_cube(fname)
+    if constraint is not None:
+        c = iris.load_cube(fname, constraint)
+    else:
+        c = iris.load_cube(fname)
     add_coord_system(c)
     c.long_name = variable
     return c
 
 
-def load_sd_climatology(variable, month):
+def load_sd_climatology(variable, month, constraint=None):
     fname = "%s/ERA5/monthly/sd_climatology/%s_%02d.nc" % (
         os.getenv("SCRATCH"),
         variable,
@@ -68,7 +73,10 @@ def load_sd_climatology(variable, month):
     )
     if not os.path.isfile(fname):
         raise Exception("No sd climatology file %s" % fname)
-    c = iris.load_cube(fname)
+    if constraint is not None:
+        c = iris.load_cube(fname, constraint)
+    else:
+        c = iris.load_cube(fname)
     add_coord_system(c)
     c.long_name = variable
     return c
