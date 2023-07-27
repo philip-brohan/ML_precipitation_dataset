@@ -1,0 +1,151 @@
+# Plotting utility functions
+
+import os
+import numpy as np
+
+import iris
+import iris.util
+import iris.analysis
+import iris.coord_systems
+
+import matplotlib
+
+from matplotlib.patches import Rectangle
+from matplotlib.lines import Line2D
+
+import cmocean
+
+# Make a dummy iris Cube for plotting.
+# Makes a cube in equirectangular projection.
+# Takes resolution, plot range, and pole location
+#  (all in degrees) as arguments, returns an
+#  iris cube.
+def plot_cube(
+    resolution=0.25,
+    xmin=-180,
+    xmax=180,
+    ymin=-90,
+    ymax=90,
+    pole_latitude=90,
+    pole_longitude=180,
+    npg_longitude=0,
+):
+    cs = iris.coord_systems.RotatedGeogCS(pole_latitude, pole_longitude, npg_longitude)
+    lat_values = np.arange(ymin, ymax + resolution, resolution)
+    latitude = iris.coords.DimCoord(
+        lat_values, standard_name="latitude", units="degrees_north", coord_system=cs
+    )
+    lon_values = np.arange(xmin, xmax + resolution, resolution)
+    longitude = iris.coords.DimCoord(
+        lon_values, standard_name="longitude", units="degrees_east", coord_system=cs
+    )
+    dummy_data = np.zeros((len(lat_values), len(lon_values)))
+    plot_cube = iris.cube.Cube(
+        dummy_data, dim_coords_and_dims=[(latitude, 0), (longitude, 1)]
+    )
+    return plot_cube
+
+
+# High res land mask for plots
+def get_land_mask(grid_cube=None):
+    lm = iris.load_cube(
+        "%s/fixed_fields/land_mask/opfc_global_2019.nc" % os.getenv("DATADIR")
+    )
+    lm = lm.regrid(grid_cube, iris.analysis.Linear())
+    return lm
+
+
+# Plot a map in a supplied axes
+def plotFieldAxes(
+    ax_map,
+    field,
+    vMax=None,
+    vMin=None,
+    lMask=None,
+    cMap=cmocean.cm.balance,
+    plotCube=None,
+):
+    if plotCube is None:
+        plotCube = plot_cube()
+    field = field.regrid(plotCube, iris.analysis.Linear())
+    if vMax is None:
+        vMax = np.max(field.data)
+    if vMin is None:
+        vMin = np.min(field.data)
+    if lMask is None:
+        lMask = get_land_mask(plot_cube(resolution=0.1))
+
+    lons = plotCube.coord("longitude").points
+    lats = plotCube.coord("latitude").points
+    ax_map.set_ylim(min(lats), max(lats))
+    ax_map.set_xlim(min(lons), max(lons))
+    ax_map.set_axis_off()
+    ax_map.set_aspect("equal", adjustable="box", anchor="C")
+    ax_map.add_patch(
+        Rectangle(
+            (min(lons), min(lats)),
+            max(lons) - min(lons),
+            max(lats) - min(lats),
+            facecolor=(0.9, 0.9, 0.9, 1),
+            fill=True,
+            zorder=1,
+        )
+    )
+    # Plot the field
+    T_img = ax_map.pcolorfast(
+        lons,
+        lats,
+        field.data,
+        cmap=cMap,
+        vmin=vMin,
+        vmax=vMax,
+        alpha=1.0,
+        zorder=10,
+    )
+
+    # Overlay the land mask
+    mask_img = ax_map.pcolorfast(
+        lMask.coord("longitude").points,
+        lMask.coord("latitude").points,
+        lMask.data,
+        cmap=matplotlib.colors.ListedColormap(
+            ((0.4, 0.4, 0.4, 0), (0.4, 0.4, 0.4, 0.3))
+        ),
+        vmin=0,
+        vmax=1,
+        alpha=1.0,
+        zorder=100,
+    )
+    return T_img
+
+
+# Scatter plot in provided axes
+def plotScatterAxes(
+    ax, var_in, var_out, vMax=None, vMin=None, xlabel="", ylabel="", bins="log"
+):
+    if vMax is None:
+        vMax = max(np.max(var_in.data), np.max(var_out.data))
+    if vMin is None:
+        vMin = min(np.min(var_in.data), np.min(var_out.data))
+    ax.set_xlim(vMin, vMax)
+    ax.set_ylim(vMin, vMax)
+    ax.hexbin(
+        x=var_in.data.flatten(),
+        y=var_out.data.flatten(),
+        cmap=cmocean.tools.crop_by_percent(cmocean.cm.ice_r, 25, which="min"),
+        bins=bins,
+        gridsize=50,
+        mincnt=1,
+    )
+    ax.add_line(
+        Line2D(
+            xdata=(vMin, vMax),
+            ydata=(vMin, vMax),
+            linestyle="solid",
+            linewidth=0.5,
+            color=(0.5, 0.5, 0.5, 1),
+            zorder=100,
+        )
+    )
+    ax.set(ylabel=ylabel, xlabel=xlabel)
+    ax.grid(color="black", alpha=0.2, linestyle="-", linewidth=0.5)
