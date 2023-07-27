@@ -80,6 +80,6 @@ for lat_i in range(llshape[0]):
         except Exception:
             print("Failed for %d %d" % (lat_i, lon_i))
 
-iris.save(shape,"%s/shape_%03d_%03d.nc" % (args.opdir,args.min_lat,args.max_lat))
-iris.save(location,"%s/location_%03d_%03d.nc" % (args.opdir,args.min_lat,args.max_lat))
-iris.save(scale,"%s/scale_%03d_%03d.nc" % (args.opdir,args.min_lat,args.max_lat))
+iris.save(shape,"%s/shape_%03d_%03d.nc" % (args.opdir,int(args.min_lat),int(args.max_lat)))
+iris.save(location,"%s/location_%03d_%03d.nc" % (args.opdir,int(args.min_lat),int(args.max_lat)))
+iris.save(scale,"%s/scale_%03d_%03d.nc" % (args.opdir,int(args.min_lat),int(args.max_lat)))

@@ -23,7 +23,7 @@ for max_lat in range(-89, 91):
         print(
             (
                 "./make_normalisation_parameters.py --startyear=%04d --endyear=%04d "
-                + "--min_lat=%4.1f --max_lat=%4.1f"
+                + "--min_lat=%04.1f --max_lat=%04.1f"
             )
             % (
                 args.startyear,

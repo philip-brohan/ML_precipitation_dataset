@@ -15,6 +15,23 @@ from matplotlib.lines import Line2D
 
 import cmocean
 
+
+# Get the pole location from a cube
+#  Assumes an equirectangular projection
+def extract_pole(cube):
+    lat = cube.coord("latitude")
+    if lat.coord_system is None:
+        return(90,180,0)
+    if lat.coord_system.grid_mapping_name == "rotated_latitude_longitude":
+        return (
+            lat.coord_system.grid_north_pole_latitude,
+            lat.coord_system.grid_north_pole_longitude,
+            lat.coord_system.north_pole_grid_longitude,
+        )
+    else:
+        raise Exception("Unsupported cube for coordinate extraction")
+
+
 # Make a dummy iris Cube for plotting.
 # Makes a cube in equirectangular projection.
 # Takes resolution, plot range, and pole location
@@ -65,18 +82,25 @@ def plotFieldAxes(
     cMap=cmocean.cm.balance,
     plotCube=None,
 ):
-    if plotCube is None:
-        plotCube = plot_cube()
-    field = field.regrid(plotCube, iris.analysis.Linear())
+    if plotCube is not None:
+        field = field.regrid(plotCube, iris.analysis.Linear())
     if vMax is None:
         vMax = np.max(field.data)
     if vMin is None:
         vMin = np.min(field.data)
     if lMask is None:
-        lMask = get_land_mask(plot_cube(resolution=0.1))
+        cs = extract_pole(field)
+        lMask = get_land_mask(
+            plot_cube(
+                resolution=0.1,
+                pole_latitude=cs[0],
+                pole_longitude=cs[1],
+                npg_longitude=cs[2],
+            )
+        )
 
-    lons = plotCube.coord("longitude").points
-    lats = plotCube.coord("latitude").points
+    lons = field.coord("longitude").points
+    lats = field.coord("latitude").points
     ax_map.set_ylim(min(lats), max(lats))
     ax_map.set_xlim(min(lons), max(lons))
     ax_map.set_axis_off()
