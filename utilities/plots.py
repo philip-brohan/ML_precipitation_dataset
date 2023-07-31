@@ -173,3 +173,21 @@ def plotScatterAxes(
     )
     ax.set(ylabel=ylabel, xlabel=xlabel)
     ax.grid(color="black", alpha=0.2, linestyle="-", linewidth=0.5)
+
+# Histogram in provided axes
+def plotHistAxes(
+    ax, var, vMax=None, vMin=None, xlabel="", ylabel="", bins=100
+):
+    if vMax is None:
+        vMax = np.max(var.data)
+    if vMin is None:
+        vMin = np.min(var.data)
+    ax.hist(
+        x=var.data.flatten(),
+        range = (vMin,vMax),
+        bins=bins,
+        color='blue',
+        density=True,
+    )
+    ax.set(ylabel=ylabel, xlabel=xlabel)
+    ax.grid(color="black", alpha=0.2, linestyle="-", linewidth=0.5)
