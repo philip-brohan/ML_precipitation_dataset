@@ -76,7 +76,7 @@ plots.plotFieldAxes(
     plotCube=plots.plot_cube(),
     vMin=np.percentile(location.data.data, 5),
     vMax=np.percentile(location.data.data, 95),
-    cMap=cmocean.cm.rain,
+    cMap=cmocean.cm.rain_r,
 )
 
 ax_scale = fig.add_axes([0.05, 0.01, 0.9, 0.31])
