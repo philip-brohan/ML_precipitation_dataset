@@ -4,6 +4,22 @@
 from scipy.stats import gamma, norm
 import numpy as np
 
+import os
+import iris
+from get_data.ERA5 import ERA5_monthly
+
+
+# Load the pre-calculated fitted values
+def load_fitted():
+    shape = iris.load_cube("%s/MLP/normalisation/SPI/ERA5/shape.nc" % os.getenv("SCRATCH"))
+    ERA5_monthly.add_coord_system(shape)
+    location = iris.load_cube(
+        "%s/MLP/normalisation/SPI/ERA5/location.nc" % os.getenv("SCRATCH")
+    )
+    ERA5_monthly.add_coord_system(location)
+    scale = iris.load_cube("%s/MLP/normalisation/SPI/ERA5/scale.nc" % os.getenv("SCRATCH"))
+    ERA5_monthly.add_coord_system(scale)
+    return(shape,location,scale)
 
 # Fit a gamma distribution to the given data
 def fit_gamma(raw):

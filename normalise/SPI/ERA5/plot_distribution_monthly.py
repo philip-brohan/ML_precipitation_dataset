@@ -5,14 +5,12 @@
 
 import os
 import sys
-import iris
 import numpy as np
 
 from utilities import plots
-from get_data.ERA5 import ERA5_monthly
 from get_data import load_monthly
 
-from normalise import normalise_cube
+from normalise import load_fitted, normalise_cube
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -34,14 +32,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Load the fitted values
-shape = iris.load_cube("%s/MLP/normalisation/SPI/ERA5/shape.nc" % os.getenv("SCRATCH"))
-ERA5_monthly.add_coord_system(shape)
-location = iris.load_cube(
-    "%s/MLP/normalisation/SPI/ERA5/location.nc" % os.getenv("SCRATCH")
-)
-ERA5_monthly.add_coord_system(location)
-scale = iris.load_cube("%s/MLP/normalisation/SPI/ERA5/scale.nc" % os.getenv("SCRATCH"))
-ERA5_monthly.add_coord_system(scale)
+(shape, location, scale) = load_fitted()
 
 # Load the precip for the selected month
 raw = load_monthly.load(organisation="ERA5", year=args.year, month=args.month)
