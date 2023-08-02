@@ -133,3 +133,6 @@ dmypy.json
 
 # Apple crap
 Thumbs.db
+
+# Temprary data 
+*.pkl

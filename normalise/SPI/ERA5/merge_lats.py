@@ -8,9 +8,9 @@ import iris.cube
 import iris.util
 
 # I don't care about datums.
-iris.FUTURE.datum_support=True
+iris.FUTURE.datum_support = True
 
-for param in ('shape','location','scale'):
+for param in ("shape", "location", "scale"):
     merged = iris.cube.CubeList()
     for max_lat in range(-89, 91):
         ipfile = "%s/MLP/normalisation/SPI/ERA5/%s_%03d_%03d.nc" % (
@@ -26,8 +26,7 @@ for param in ('shape','location','scale'):
     junk = iris.util.equalise_attributes(merged)
     merged = merged.concatenate_cube()
     opfile = "%s/MLP/normalisation/SPI/ERA5/%s.nc" % (
-            os.getenv("SCRATCH"),
-            param,
+        os.getenv("SCRATCH"),
+        param,
     )
-    iris.save(merged,opfile)
-
+    iris.save(merged, opfile)

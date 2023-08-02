@@ -178,6 +178,7 @@ def plotScatterAxes(
 def plotHistAxes(
     ax, var, vMax=None, vMin=None, xlabel="", ylabel="", bins=100
 ):
+    
     if vMax is None:
         vMax = np.max(var.data)
     if vMin is None:

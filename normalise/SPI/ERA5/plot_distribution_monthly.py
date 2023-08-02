@@ -47,11 +47,11 @@ ERA5_monthly.add_coord_system(scale)
 raw = load_monthly.load(organisation="ERA5", year=args.year, month=args.month)
 
 # Make the normalised version
-normalised = normalise_cube(raw,shape,location,scale)
+normalised = normalise_cube(raw, shape, location, scale)
 
 # Make the plot
 fig = Figure(
-    figsize=(10*3/2, 10),
+    figsize=(10 * 3 / 2, 10),
     dpi=100,
     facecolor=(0.5, 0.5, 0.5, 1),
     edgecolor=None,
@@ -81,6 +81,7 @@ axb.add_patch(
     )
 )
 
+
 ax_raw = fig.add_axes([0.02, 0.515, 0.607, 0.455])
 plots.plotFieldAxes(
     ax_raw,
@@ -92,20 +93,22 @@ plots.plotFieldAxes(
 )
 
 ax_hist_raw = fig.add_axes([0.683, 0.535, 0.303, 0.435])
-plots.plotHistAxes(ax_hist_raw,raw,bins=25)
+plots.plotHistAxes(ax_hist_raw, raw, bins=25)
 
 ax_normalised = fig.add_axes([0.02, 0.03, 0.607, 0.455])
 plots.plotFieldAxes(
     ax_normalised,
     normalised,
     plotCube=plots.plot_cube(),
-    vMin=np.percentile(normalised.data.data, 5),
-    vMax=np.percentile(normalised.data.data, 95),
+    vMin=-0.25,
+    vMax=1.25,
+    # vMin=np.percentile(normalised.data.data, 5),
+    # vMax=np.percentile(normalised.data.data, 95),
     cMap=cmocean.cm.rain,
 )
 
 ax_hist_normalised = fig.add_axes([0.683, 0.05, 0.303, 0.435])
-plots.plotHistAxes(ax_hist_normalised,normalised,bins=25)
+plots.plotHistAxes(ax_hist_normalised, normalised, vMin=-0.25, vMax=1.25, bins=25)
 
 
 fig.savefig("monthly.png")
