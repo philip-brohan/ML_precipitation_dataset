@@ -77,17 +77,16 @@ for i in range(25):
     ax = make_axes(i)
     araw = np.cbrt(raw[i])
     shape, location, scale = gamma.fit(araw)
-    araw = araw[-120:] # Only plot last few years
+    araw = araw[-120:]  # Only plot last few years
     x = list(range(len(araw)))
     ax.set_xlim(0, len(araw))
-    ax.set_ylim(0,0.25)
+    ax.set_ylim(0, 0.25)
     ax.add_line(Line2D(x, araw, color="blue", linewidth=2))
     ax2 = ax.twinx()
-    norm = match_normal(araw,(shape,location,scale))
+    norm = match_normal(araw, (shape, location, scale))
     ax2.set_xlim(0, len(araw))
-    ax2.set_ylim(-0.25,1.25)
+    ax2.set_ylim(-0.25, 1.25)
     ax2.add_line(Line2D(x, norm, color="red", linewidth=2))
-  
 
 
 fig.savefig("sample_time-series.png")
