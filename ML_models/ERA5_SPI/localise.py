@@ -6,4 +6,3 @@
 #  and just changing the name in this file.
 
 ModelName = "ERA5_SPI"
-

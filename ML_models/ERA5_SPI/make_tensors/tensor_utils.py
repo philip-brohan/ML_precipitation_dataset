@@ -34,7 +34,7 @@ lat_values = np.arange(ymin, ymax + resolution, resolution)
 latitude = iris.coords.DimCoord(
     lat_values, standard_name="latitude", units="degrees_north", coord_system=cs
 )
-lon_values = np.arange(xmin, xmax + resolution, resolution)
+lon_values = np.arange(xmin, xmax, resolution)
 longitude = iris.coords.DimCoord(
     lon_values, standard_name="longitude", units="degrees_east", coord_system=cs
 )
