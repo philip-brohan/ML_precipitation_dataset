@@ -39,8 +39,8 @@ if nMonthsInEpoch is None:
     nMonthsInEpoch = nTrainingMonths
 
 # Dataset parameters
-bufferSize = 100 #0  # Already shuffled data, so not so important
-batchSize = 3 #2  # Arbitrary
+bufferSize = 100  # 0  # Already shuffled data, so not so important
+batchSize = 3  # 2  # Arbitrary
 
 
 # Instantiate and run the model under the control of the distribution strategy

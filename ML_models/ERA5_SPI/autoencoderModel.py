@@ -81,18 +81,18 @@ class DCVAE(tf.keras.Model):
             [
                 tf.keras.layers.InputLayer(input_shape=(self.latent_dim,)),
                 tf.keras.layers.Dense(
-                    units=45 * 22 * 40,
+                    units=45 * 23 * 40,
                     activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
                 ),
-                tf.keras.layers.Reshape(target_shape=(45, 22, 40)),
+                tf.keras.layers.Reshape(target_shape=(45, 23, 40)),
                 tf.keras.layers.Conv2DTranspose(
                     filters=20,
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(0, 1),
+                    output_padding=(1, 1),
                     activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
@@ -102,6 +102,7 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
+                    output_padding=(1, 0),
                     activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
@@ -111,6 +112,8 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
+                    output_padding=(1, 0),
+                    activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
                 ),
@@ -119,11 +122,17 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
+                    output_padding=(1, 0),
+                    activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
                 ),
                 tf.keras.layers.Conv2DTranspose(
-                    filters=1, kernel_size=3, strides=2, padding="same"
+                    filters=1,
+                    kernel_size=3,
+                    strides=2,
+                    padding="same",
+                    output_padding=(1, 0),
                 ),
             ]
         )
