@@ -31,16 +31,16 @@ nTestMonths = None
 
 # How many epochs to train for
 nEpochs = 250
-# Length of an epoch - if None, same as nTrainingImages
+# Length of an epoch - if None, same as nTrainingMonths
 nMonthsInEpoch = None
-nRepeatsPerEpoch = 2  # Show each month this many times
+nRepeatsPerEpoch = 1  # Show each month this many times
 
 if nMonthsInEpoch is None:
     nMonthsInEpoch = nTrainingMonths
 
 # Dataset parameters
-bufferSize = 100  # 0  # Already shuffled data, so not so important
-batchSize = 3  # 2  # Arbitrary
+bufferSize = 1000  # Already shuffled data, so not so important
+batchSize = 32  # Arbitrary
 
 
 # Instantiate and run the model under the control of the distribution strategy
