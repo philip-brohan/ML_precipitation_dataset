@@ -92,7 +92,7 @@ def loadHistory(LSC, offset=0):
 (hts, ymax, ymin, epoch) = loadHistory(ModelName)
 
 if args.selfc is not None:
-    (chts, cymax, cymin, cepoch) = loadHistory(ModelName, -1 - args.selfc)
+    (chts, cymax, cymin, cepoch) = loadHistory(ModelName, args.selfc)
     epoch = max(epoch, cepoch)
     ymax = max(ymax, cymax)
     ymin = min(ymin, cymin)
@@ -154,14 +154,13 @@ def addLine(ax, dta, key, col, z, rscale=1):
     )
 
 
-# Main loss
-
+# Left - Main loss
 ymaxL = max(100, max(hts["Train_RMSE"] + hts["Test_RMSE"]))
 if args.comparator is not None or args.selfc is not None:
     ymaxL = max(ymaxL, max(chts["Train_RMSE"] + chts["Test_RMSE"]))
 if args.ymax is not None:
     ymaxL = args.ymax
-ax_prmsl = fig.add_axes([0.055, 0.06, 0.27, 0.9], xlim=(-1, epoch + 1), ylim=(0, ymaxL))
+ax_prmsl = fig.add_axes([0.055, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(0, ymaxL))
 ax_prmsl.set_ylabel("% Variance")
 ax_prmsl.set_xlabel("epoch")
 ax_prmsl.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
@@ -173,9 +172,8 @@ if args.comparator is not None or args.selfc is not None:
     addLine(ax_prmsl, chts, "Test_RMSE", (0, 0, 1, 1), 20)
 
 
-#
-# Top right - logpz
-ax_lpz = fig.add_axes([0.77/2, 0.06, 0.27, 0.9], xlim=(-1, epoch + 1), ylim=(ymin, ymax))
+# Centre - logpz
+ax_lpz = fig.add_axes([0.77/2, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(ymin, ymax))
 ax_lpz.set_ylabel("logpz")
 ax_lpz.set_xlabel("epoch")
 ax_lpz.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
@@ -185,8 +183,8 @@ if args.comparator is not None or args.selfc is not None:
     addLine(ax_lpz, chts, "Train_logpz", (0.5, 0.5, 1, 1), 10)
     addLine(ax_lpz, chts, "Test_logpz", (0, 0, 1, 1), 20)
 
-# Bottom right - logqz_x
-ax_lqz = fig.add_axes([0.715, 0.06, 0.27, 0.9], xlim=(-1, epoch + 1), ylim=(ymin, ymax))
+# Right - logqz_x
+ax_lqz = fig.add_axes([0.715, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(ymin, ymax))
 ax_lqz.set_ylabel("logqz_x")
 ax_lqz.set_xlabel("epoch")
 ax_lqz.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)

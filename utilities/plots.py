@@ -156,7 +156,7 @@ def plotScatterAxes(
     ax.hexbin(
         x=var_in.data.flatten(),
         y=var_out.data.flatten(),
-        cmap=cmocean.tools.crop_by_percent(cmocean.cm.ice_r, 25, which="min"),
+        cmap=cmocean.tools.crop_by_percent(cmocean.cm.ice_r, 5, which="min"),
         bins=bins,
         gridsize=50,
         mincnt=1,
