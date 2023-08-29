@@ -20,7 +20,7 @@ class DCVAE(tf.keras.Model):
         # Model to encode input to latent space distribution
         self.encoder = tf.keras.Sequential(
             [
-                tf.keras.layers.InputLayer(input_shape=(1440, 721, 1)),
+                tf.keras.layers.InputLayer(input_shape=(721, 1440, 1)),
                 tf.keras.layers.Conv2D(
                     filters=5,
                     kernel_size=3,
@@ -81,12 +81,12 @@ class DCVAE(tf.keras.Model):
             [
                 tf.keras.layers.InputLayer(input_shape=(self.latent_dim,)),
                 tf.keras.layers.Dense(
-                    units=45 * 23 * 40,
+                    units=23 * 45 * 40,
                     activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
                 ),
-                tf.keras.layers.Reshape(target_shape=(45, 23, 40)),
+                tf.keras.layers.Reshape(target_shape=(23, 45, 40)),
                 tf.keras.layers.Conv2DTranspose(
                     filters=20,
                     kernel_size=3,
@@ -102,7 +102,7 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(1, 0),
+                    output_padding=(0, 1),
                     activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
@@ -112,7 +112,7 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(1, 0),
+                    output_padding=(0, 1),
                     activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
@@ -122,7 +122,7 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(1, 0),
+                    output_padding=(0, 1),
                     activation="elu",
                     kernel_regularizer=tf.keras.regularizers.L2(0.01),
                     activity_regularizer=tf.keras.regularizers.L2(0.01),
@@ -132,7 +132,7 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(1, 0),
+                    output_padding=(0, 1),
                 ),
             ]
         )
