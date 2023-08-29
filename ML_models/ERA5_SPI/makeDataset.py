@@ -13,7 +13,7 @@ from localise import ModelName
 def load_tensor(file_name):
     sict = tf.io.read_file(file_name)
     imt = tf.io.parse_tensor(sict, np.float32)
-    imt = tf.reshape(imt, [1440, 721, 1])
+    imt = tf.reshape(imt, [721, 1440, 1])
     return imt
 
 
