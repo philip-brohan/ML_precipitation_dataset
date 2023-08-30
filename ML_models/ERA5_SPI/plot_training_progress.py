@@ -53,9 +53,9 @@ args = parser.parse_args()
 
 
 # Load the history
-def loadHistory(LSC, offset=0):
+def loadHistory(LSC, offset=-1):
     history = {}
-    summary_dir = "%s/MLP/%s/logs/Training" % (os.getenv('SCRATCH'),LSC)
+    summary_dir = "%s/MLP/%s/logs/Training" % (os.getenv("SCRATCH"), LSC)
     Rfiles = os.listdir(summary_dir)
     Rfiles.sort(key=lambda x: os.path.getmtime(os.path.join(summary_dir, x)))
     filename = Rfiles[offset]
@@ -160,7 +160,9 @@ if args.comparator is not None or args.selfc is not None:
     ymaxL = max(ymaxL, max(chts["Train_RMSE"] + chts["Test_RMSE"]))
 if args.ymax is not None:
     ymaxL = args.ymax
-ax_prmsl = fig.add_axes([0.055, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(0, ymaxL))
+ax_prmsl = fig.add_axes(
+    [0.055, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(0, ymaxL)
+)
 ax_prmsl.set_ylabel("% Variance")
 ax_prmsl.set_xlabel("epoch")
 ax_prmsl.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
@@ -173,7 +175,9 @@ if args.comparator is not None or args.selfc is not None:
 
 
 # Centre - logpz
-ax_lpz = fig.add_axes([0.77/2, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(ymin, ymax))
+ax_lpz = fig.add_axes(
+    [0.77 / 2, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(ymin, ymax)
+)
 ax_lpz.set_ylabel("logpz")
 ax_lpz.set_xlabel("epoch")
 ax_lpz.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
@@ -184,7 +188,9 @@ if args.comparator is not None or args.selfc is not None:
     addLine(ax_lpz, chts, "Test_logpz", (0, 0, 1, 1), 20)
 
 # Right - logqz_x
-ax_lqz = fig.add_axes([0.715, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(ymin, ymax))
+ax_lqz = fig.add_axes(
+    [0.715, 0.13, 0.27, 0.85], xlim=(-1, epoch + 1), ylim=(ymin, ymax)
+)
 ax_lqz.set_ylabel("logqz_x")
 ax_lqz.set_xlabel("epoch")
 ax_lqz.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
