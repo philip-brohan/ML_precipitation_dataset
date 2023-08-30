@@ -41,7 +41,14 @@ from utilities import plots
 from get_data import load_monthly
 
 from autoencoderModel import DCVAE
-from make_tensors.tensor_utils import load_raw,raw_to_tensor,tensor_to_raw,normalise,unnormalise,sCube
+from make_tensors.tensor_utils import (
+    load_raw,
+    raw_to_tensor,
+    tensor_to_raw,
+    normalise,
+    unnormalise,
+    sCube,
+)
 
 
 # Load and standardise data
@@ -49,7 +56,11 @@ qd = load_raw(args.year, args.month)
 ic_source = raw_to_tensor(qd)
 
 autoencoder = DCVAE()
-weights_dir = "%s/MLP/%s/weights/Epoch_%04d" % (os.getenv("SCRATCH"),ModelName,args.epoch,)
+weights_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
+    os.getenv("SCRATCH"),
+    ModelName,
+    args.epoch,
+)
 load_status = autoencoder.load_weights("%s/ckpt" % weights_dir)
 # Check the load worked
 load_status.assert_existing_objects_matched()
@@ -91,11 +102,9 @@ axb.add_patch(
 
 
 # Top left - raw original
-varx = sCube.copy()
-varx.data = np.squeeze(ic_source.numpy())
-varx = unnormalise(varx)
-(dmin, dmax) = (0,0.03)
-ax_ro = fig.add_axes([0.000 / 3, 0.125 / 2 + 0.5, 0.95*2 / 5, 0.85 / 2])
+varx = qd.regrid(sCube, iris.analysis.Nearest())
+(dmin, dmax) = (0, 0.03)
+ax_ro = fig.add_axes([0.000 / 3, 0.125 / 2 + 0.5, 0.95 * 2 / 5, 0.85 / 2])
 ax_ro.set_axis_off()
 ro_img = plots.plotFieldAxes(
     ax_ro,
@@ -104,7 +113,7 @@ ro_img = plots.plotFieldAxes(
     vMin=dmin,
     cMap=cmocean.cm.rain,
 )
-ax_ro_cb = fig.add_axes([0.10 / 3, 0.06 / 2 + 0.5, 0.75*2 / 5, 0.05 / 2])
+ax_ro_cb = fig.add_axes([0.10 / 3, 0.06 / 2 + 0.5, 0.75 * 2 / 5, 0.05 / 2])
 ax_ro_cb.set_axis_off()
 cb = fig.colorbar(
     ro_img, ax=ax_ro_cb, location="bottom", orientation="horizontal", fraction=1.0
@@ -114,7 +123,9 @@ cb = fig.colorbar(
 vary = sCube.copy()
 vary.data = np.squeeze(encoded[0, :, :, 0].numpy())
 vary = unnormalise(vary)
-ax_re = fig.add_axes([0.000 / 3 + 2 / 5-0.02, 0.125 / 2 + 0.5, 0.95*2 / 5, 0.85 / 2])
+ax_re = fig.add_axes(
+    [0.000 / 3 + 2 / 5 - 0.02, 0.125 / 2 + 0.5, 0.95 * 2 / 5, 0.85 / 2]
+)
 ax_re.set_axis_off()
 re_img = plots.plotFieldAxes(
     ax_re,
@@ -123,7 +134,9 @@ re_img = plots.plotFieldAxes(
     vMin=dmin,
     cMap=cmocean.cm.rain,
 )
-ax_re_cb = fig.add_axes([0.100 / 3 + 2 / 5-0.02, 0.06 / 2 + 0.5, 0.75*2 / 5, 0.05 / 2])
+ax_re_cb = fig.add_axes(
+    [0.100 / 3 + 2 / 5 - 0.02, 0.06 / 2 + 0.5, 0.75 * 2 / 5, 0.05 / 2]
+)
 ax_re_cb.set_axis_off()
 cb = fig.colorbar(
     re_img,
@@ -134,18 +147,16 @@ cb = fig.colorbar(
 )
 
 # Top right - raw scatter
-ax_rs = fig.add_axes(
-    [0.005 / 3 + 4 / 5, 0.125 / 2 + 0.5, 0.95 / 5, 0.85 / 2]
-)
-ax_rs.set_xticks([0.005,0.015,0.025])
-ax_rs.set_yticks([0.0,0.01,0.02,0.03])
-vary.data[vary.data>dmax]=dmax # Scatter plot fn can't cope with bad data
-plots.plotScatterAxes(ax_rs, varx, vary, vMin=dmin, vMax=dmax, bins='log')
+ax_rs = fig.add_axes([0.005 / 3 + 4 / 5, 0.125 / 2 + 0.5, 0.95 / 5, 0.85 / 2])
+ax_rs.set_xticks([0.005, 0.015, 0.025])
+ax_rs.set_yticks([0.0, 0.01, 0.02, 0.03])
+vary.data[vary.data > dmax] = dmax  # Scatter plot fn can't cope with bad data
+plots.plotScatterAxes(ax_rs, varx, vary, vMin=dmin, vMax=dmax, bins="log")
 
 # Bottom left - normalised original
 varx.data = np.squeeze(ic_source.numpy())
-(dmin, dmax) = (-0.25,1.25)
-ax_no = fig.add_axes([0.000 / 3, 0.125 / 2, 0.95*2 / 5, 0.85 / 2])
+(dmin, dmax) = (-0.25, 1.25)
+ax_no = fig.add_axes([0.000 / 3, 0.125 / 2, 0.95 * 2 / 5, 0.85 / 2])
 ax_no.set_axis_off()
 no_img = plots.plotFieldAxes(
     ax_no,
@@ -154,7 +165,7 @@ no_img = plots.plotFieldAxes(
     vMin=dmin,
     cMap=cmocean.cm.rain,
 )
-ax_no_cb = fig.add_axes([0.10 / 3, 0.06 / 2, 0.75*2 / 5, 0.05 / 2])
+ax_no_cb = fig.add_axes([0.10 / 3, 0.06 / 2, 0.75 * 2 / 5, 0.05 / 2])
 ax_no_cb.set_axis_off()
 cb = fig.colorbar(
     no_img, ax=ax_no_cb, location="bottom", orientation="horizontal", fraction=1.0
@@ -162,7 +173,7 @@ cb = fig.colorbar(
 
 # Bottom centre - normalised encoded
 vary.data = encoded.numpy()[0, :, :, 0]
-ax_ne = fig.add_axes([0.000 / 3 + 2 / 5-0.02, 0.125 / 2, 0.95*2 / 5, 0.85 / 2])
+ax_ne = fig.add_axes([0.000 / 3 + 2 / 5 - 0.02, 0.125 / 2, 0.95 * 2 / 5, 0.85 / 2])
 ax_ne.set_axis_off()
 ne_img = plots.plotFieldAxes(
     ax_ne,
@@ -171,17 +182,15 @@ ne_img = plots.plotFieldAxes(
     vMin=dmin,
     cMap=cmocean.cm.rain,
 )
-ax_ne_cb = fig.add_axes([0.1 / 3 + 2 / 5-0.02, 0.06 / 2, 0.75*2 / 5, 0.05 / 2])
+ax_ne_cb = fig.add_axes([0.1 / 3 + 2 / 5 - 0.02, 0.06 / 2, 0.75 * 2 / 5, 0.05 / 2])
 ax_ne_cb.set_axis_off()
 cb = fig.colorbar(
     ne_img, ax=ax_ne_cb, location="bottom", orientation="horizontal", fraction=1.0
 )
 
 # Bottom right - normalised scatter
-ax_ns = fig.add_axes(
-    [0.005 / 3 + 4 / 5, 0.125 / 2, 0.95 / 5, 0.85 / 2]
-)
-plots.plotScatterAxes(ax_ns, varx, vary, vMin=dmin, vMax=dmax, bins='log')
+ax_ns = fig.add_axes([0.005 / 3 + 4 / 5, 0.125 / 2, 0.95 / 5, 0.85 / 2])
+plots.plotScatterAxes(ax_ns, varx, vary, vMin=dmin, vMax=dmax, bins="log")
 
 
 fig.savefig("comparison.png")
