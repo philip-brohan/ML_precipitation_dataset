@@ -11,7 +11,6 @@ import iris.fileformats
 import iris.analysis
 import datetime
 from statistics import mean
-import cmocean
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
