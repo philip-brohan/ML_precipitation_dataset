@@ -38,14 +38,11 @@ parser.add_argument("--month", help="Test month", type=int, required=False, defa
 args = parser.parse_args()
 
 from utilities import plots
-from get_data import load_monthly
 
 from autoencoderModel import DCVAE
 from make_tensors.tensor_utils import (
     load_raw,
     raw_to_tensor,
-    tensor_to_raw,
-    normalise,
     unnormalise,
     sCube,
 )
