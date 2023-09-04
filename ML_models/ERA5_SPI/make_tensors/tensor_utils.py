@@ -11,7 +11,7 @@ import tensorflow as tf
 import numpy as np
 
 from get_data import load_monthly
-from normalise.SPI.ERA5.normalise import normalise_cube, unnormalise_cube, load_fitted
+from normalise.SPI_monthly.ERA5.normalise import normalise_cube, unnormalise_cube, load_fitted
 
 import warnings
 
@@ -42,10 +42,14 @@ dummy_data = np.zeros((len(lat_values), len(lon_values)))
 sCube = iris.cube.Cube(dummy_data, dim_coords_and_dims=[(latitude, 0), (longitude, 1)])
 
 # Get fitted normalisation parameters and regrid to standard cube
-(shape, location, scale) = load_fitted()
-shape = shape.regrid(sCube, iris.analysis.Nearest())
-location = location.regrid(sCube, iris.analysis.Nearest())
-scale = scale.regrid(sCube, iris.analysis.Nearest())
+shape = []
+location=[]
+scale= []
+for month in range(1,13):
+    parameters = load_fitted(month)
+    shape.append(parameters[0].regrid(sCube, iris.analysis.Nearest()))
+    location.append(parameters[1].regrid(sCube, iris.analysis.Nearest()))
+    scale.append(parameters[2].regrid(sCube, iris.analysis.Nearest()))
 
 
 # Load the data for 1 month and regrid to the standard cube.
@@ -56,17 +60,17 @@ def load_raw(year, month):
 
 
 # Normalise the data
-def normalise(cube):
-    return normalise_cube(cube, shape, location, scale)
+def normalise(cube,month):
+    return normalise_cube(cube, shape[month-1], location[month-1], scale[month-1])
 
 
-def unnormalise(cube):
-    return unnormalise_cube(cube, shape, location, scale)
+def unnormalise(cube,month):
+    return unnormalise_cube(cube, shape[month-1], location[month-1], scale[month-1])
 
 
 # Convert raw cube to normalised tensor
-def raw_to_tensor(raw):
-    norm = normalise(raw)
+def raw_to_tensor(raw,month):
+    norm = normalise(raw,month)
     ict = tf.convert_to_tensor(norm.data, np.float32)
     return ict
 
@@ -79,7 +83,7 @@ def tensor_to_cube(tensor):
 
 
 # Convert normalised tensor to raw precip
-def tensor_to_raw(tensor):
+def tensor_to_raw(tensor,month):
     cube = tensor_to_cube(tensor)
-    raw = unnormalise(cube)
+    raw = unnormalise(cube,month)
     return raw

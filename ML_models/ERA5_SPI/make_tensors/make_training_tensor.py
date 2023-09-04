@@ -50,7 +50,7 @@ if not os.path.isdir(os.path.dirname(args.opfile)):
 
 # Load and standardise data
 qd = load_raw(args.year, args.month)
-ict = raw_to_tensor(qd)
+ict = raw_to_tensor(qd,args.month)
 
 # Write to file
 sict = tf.io.serialize_tensor(ict)
