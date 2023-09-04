@@ -25,9 +25,10 @@ from matplotlib.patches import Rectangle
 sys.path.append("%s/.." % os.path.dirname(__file__))
 from localise import ModelName
 
-import warnings
+# I don't need all the messages about a missing font (on Isambard)
+import logging
 
-warnings.filterwarnings("ignore", message=".*partition.*")
+logging.getLogger("matplotlib.font_manager").disabled = True
 
 import argparse
 
