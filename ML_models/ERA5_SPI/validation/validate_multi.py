@@ -101,9 +101,9 @@ load_status = autoencoder.load_weights("%s/ckpt" % weights_dir)
 load_status.assert_existing_objects_matched()
 
 
-def field_to_scalar(field, normalised=False):
+def field_to_scalar(field, month, normalised=False):
     if normalised:
-        field = unnormalise(field)
+        field = unnormalise(field,month)
     field = field.extract(
         iris.Constraint(
             coord_values={"latitude": lambda cell: args.min_lat <= cell <= args.max_lat}
@@ -131,18 +131,22 @@ def compute_stats(model, x):
     stats["dtp"] = dtp
     stats["n_target"] = field_to_scalar(
         tensor_to_cube(tf.squeeze(x[0])),
+        month,
         normalised=False,
     )
     stats["n_model"] = field_to_scalar(
         tensor_to_cube(tf.squeeze(generated)),
+        month,
         normalised=False,
     )
     stats["r_target"] = field_to_scalar(
         tensor_to_cube(tf.squeeze(x[0])),
+        month,
         normalised=True,
     )
     stats["r_model"] = field_to_scalar(
         tensor_to_cube(tf.squeeze(generated)),
+        month,
         normalised=True,
     )
     return stats
