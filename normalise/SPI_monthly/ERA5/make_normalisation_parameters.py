@@ -12,6 +12,7 @@ import iris.util
 import iris.time
 import numpy as np
 import argparse
+import pickle
 
 from get_data import load_monthly
 
@@ -101,6 +102,19 @@ for lat_i in range(llshape[0]):
             ) = gamma.fit(fdata, method="MLE", floc=-0.0001)
         except Exception:
             print("Failed for %d %d %d" % (month, lat_i, lon_i))
+        if np.isnan(shape.data[lat_i, lon_i]):
+            # This means that all the data is zero - replace with nominal distn
+            (
+                shape.data[lat_i, lon_i],
+                location.data[lat_i, lon_i],
+                scale.data[lat_i, lon_i],
+            ) = (0.88, -0.0001, 0.0006)            
+        if np.isnan(location.data[lat_i, lon_i]):
+            raise Exception("Bad location %d %d %d" % (lat_i, lon_i, args.month))
+        if np.isnan(scale.data[lat_i, lon_i]):
+            with open("tmp.pkl", "wb") as opf:
+                pickle.dump((fdata), opf)
+            raise Exception("Bad scale %d %d %d" % (lat_i, lon_i, args.month))
 
 iris.save(
     shape,

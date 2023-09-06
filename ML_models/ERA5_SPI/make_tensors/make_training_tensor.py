@@ -51,6 +51,7 @@ if not os.path.isdir(os.path.dirname(args.opfile)):
 # Load and standardise data
 qd = load_raw(args.year, args.month)
 ict = raw_to_tensor(qd,args.month)
+tf.debugging.check_numerics(ict,"Bad data %04d-%02d" % (args.year,args.month))
 
 # Write to file
 sict = tf.io.serialize_tensor(ict)
