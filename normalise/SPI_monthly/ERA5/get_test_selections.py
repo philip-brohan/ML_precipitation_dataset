@@ -18,6 +18,7 @@ import pickle
 from get_data import load_monthly
 
 from scipy.stats import gamma
+
 # Define a standard-cube to work with
 # Identical to that used in ERA5, except that the longitude cut is moved
 #  to mid pacific (-180) instead of over the UK (0)
@@ -43,8 +44,8 @@ sCube = iris.cube.Cube(dummy_data, dim_coords_and_dims=[(latitude, 0), (longitud
 
 # Select the points - I can't be bothered to do argparse, just edit this file
 # Not more than 25 points
-points_x = [403,463,464,467,476,477,478,578]
-points_y = [835,835,835,842,916,919,919,919]
+points_x = [403, 463, 464, 467, 476, 477, 478, 578]
+points_y = [835, 835, 835, 842, 916, 919, 919, 919]
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -65,8 +66,10 @@ random_points = []
 raw = []
 for year in range(args.startyear, args.endyear + 1):
     m = load_monthly.load(
-        organisation="ERA5", year=year, month=args.month,
-    ).regrid(sCube,iris.analysis.Nearest())
+        organisation="ERA5",
+        year=year,
+        month=args.month,
+    ).regrid(sCube, iris.analysis.Nearest())
     if len(raw) == 0:
         for i in range(len(points_x)):
             raw.append([])
@@ -74,13 +77,17 @@ for year in range(args.startyear, args.endyear + 1):
     if pm < 1:
         pm = 12
     pm = load_monthly.load(
-        organisation="ERA5", year=year, month=pm,
+        organisation="ERA5",
+        year=year,
+        month=pm,
     )
     pp = args.month + 1
     if pp > 12:
         pp = 1
     pp = load_monthly.load(
-        organisation="ERA5", year=year, month=pp,
+        organisation="ERA5",
+        year=year,
+        month=pp,
     )
     for i in range(len(points_x)):
         raw[i].append(m.data[points_x[i], points_y[i]])

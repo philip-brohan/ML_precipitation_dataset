@@ -108,7 +108,7 @@ for lat_i in range(llshape[0]):
                 shape.data[lat_i, lon_i],
                 location.data[lat_i, lon_i],
                 scale.data[lat_i, lon_i],
-            ) = (0.88, -0.0001, 0.0006)            
+            ) = (0.88, -0.0001, 0.0006)
         if np.isnan(location.data[lat_i, lon_i]):
             raise Exception("Bad location %d %d %d" % (lat_i, lon_i, args.month))
         if np.isnan(scale.data[lat_i, lon_i]):
