@@ -83,9 +83,10 @@ def make_axes(sample_i):
 
 for i in range(25):
     ax = make_axes(i)
-    araw = np.cbrt(raw[i])
+    araw = raw[i]
     plots.plotHistAxes(ax, iris.cube.Cube(araw), bins=25)
-    shape, location, scale = gamma.fit(araw, method="MM")
+    afit = araw
+    shape, location, scale = gamma.fit(afit, method="MLE", floc=-0.0001)
     x = np.linspace(0, np.max(araw), num=100)
     y = gamma.pdf(x, shape, location, scale)
     ax.add_line(Line2D(x, y, color="red", linewidth=2))

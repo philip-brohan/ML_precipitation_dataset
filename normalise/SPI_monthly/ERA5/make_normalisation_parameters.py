@@ -98,7 +98,7 @@ for lat_i in range(llshape[0]):
                 shape.data[lat_i, lon_i],
                 location.data[lat_i, lon_i],
                 scale.data[lat_i, lon_i],
-            ) = gamma.fit(np.cbrt(fdata), method="MM")
+            ) = gamma.fit(fdata, method="MLE", floc=-0.0001)
         except Exception:
             print("Failed for %d %d %d" % (month, lat_i, lon_i))
 
