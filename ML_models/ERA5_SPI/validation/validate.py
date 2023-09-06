@@ -51,7 +51,7 @@ from make_tensors.tensor_utils import (
 
 # Load and standardise data
 qd = load_raw(args.year, args.month)
-ic_source = raw_to_tensor(qd)
+ic_source = raw_to_tensor(qd,args.month)
 
 autoencoder = DCVAE()
 weights_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
@@ -120,7 +120,7 @@ cb = fig.colorbar(
 # Top centre - raw encoded
 vary = sCube.copy()
 vary.data = np.squeeze(encoded[0, :, :, 0].numpy())
-vary = unnormalise(vary)
+vary = unnormalise(vary,args.month)
 ax_re = fig.add_axes(
     [0.000 / 3 + 2 / 5 - 0.02, 0.125 / 2 + 0.5, 0.95 * 2 / 5, 0.85 / 2]
 )
@@ -161,7 +161,7 @@ no_img = plots.plotFieldAxes(
     varx,
     vMax=dmax,
     vMin=dmin,
-    cMap=cmocean.cm.rain,
+    cMap=cmocean.cm.tarn,
 )
 ax_no_cb = fig.add_axes([0.10 / 3, 0.06 / 2, 0.75 * 2 / 5, 0.05 / 2])
 ax_no_cb.set_axis_off()
@@ -178,7 +178,7 @@ ne_img = plots.plotFieldAxes(
     vary,
     vMax=dmax,
     vMin=dmin,
-    cMap=cmocean.cm.rain,
+    cMap=cmocean.cm.tarn,
 )
 ax_ne_cb = fig.add_axes([0.1 / 3 + 2 / 5 - 0.02, 0.06 / 2, 0.75 * 2 / 5, 0.05 / 2])
 ax_ne_cb.set_axis_off()
