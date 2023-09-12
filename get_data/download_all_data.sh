@@ -11,6 +11,9 @@ echo 'CRU'
 echo 'ERA5'
 (cd ERA5 && ./get_data_for_period_ERA5.py | parallel -j 1)
 
+echo 'TWCR'
+(cd TWCR && ./get_data_for_period.py | parallel -j 1)
+
 echo -n 'GPCC: '
 echo -n 'In-situ, '
 (cd ./GPCC/in_situ && ./get_data_for_period.py | parallel -j 1)
