@@ -13,6 +13,7 @@ echo 'ERA5'
 
 echo 'TWCR'
 (cd TWCR && ./get_data_for_period.py | parallel -j 1)
+(cd TWCR && ./get_land_mask.py)
 
 echo -n 'GPCC: '
 echo -n 'In-situ, '

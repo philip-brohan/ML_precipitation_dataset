@@ -55,6 +55,13 @@ def load(year=None, month=None, organisation=None, source=None, constraint=None)
             variable="total_precipitation",
             constraint=constraint,
         )
+    elif organisation == "TWCR":
+        varC = TWCR.TWCR_monthly_load.load_monthly_member(
+            year=year,
+            month=month,
+            variable="PRATE",
+            constraint=constraint,
+        )
     elif organisation == "GPCC":
         if source is None:
             raise Exception("for GPCC, source must be specified")

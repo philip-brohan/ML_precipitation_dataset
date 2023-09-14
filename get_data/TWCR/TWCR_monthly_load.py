@@ -8,14 +8,18 @@ import iris.time
 import iris.analysis
 import iris.coord_systems
 import iris.fileformats
-import datetime
 import numpy as np
 import warnings
 
 warnings.filterwarnings("ignore", message=".*frac.*")
 
-# Need to add coordinate system metadata so they work with cartopy
+# Need to add coordinate system metadata so they work with iris
 coord_s = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
+
+# And a function to add the coord system to a cube (in-place)
+def add_coord_system(cbe):
+    cbe.coord("latitude").coord_system = coord_s
+    cbe.coord("longitude").coord_system = coord_s
 
 # Add a land-mask for TWCR SST grid
 lm_TWCR = iris.load_cube("%s/20CR/version_3/fixed/land.nc" % os.getenv("SCRATCH"))
@@ -27,16 +31,17 @@ lm_TWCR.data.data[np.where(lm_TWCR.data.mask == True)] = 0
 lm_TWCR.data.data[np.where(lm_TWCR.data.mask == False)] = 1
 
 
-def load_quad(year, month, member):
-    res = []
-    for var in ("PRMSL", "TMPS", "TMP2m", "PRATE"):
-        res.append(load_monthly_member(var, year, month, member))
-    return res
-
-
-def load_monthly_member(variable, year, month, member):
+def load_monthly_member(
+    variable="PRATE", year=None, month=None, member=1, constraint=None
+):
     if variable == "SST":
-        ts = load_monthly_member("TMPS", year, month, member)
+        ts = load_monthly_member(
+            variable="TMPS",
+            year=year,
+            month=month,
+            member=member,
+            constraint=constraint,
+        )
         return ts
     else:
         fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem%03d.nc" % (
@@ -49,6 +54,8 @@ def load_monthly_member(variable, year, month, member):
         if not os.path.isfile(fname):
             raise Exception("No data file %s" % fname)
         ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
+        if constraint is not None:
+            ftt = ftt & constraint
         hslice = iris.load_cube(fname, ftt)
         if variable == "TMP2m":
             hslice = iris.util.squeeze(hslice)
@@ -57,7 +64,7 @@ def load_monthly_member(variable, year, month, member):
         return hslice
 
 
-def load_monthly_ensemble(variable, year, month):
+def load_monthly_ensemble(variable='PRATE', year=None, month=None,constraint=None):
     fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem*.nc" % (
         os.getenv("SCRATCH"),
         year,
@@ -65,6 +72,8 @@ def load_monthly_ensemble(variable, year, month):
         year,
     )
     ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
+    if constraint is not None:
+        ftt = ftt & constraint
     hslice = iris.load(fname, ftt)
     for i, cb in enumerate(hslice):
         cb.add_aux_coord(
@@ -81,43 +90,3 @@ def load_monthly_ensemble(variable, year, month):
     hslice.coord("longitude").coord_system = coord_s
     return hslice
 
-
-def load_climatology(variable, month):
-    if variable == "SST":
-        ts = load_climatology("TMPS", month)
-        return ts
-    fname = "%s/20CR/version_3/monthly/climatology/%s_%02d.nc" % (
-        os.getenv("SCRATCH"),
-        variable,
-        month,
-    )
-    if not os.path.isfile(fname):
-        raise Exception("No climatology file %s" % fname)
-    return iris.load_cube(fname)
-
-
-def load_sd_climatology(variable, month):
-    if variable == "SST":
-        ts = load_sd_climatology("TMPS", month)
-        return ts
-    fname = "%s/20CR/version_3/monthly/sd_climatology/%s_%02d.nc" % (
-        os.getenv("SCRATCH"),
-        variable,
-        month,
-    )
-    if not os.path.isfile(fname):
-        raise Exception("No sd climatology file %s" % fname)
-    return iris.load_cube(fname)
-
-
-def get_range(variable, month, cube=None, anomaly=False):
-    clim = load_climatology(variable, month)
-    if anomaly:
-        clim.data *= 0
-    sdc = load_sd_climatology(variable, month)
-    if cube is not None:
-        clim = clim.regrid(cube, iris.analysis.Nearest())
-        sdc = sdc.regrid(cube, iris.analysis.Nearest())
-    dmax = np.percentile(clim.data + (sdc.data * 2), 95)
-    dmin = np.percentile(clim.data - (sdc.data * 2), 5)
-    return (dmin, dmax)
