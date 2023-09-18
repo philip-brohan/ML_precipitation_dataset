@@ -44,7 +44,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Load the fitted values
-(shape, location, scale) = load_fitted(args.month,variable=args.variable)
+(shape, location, scale) = load_fitted(args.month, variable=args.variable)
 
 # Load the precip for the selected month
 raw = TWCR_monthly_load.load_monthly_member(
@@ -90,11 +90,11 @@ axb.add_patch(
 )
 
 # choose actual and normalised data colour maps based on variable
-cmaps = (cmocean.cm.balance,cmocean.cm.balance)
-if args.variable=='PRATE':
-    cmaps = (cmocean.cm.rain,cmocean.cm.tarn)
-if args.variable=='PRMSL':
-    cmaps = (cmocean.cm.diff,cmocean.cm.diff)
+cmaps = (cmocean.cm.balance, cmocean.cm.balance)
+if args.variable == "PRATE":
+    cmaps = (cmocean.cm.rain, cmocean.cm.tarn)
+if args.variable == "PRMSL":
+    cmaps = (cmocean.cm.diff, cmocean.cm.diff)
 
 
 ax_raw = fig.add_axes([0.02, 0.515, 0.607, 0.455])
@@ -102,7 +102,7 @@ plots.plotFieldAxes(
     ax_raw,
     raw,
     plotCube=plots.plot_cube(),
-    vMin=0 if args.variable=='PRATE' else np.percentile(raw.data.data, 5),
+    vMin=0 if args.variable == "PRATE" else np.percentile(raw.data.data, 5),
     vMax=np.percentile(raw.data.data, 95),
     cMap=cmaps[0],
 )
