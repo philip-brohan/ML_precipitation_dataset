@@ -88,6 +88,7 @@ for year in range(args.startyear, args.endyear + 1):
             constraint=llconstraint,
             member=member,
         )
+        m.cell_methods=None
         raw.append(m)
 
 junk = iris.util.equalise_attributes(raw)

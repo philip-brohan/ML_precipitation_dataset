@@ -89,15 +89,22 @@ axb.add_patch(
     )
 )
 
+# choose actual and normalised data colour maps based on variable
+cmaps = (cmocean.cm.balance,cmocean.cm.balance)
+if args.variable=='PRATE':
+    cmaps = (cmocean.cm.rain,cmocean.cm.tarn)
+if args.variable=='PRMSL':
+    cmaps = (cmocean.cm.diff,cmocean.cm.diff)
+
 
 ax_raw = fig.add_axes([0.02, 0.515, 0.607, 0.455])
 plots.plotFieldAxes(
     ax_raw,
     raw,
     plotCube=plots.plot_cube(),
-    vMin=0,
+    vMin=0 if args.variable=='PRATE' else np.percentile(raw.data.data, 5),
     vMax=np.percentile(raw.data.data, 95),
-    cMap=cmocean.cm.rain,
+    cMap=cmaps[0],
 )
 
 ax_hist_raw = fig.add_axes([0.683, 0.535, 0.303, 0.435])
@@ -112,7 +119,7 @@ plots.plotFieldAxes(
     vMax=1.25,
     # vMin=np.percentile(normalised.data.data, 5),
     # vMax=np.percentile(normalised.data.data, 95),
-    cMap=cmocean.cm.tarn,
+    cMap=cmaps[1],
 )
 
 ax_hist_normalised = fig.add_axes([0.683, 0.05, 0.303, 0.435])
