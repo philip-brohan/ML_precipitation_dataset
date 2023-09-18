@@ -14,19 +14,19 @@ def load_fitted(month, variable="PRATE"):
     shape = iris.load_cube(
         "%s/MLP/normalisation/SPI_monthly/TWCR/%s/shape.nc"
         % (os.getenv("SCRATCH"), variable),
-        iris.Constraint(time=iris.time.PartialDateTime(month=month)),
+        iris.Constraint(time=lambda cell: cell.point.month == month),
     )
     TWCR_monthly_load.add_coord_system(shape)
     location = iris.load_cube(
         "%s/MLP/normalisation/SPI_monthly/TWCR/%s/location.nc"
         % (os.getenv("SCRATCH"), variable),
-        iris.Constraint(time=iris.time.PartialDateTime(month=month)),
+        iris.Constraint(time=lambda cell: cell.point.month == month),
     )
     TWCR_monthly_load.add_coord_system(location)
     scale = iris.load_cube(
         "%s/MLP/normalisation/SPI_monthly/TWCR/%s/scale.nc"
         % (os.getenv("SCRATCH"), variable),
-        iris.Constraint(time=iris.time.PartialDateTime(month=month)),
+        iris.Constraint(time=lambda cell: cell.point.month == month),
     )
     TWCR_monthly_load.add_coord_system(scale)
     return (shape, location, scale)
