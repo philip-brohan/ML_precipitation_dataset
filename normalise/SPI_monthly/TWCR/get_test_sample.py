@@ -16,6 +16,7 @@ import numpy as np
 import pickle
 
 from get_data.TWCR import TWCR_monthly_load
+from utilities.grids import E5sCube
 
 from scipy.stats import gamma
 
@@ -82,6 +83,7 @@ for year in range(args.startyear, args.endyear + 1):
         month=args.month,
         constraint=llconstraint,
         member=member,
+        grid=E5sCube,
     )
     if len(raw) == 0:
         random_i = rng.choice(range(m.data.shape[0]), size=args.nsample, replace=False)
@@ -97,6 +99,7 @@ for year in range(args.startyear, args.endyear + 1):
         month=pm,
         constraint=llconstraint,
         member=member,
+        grid=E5sCube,
     )
     pp = args.month + 1
     if pp > 12:
@@ -107,6 +110,7 @@ for year in range(args.startyear, args.endyear + 1):
         month=pp,
         constraint=llconstraint,
         member=member,
+        grid=E5sCube,
     )
     for i in range(args.nsample):
         raw[i].append(m.data[random_i[i], random_j[i]])

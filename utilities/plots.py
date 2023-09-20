@@ -15,13 +15,18 @@ from matplotlib.lines import Line2D
 
 import cmocean
 
+# I don't care about datums.
+iris.FUTURE.datum_support = True
 
 # Get the pole location from a cube
 #  Assumes an equirectangular projection
 def extract_pole(cube):
-    lat = cube.coord("latitude")
-    if lat.coord_system is None:
-        return(90,180,0)
+    try:
+        lat = cube.coord("grid_latitude")
+        if lat.coord_system is None:
+            return(90,180,0)
+    except Exception:
+            return(90,180,0)
     if lat.coord_system.grid_mapping_name == "rotated_latitude_longitude":
         return (
             lat.coord_system.grid_north_pole_latitude,
@@ -29,6 +34,7 @@ def extract_pole(cube):
             lat.coord_system.north_pole_grid_longitude,
         )
     else:
+        print(lat.coord_system)
         raise Exception("Unsupported cube for coordinate extraction")
 
 
@@ -99,8 +105,8 @@ def plotFieldAxes(
             )
         )
 
-    lons = field.coord("longitude").points
-    lats = field.coord("latitude").points
+    lons = field.coord("grid_longitude").points
+    lats = field.coord("grid_latitude").points
     ax_map.set_ylim(min(lats), max(lats))
     ax_map.set_xlim(min(lons), max(lons))
     ax_map.set_axis_off()

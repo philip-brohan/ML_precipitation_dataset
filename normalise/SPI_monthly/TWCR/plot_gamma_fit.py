@@ -10,8 +10,6 @@ import numpy as np
 
 from utilities import plots
 
-from get_data.TWCR import TWCR_monthly_load
-
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -19,6 +17,9 @@ from matplotlib.patches import Rectangle
 
 import cmocean
 import argparse
+
+# I don't care about datums.
+iris.FUTURE.datum_support = True
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -38,19 +39,16 @@ shape = iris.load_cube(
     % (os.getenv("SCRATCH"), args.variable),
     iris.Constraint(time=lambda cell: cell.point.month == args.month),
 )
-TWCR_monthly_load.add_coord_system(shape)
 location = iris.load_cube(
     "%s/MLP/normalisation/SPI_monthly/TWCR/%s/location.nc"
     % (os.getenv("SCRATCH"), args.variable),
     iris.Constraint(time=lambda cell: cell.point.month == args.month),
 )
-TWCR_monthly_load.add_coord_system(location)
 scale = iris.load_cube(
     "%s/MLP/normalisation/SPI_monthly/TWCR/%s/scale.nc"
     % (os.getenv("SCRATCH"), args.variable),
     iris.Constraint(time=lambda cell: cell.point.month == args.month),
 )
-TWCR_monthly_load.add_coord_system(scale)
 
 # Make the plot
 fig = Figure(
@@ -88,30 +86,27 @@ ax_shape = fig.add_axes([0.05, 0.68, 0.9, 0.31])
 plots.plotFieldAxes(
     ax_shape,
     shape,
-    plotCube=plots.plot_cube(),
     vMin=np.percentile(shape.data.data, 5),
     vMax=np.percentile(shape.data.data, 95),
-    cMap=cmocean.cm.rain,
+    cMap=cmocean.cm.balance,
 )
 
 ax_location = fig.add_axes([0.05, 0.345, 0.9, 0.31])
 plots.plotFieldAxes(
     ax_location,
     location,
-    plotCube=plots.plot_cube(),
     vMin=np.percentile(location.data.data, 5),
     vMax=np.percentile(location.data.data, 95),
-    cMap=cmocean.cm.rain_r,
+    cMap=cmocean.cm.balance_r,
 )
 
 ax_scale = fig.add_axes([0.05, 0.01, 0.9, 0.31])
 plots.plotFieldAxes(
     ax_scale,
     scale,
-    plotCube=plots.plot_cube(),
     vMin=np.percentile(scale.data.data, 5),
     vMax=np.percentile(scale.data.data, 95),
-    cMap=cmocean.cm.rain,
+    cMap=cmocean.cm.balance,
 )
 
 fig.savefig("gamma.png")

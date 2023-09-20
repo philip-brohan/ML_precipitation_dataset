@@ -2,7 +2,7 @@
 
 # Plot gamma fits to the sample data points
 
-import os
+import numpy as np
 import sys
 import iris
 import iris.cube
@@ -21,6 +21,7 @@ import cmocean
 import pickle
 
 from scipy.stats import gamma
+rng = np.random.default_rng()
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -86,7 +87,7 @@ def make_axes(sample_i):
 
 for i in range(25):
     ax = make_axes(i)
-    araw = raw[i]
+    araw = raw[i]+rng.random(len(raw[i]))*0.00000001
     plots.plotHistAxes(ax, iris.cube.Cube(araw), bins=25)
     afit = araw
     if args.variable == "PRATE":

@@ -15,6 +15,7 @@ import argparse
 import pickle
 
 from get_data.TWCR import TWCR_monthly_load
+from utilities import grids
 
 from scipy.stats import gamma
 
@@ -66,7 +67,7 @@ if not os.path.isdir(opdir):
 
 
 llconstraint = iris.Constraint(
-    coord_values={"latitude": lambda cell: args.min_lat <= cell < args.max_lat}
+    coord_values={"grid_latitude": lambda cell: args.min_lat <= cell < args.max_lat}
 )
 # Load the raw data
 mp = args.month - 1
@@ -87,7 +88,10 @@ for year in range(args.startyear, args.endyear + 1):
             month=month,
             constraint=llconstraint,
             member=member,
+            grid=grids.E5sCube,
         )
+        if m is None:
+            raise Exception("No data %04d %02d %02d" % (year,month,member))
         m.cell_methods = None
         raw.append(m)
 
@@ -120,6 +124,7 @@ for lat_i in range(llshape[0]):
             fdata = np.append(fdata, msub.data[:, lat_i, lon_i + 1])
         fdata = np.append(fdata, mp.data[:, lat_i, lon_i])
         fdata = np.append(fdata, mn.data[:, lat_i, lon_i])
+        fdata += rng.random(len(fdata))*0.00000001
         try:
             if args.variable == "PRATE":
                 (

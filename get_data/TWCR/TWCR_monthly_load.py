@@ -32,7 +32,7 @@ lm_TWCR.data.data[np.where(lm_TWCR.data.mask == False)] = 1
 
 
 def load_monthly_member(
-    variable="PRATE", year=None, month=None, member=1, constraint=None
+    variable="PRATE", year=None, month=None, member=1, constraint=None, grid=None
 ):
     if variable == "SST":
         ts = load_monthly_member(
@@ -54,17 +54,20 @@ def load_monthly_member(
         if not os.path.isfile(fname):
             raise Exception("No data file %s" % fname)
         ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
-        if constraint is not None:
-            ftt = ftt & constraint
         hslice = iris.load_cube(fname, ftt)
         if variable == "TMP2m":
             hslice = iris.util.squeeze(hslice)
         hslice.coord("latitude").coord_system = coord_s
         hslice.coord("longitude").coord_system = coord_s
+        if grid is not None:
+            hslice = hslice.regrid(grid,iris.analysis.Linear())
+        if constraint is not None:
+            hslice = hslice.extract(constraint)
+
         return hslice
 
 
-def load_monthly_ensemble(variable='PRATE', year=None, month=None,constraint=None):
+def load_monthly_ensemble(variable='PRATE', year=None, month=None,constraint=None,grid=None):
     fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem*.nc" % (
         os.getenv("SCRATCH"),
         year,
@@ -72,21 +75,25 @@ def load_monthly_ensemble(variable='PRATE', year=None, month=None,constraint=Non
         year,
     )
     ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
-    if constraint is not None:
-        ftt = ftt & constraint
     hslice = iris.load(fname, ftt)
     for i, cb in enumerate(hslice):
+        cb.coord("latitude").coord_system = coord_s
+        cb.coord("longitude").coord_system = coord_s
+        if grid is not None:
+            cb = cb.regrid(grid,iris.analysis.Linear())
+        if constraint is not None:
+            cb = cb.extract(constraint)
         cb.add_aux_coord(
             iris.coords.AuxCoord(
                 cb.attributes["realization"], standard_name="realization"
             )
         )
-        cb = iris.util.new_axis(cb, "realization")
         del cb.attributes["realization"]
         del cb.attributes["history"]
+        cb = iris.util.new_axis(cb, "realization")
         hslice[i] = cb
     hslice = hslice.concatenate_cube()
-    hslice.coord("latitude").coord_system = coord_s
-    hslice.coord("longitude").coord_system = coord_s
+
+
     return hslice
 

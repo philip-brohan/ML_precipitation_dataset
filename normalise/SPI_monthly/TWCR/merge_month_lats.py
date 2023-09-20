@@ -20,7 +20,7 @@ for param in ("shape", "location", "scale"):
     mmerged = iris.cube.CubeList()
     for month in range(1, 13):
         merged = iris.cube.CubeList()
-        for max_lat in range(-85, 95, 5):
+        for max_lat in range(-89, 91, 1):
             ipfile = (
                 "%s/MLP/normalisation/SPI_monthly/TWCR/%s/%s_m%02d_%03d_%03d.nc"
                 % (
@@ -28,7 +28,7 @@ for param in ("shape", "location", "scale"):
                     args.variable,
                     param,
                     month,
-                    max_lat - 5,
+                    max_lat - 1,
                     max_lat,
                 )
             )
