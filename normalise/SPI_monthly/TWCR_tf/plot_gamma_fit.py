@@ -5,6 +5,7 @@
 
 import os
 import iris
+import sys
 import iris.time
 import iris.util
 import numpy as np
@@ -52,13 +53,18 @@ load_status.assert_existing_objects_matched()
 
 # Turn the weight parameters into cubes
 gl = fitter.get_layer('sequential').get_layer('gamma_c')
-glw = gl.get_weights()
 shape = grids.E5sCube.copy()
-shape.data = np.squeeze(glw[0])
+for weight in gl.weights:
+    if weight.name == 'gamma_c/shape:0':
+        shape.data = np.squeeze(weight.numpy())
 location = grids.E5sCube.copy()
-location.data = np.squeeze(glw[1])
+for weight in gl.weights:
+    if weight.name == 'gamma_c/location:0':
+        location.data = np.squeeze(weight.numpy())
 scale = grids.E5sCube.copy()
-scale.data = np.squeeze(glw[2])
+for weight in gl.weights:
+    if weight.name == 'gamma_c/scale:0':
+        scale.data = np.squeeze(weight.numpy())
 
 # Make the plot
 fig = Figure(
@@ -86,7 +92,7 @@ axb.add_patch(
         (0, 0),
         1,
         1,
-        facecolor=(1.0, 1.0, 1.0, 1),
+        facecolor=(1.0, 0.0, 0.0, 1),
         fill=True,
         zorder=1,
     )
@@ -96,8 +102,8 @@ ax_shape = fig.add_axes([0.05, 0.68, 0.9, 0.31])
 plots.plotFieldAxes(
     ax_shape,
     shape,
-    vMin=np.percentile(shape.data.data, 5),
-    vMax=np.percentile(shape.data.data, 95),
+    #vMin=np.percentile(shape.data.data, 0.05),
+    #vMax=np.percentile(shape.data.data, 99.95),
     cMap=cmocean.cm.balance,
 )
 
@@ -105,17 +111,17 @@ ax_location = fig.add_axes([0.05, 0.345, 0.9, 0.31])
 plots.plotFieldAxes(
     ax_location,
     location,
-    vMin=np.percentile(location.data.data, 5),
-    vMax=np.percentile(location.data.data, 95),
-    cMap=cmocean.cm.balance_r,
+    #vMin=np.percentile(location.data.data, 0.055),
+    #vMax=np.percentile(location.data.data, 99.95),
+    cMap=cmocean.cm.balance,
 )
 
 ax_scale = fig.add_axes([0.05, 0.01, 0.9, 0.31])
 plots.plotFieldAxes(
     ax_scale,
     scale,
-    vMin=np.percentile(scale.data.data, 5),
-    vMax=np.percentile(scale.data.data, 95),
+    #vMin=np.percentile(scale.data.data, 0.05),
+    #vMax=np.percentile(scale.data.data, 99.95),
     cMap=cmocean.cm.balance,
 )
 

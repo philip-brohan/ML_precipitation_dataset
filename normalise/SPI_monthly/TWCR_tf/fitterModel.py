@@ -6,8 +6,8 @@ import tensorflow_probability as tfp
 # Relative scaling factors for losses
 fit_scale = 1.0
 shape_regularization_factor = 0.0
-scale_regularization_factor = 0.0
-location_regularization_factor = 0.0
+scale_regularization_factor = 0.01
+location_regularization_factor = 0.01
 shape_neighbour_factor = 0.0
 scale_neighbour_factor = 0.0
 location_neighbour_factor = 0.0
@@ -25,19 +25,19 @@ class GammaC(tf.keras.layers.Layer):
     def build(self, input_shape):
         self.shape = self.add_weight(
             shape=input_shape[1:],
-            initializer=tf.keras.initializers.Constant(value=1.0),
+            initializer=tf.keras.initializers.Constant(value=100.0*5),
             trainable=True,
             name="shape",
         )
         self.location = self.add_weight(
             shape=input_shape[1:],
-            initializer=tf.keras.initializers.Constant(value=0.0),
+            initializer=tf.keras.initializers.Constant(value=200.0),
             trainable=True,
             name="location",
         )
         self.scale = self.add_weight(
             shape=input_shape[1:],
-            initializer=tf.keras.initializers.Constant(value=1.0),
+            initializer=tf.keras.initializers.Constant(value=10.0*10),
             trainable=True,
             name="scale",
         )
@@ -45,8 +45,11 @@ class GammaC(tf.keras.layers.Layer):
     def call(self, inputs):
         # Constrain scale and shape to be +ve
         dists = tfp.distributions.Gamma(
-            concentration=tf.nn.relu(self.scale), rate=1.0 / tf.nn.relu(self.shape)
+            concentration=tf.nn.relu(self.scale/5)+0.001, rate=1.0 / (tf.nn.relu(self.shape/10)+0.1)
         )
+        #dists = tfp.distributions.Normal(
+        #    self.location, tf.nn.relu(self.scale/10)+0.01
+        #)
         # Regularize
         self.add_loss(
             shape_regularization_factor * tf.reduce_mean(tf.square(self.shape))
@@ -80,7 +83,8 @@ class GammaC(tf.keras.layers.Layer):
                 )
             )
         )
-        return dists.prob(inputs - self.location)
+        return dists.log_prob(inputs-self.location)*-1
+        #return tf.reduce_mean(tf.math.squared_difference(inputs,self.location))
 
 
 # Define the model

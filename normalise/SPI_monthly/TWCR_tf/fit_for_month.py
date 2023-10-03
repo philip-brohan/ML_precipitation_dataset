@@ -36,7 +36,7 @@ bufferSize = 10  # 00  # Already shuffled data, so not so important
 batchSize = 3  # 2  # Arbitrary
 
 # Start training rate
-training_rate = 0.1
+training_rate = 1
 
 # Instantiate and run the fitter under the control of the distribution strategy
 with strategy.scope():
@@ -46,7 +46,7 @@ with strategy.scope():
         args.month,
         startyear=args.startyear,
         endyear=args.endyear,
-        cache=False,
+        cache=True,
     ).repeat(nRepeatsPerEpoch)
     trainingData = trainingData.shuffle(bufferSize).batch(batchSize)
     trainingData = strategy.experimental_distribute_dataset(trainingData)
