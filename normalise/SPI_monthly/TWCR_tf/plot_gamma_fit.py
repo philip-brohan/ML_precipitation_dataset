@@ -23,7 +23,7 @@ import argparse
 
 import tensorflow as tf
 
-from fitterModel import Gamma_Fitter
+from fitterModel import Gamma_Fitter, GammaC
 
 
 parser = argparse.ArgumentParser()
@@ -42,33 +42,34 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Load the trained model - params are its weights
-fitter = Gamma_Fitter()
-weights_dir = "%s/MLP/fitter/%s/weights/Epoch_%04d" % (
+fitter = Gamma_Fitter(GammaC())
+weights_dir = "%s/MLP/fitter/TWCR/%s/%02d/weights/Epoch_%04d" % (
     os.getenv("SCRATCH"),
     args.variable,
+    args.month,
     args.epoch,
 )
 load_status = fitter.load_weights("%s/ckpt" % weights_dir)
 load_status.assert_existing_objects_matched()
 
 # Turn the weight parameters into cubes
-gl = fitter.get_layer('sequential').get_layer('gamma_c')
+gl = fitter.get_layer("sequential").get_layer("gamma_c")
 shape = grids.E5sCube.copy()
 for weight in gl.weights:
-    if weight.name == 'gamma_c/shape:0':
+    if weight.name == "gamma_c/shape:0":
         shape.data = np.squeeze(weight.numpy())
 location = grids.E5sCube.copy()
 for weight in gl.weights:
-    if weight.name == 'gamma_c/location:0':
+    if weight.name == "gamma_c/location:0":
         location.data = np.squeeze(weight.numpy())
 scale = grids.E5sCube.copy()
 for weight in gl.weights:
-    if weight.name == 'gamma_c/scale:0':
+    if weight.name == "gamma_c/scale:0":
         scale.data = np.squeeze(weight.numpy())
 
 # Make the plot
 fig = Figure(
-    figsize=(10, 10 * 3 / 2),
+    figsize=(11, 10 * 3 / 2),
     dpi=100,
     facecolor=(0.5, 0.5, 0.5, 1),
     edgecolor=None,
@@ -92,37 +93,56 @@ axb.add_patch(
         (0, 0),
         1,
         1,
-        facecolor=(1.0, 0.0, 0.0, 1),
+        facecolor=(1.0, 1.0, 1.0, 1),
         fill=True,
         zorder=1,
     )
 )
 
-ax_shape = fig.add_axes([0.05, 0.68, 0.9, 0.31])
-plots.plotFieldAxes(
-    ax_shape,
-    shape,
-    #vMin=np.percentile(shape.data.data, 0.05),
-    #vMax=np.percentile(shape.data.data, 99.95),
-    cMap=cmocean.cm.balance,
-)
-
-ax_location = fig.add_axes([0.05, 0.345, 0.9, 0.31])
-plots.plotFieldAxes(
+ax_location = fig.add_axes([0.02, 0.68, 0.8, 0.31])
+location_img = plots.plotFieldAxes(
     ax_location,
     location,
-    #vMin=np.percentile(location.data.data, 0.055),
-    #vMax=np.percentile(location.data.data, 99.95),
+    # vMin=np.percentile(location.data.data, 0.055),
+    # vMax=np.percentile(location.data.data, 99.95),
     cMap=cmocean.cm.balance,
 )
+ax_location_cb = fig.add_axes([0.85, 0.68, 0.13, 0.31])
+ax_location_cb.set_axis_off()
+cb = fig.colorbar(
+    location_img,
+    ax=ax_location_cb,
+    location="right",
+    orientation="vertical",
+    fraction=1.0,
+)
 
-ax_scale = fig.add_axes([0.05, 0.01, 0.9, 0.31])
-plots.plotFieldAxes(
+ax_scale = fig.add_axes([0.02, 0.345, 0.8, 0.31])
+scale_img = plots.plotFieldAxes(
     ax_scale,
     scale,
-    #vMin=np.percentile(scale.data.data, 0.05),
-    #vMax=np.percentile(scale.data.data, 99.95),
+    # vMin=np.percentile(scale.data.data, 0.05),
+    # vMax=np.percentile(scale.data.data, 99.95),
     cMap=cmocean.cm.balance,
+)
+ax_scale_cb = fig.add_axes([0.85, 0.345, 0.13, 0.31])
+ax_scale_cb.set_axis_off()
+cb = fig.colorbar(
+    scale_img, ax=ax_scale_cb, location="right", orientation="vertical", fraction=1.0
+)
+
+ax_shape = fig.add_axes([0.02, 0.01, 0.8, 0.31])
+shape_img = plots.plotFieldAxes(
+    ax_shape,
+    shape,
+    # vMin=np.percentile(shape.data.data, 0.05),
+    # vMax=np.percentile(shape.data.data, 99.95),
+    cMap=cmocean.cm.balance,
+)
+ax_shape_cb = fig.add_axes([0.85, 0.01, 0.13, 0.31])
+ax_shape_cb.set_axis_off()
+cb = fig.colorbar(
+    shape_img, ax=ax_shape_cb, location="right", orientation="vertical", fraction=1.0
 )
 
 fig.savefig("gamma.png")

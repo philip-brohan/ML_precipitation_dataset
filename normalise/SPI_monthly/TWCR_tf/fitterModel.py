@@ -1,81 +1,106 @@
 # Custom TF model for gamma distribution fitting
 
+import sys
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-# Relative scaling factors for losses
-fit_scale = 1.0
-shape_regularization_factor = 0.0
-scale_regularization_factor = 0.01
-location_regularization_factor = 0.01
-shape_neighbour_factor = 0.0
-scale_neighbour_factor = 0.0
-location_neighbour_factor = 0.0
+
+# Class to initialize weights to a given tensor
+class ToTensor(tf.keras.initializers.Initializer):
+    def __init__(self, values):
+        self.values = values
+
+    def __call__(self, shape, dtype=None):
+        return tf.Variable(self.values)
 
 
 # Define a TF layer to compare its input against a gamma distribution
 # Returns the probability of the inputs given a gamma distribution
 #  defined by the layer weights. (Train weights to maximise this).
-class GammaC(tf.keras.layers.Layer):
+class GammaC(
+    tf.keras.layers.Layer,
+):
     def __init__(
         self,
+        fg_shape=tf.zeros([721, 1440, 1], tf.float32),
+        fg_location=tf.zeros([721, 1440, 1], tf.float32),
+        fg_scale=tf.zeros([721, 1440, 1], tf.float32),
+        fit_loss_scale=1.0,
+        shape_regularization_factor=0.0,
+        scale_regularization_factor=0.0,
+        location_regularization_factor=0.0,
+        shape_neighbour_factor=0.0,
+        scale_neighbour_factor=0.0,
+        location_neighbour_factor=0.0,
     ):
         super().__init__()
+        self.fg_shape = fg_shape
+        self.fg_location = fg_location
+        self.fg_scale = fg_scale
+        self.fit_loss_scale = fit_loss_scale
+        self.shape_regularization_factor = shape_regularization_factor
+        self.scale_regularization_factor = scale_regularization_factor
+        self.location_regularization_factor = location_regularization_factor
+        self.shape_neighbour_factor = shape_neighbour_factor
+        self.scale_neighbour_factor = scale_neighbour_factor
+        self.location_neighbour_factor = location_neighbour_factor
 
     def build(self, input_shape):
         self.shape = self.add_weight(
             shape=input_shape[1:],
-            initializer=tf.keras.initializers.Constant(value=100.0*5),
+            initializer=ToTensor(self.fg_shape),
             trainable=True,
             name="shape",
         )
         self.location = self.add_weight(
             shape=input_shape[1:],
-            initializer=tf.keras.initializers.Constant(value=200.0),
+            initializer=ToTensor(self.fg_location),
             trainable=True,
             name="location",
         )
         self.scale = self.add_weight(
             shape=input_shape[1:],
-            initializer=tf.keras.initializers.Constant(value=10.0*10),
+            initializer=ToTensor(self.fg_scale),
             trainable=True,
             name="scale",
         )
 
     def call(self, inputs):
         # Constrain scale and shape to be +ve
+        tf.debugging.check_numerics(self.location, "Bad location")
+        tf.debugging.check_numerics(self.scale, "Bad scale")
+        tf.debugging.check_numerics(self.shape, "Bad shape")
         dists = tfp.distributions.Gamma(
-            concentration=tf.nn.relu(self.scale/5)+0.001, rate=1.0 / (tf.nn.relu(self.shape/10)+0.1)
+            concentration=tf.nn.relu(self.shape) + self.fg_shape / 100,
+            rate=1.0 / (tf.nn.relu(self.scale) + self.fg_scale / 100),
         )
-        #dists = tfp.distributions.Normal(
-        #    self.location, tf.nn.relu(self.scale/10)+0.01
-        #)
         # Regularize
         self.add_loss(
-            shape_regularization_factor * tf.reduce_mean(tf.square(self.shape))
+            self.shape_regularization_factor * tf.reduce_mean(tf.square(self.shape))
         )
         self.add_loss(
-            scale_regularization_factor * tf.reduce_mean(tf.square(self.scale))
+            self.scale_regularization_factor * tf.reduce_mean(tf.square(self.scale))
         )
         self.add_loss(
-            location_regularization_factor * tf.reduce_mean(tf.square(self.location))
+            self.location_regularization_factor
+            * tf.reduce_mean(tf.square(self.location))
         )
         self.add_loss(
-            shape_neighbour_factor
+            self.shape_neighbour_factor
             * (
                 tf.reduce_mean(tf.square(self.shape[1:, :] - self.shape[:-1, :]))
                 + tf.reduce_mean(tf.square(self.shape[:, 1:] - self.shape[:, :-1]))
             )
         )
         self.add_loss(
-            scale_neighbour_factor
+            self.scale_neighbour_factor
             * (
                 tf.reduce_mean(tf.square(self.scale[1:, :] - self.scale[:-1, :]))
                 + tf.reduce_mean(tf.square(self.scale[:, 1:] - self.scale[:, :-1]))
             )
         )
         self.add_loss(
-            location_neighbour_factor
+            self.location_neighbour_factor
             * (
                 tf.reduce_mean(tf.square(self.location[1:, :] - self.location[:-1, :]))
                 + tf.reduce_mean(
@@ -83,14 +108,17 @@ class GammaC(tf.keras.layers.Layer):
                 )
             )
         )
-        return dists.log_prob(inputs-self.location)*-1
-        #return tf.reduce_mean(tf.math.squared_difference(inputs,self.location))
+        loc_off = tf.nn.relu(self.fg_location - self.location)
+        lp = dists.log_prob(inputs - self.location + loc_off)
+        # tf.print(tf.where(tf.math.is_nan(lp)))
+        # tf.debugging.check_numerics(lp,"Bad probabilities")
+        return lp * -1
 
 
 # Define the model
 class Gamma_Fitter(tf.keras.Model):
     # Initialiser - set up instance and define the models
-    def __init__(self):
+    def __init__(self, FitLayer):
         super(Gamma_Fitter, self).__init__()
 
         # Hyperparameters
@@ -99,7 +127,7 @@ class Gamma_Fitter(tf.keras.Model):
 
         # Model to encode input to latent space distribution
         self.fitter = tf.keras.Sequential(
-            [tf.keras.layers.InputLayer(input_shape=(721, 1440, 1)), GammaC()]
+            [tf.keras.layers.InputLayer(input_shape=(721, 1440, 1)), FitLayer]
         )
 
     def call(self, x, training=False):

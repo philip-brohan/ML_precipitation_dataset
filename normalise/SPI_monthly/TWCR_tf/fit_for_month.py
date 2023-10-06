@@ -8,7 +8,7 @@ import time
 import tensorflow as tf
 
 from makeDataset import getDataset
-from fitterModel import Gamma_Fitter
+from fitterModel import Gamma_Fitter, GammaC
 
 import argparse
 
@@ -32,11 +32,48 @@ strategy = tf.distribute.MirroredStrategy()
 # How many epochs to train for
 nEpochs = 250
 nRepeatsPerEpoch = 1  # Show each month this many times
-bufferSize = 10  # 00  # Already shuffled data, so not so important
-batchSize = 3  # 2  # Arbitrary
+bufferSize = 1000
+batchSize = 32  # Arbitrary
+
+# First calculate minimum, mean, and sd to provide
+#  first-guess parameters
+trainingData = getDataset(
+    args.variable,
+    args.month,
+    startyear=args.startyear,
+    endyear=args.endyear,
+    cache=False,
+).batch(1)
+mean = tf.zeros([721, 1440, 1], dtype=tf.float32)
+min = tf.zeros([721, 1440, 1], dtype=tf.float32) + 1000000.0
+count = tf.zeros([1], dtype=tf.float32)
+for batch in trainingData:
+    mean += batch[0][0, :, :, :]
+    min = tf.math.minimum(min, batch[0][0, :, :, :])
+    count += 1.0
+
+mean /= count
+variance = tf.zeros([721, 1440, 1], dtype=tf.float32)
+for batch in trainingData:
+    variance += tf.math.squared_difference(batch[0][0, :, :, :], mean)
+
+variance /= count
+mean -= min
+
+# First guesses:
+fg_location = min
+fg_scale = variance / mean
+fg_shape = mean / fg_scale
+fg_location -= mean / 20
+
+# fg_location *=0
+fg_location -= 0.0001
+
+# Regularization
+shape_neighbour_factor = 10.0
 
 # Start training rate
-training_rate = 1
+training_rate = 0.000001
 
 # Instantiate and run the fitter under the control of the distribution strategy
 with strategy.scope():
@@ -52,8 +89,22 @@ with strategy.scope():
     trainingData = strategy.experimental_distribute_dataset(trainingData)
 
     # Instantiate the model
-    fitter = Gamma_Fitter()
+    fit_layer = GammaC(
+        fg_shape, fg_location, fg_scale, shape_neighbour_factor=shape_neighbour_factor
+    )
+    fitter = Gamma_Fitter(fit_layer)
     optimizer = tf.keras.optimizers.Adam(training_rate)
+
+    # Save initial state
+    save_dir = "%s/MLP/fitter/TWCR/%s/%02d/weights/Epoch_%04d" % (
+        os.getenv("SCRATCH"),
+        args.variable,
+        args.month,
+        0,
+    )
+    if not os.path.isdir(save_dir):
+        os.makedirs(save_dir)
+    fitter.save_weights("%s/ckpt" % save_dir)
 
     # Metrics for training loss
     fit_m = tf.Variable(0.0, trainable=False)
@@ -66,9 +117,10 @@ with strategy.scope():
     loss_m = tf.Variable(0.0, trainable=False)
 
     # logfile to output the metrics
-    log_FN = ("%s/MLP/normalisation/logs/%s/Fitting") % (
+    log_FN = ("%s/MLP/normalisation/TWCR/logs/%s/%02d/Fitting") % (
         os.getenv("SCRATCH"),
         args.variable,
+        args.month,
     )
     if not os.path.isdir(os.path.dirname(log_FN)):
         os.makedirs(os.path.dirname(log_FN))
@@ -112,9 +164,10 @@ with strategy.scope():
             batch_count += 1
 
         # Save model state and current metrics
-        save_dir = "%s/MLP/fitter/%s/weights/Epoch_%04d" % (
+        save_dir = "%s/MLP/fitter/TWCR/%s/%02d/weights/Epoch_%04d" % (
             os.getenv("SCRATCH"),
             args.variable,
+            args.month,
             epoch,
         )
         if not os.path.isdir(save_dir):
