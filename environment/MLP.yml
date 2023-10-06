@@ -5,6 +5,7 @@ channels:
 dependencies:
 # Basics
   - python=3.9
+  - libwebp=1.3.2
   - iris=3.6
   - pandas=2.0
   - cmocean=3.0
