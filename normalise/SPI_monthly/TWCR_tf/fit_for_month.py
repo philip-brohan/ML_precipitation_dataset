@@ -51,6 +51,8 @@ for batch in trainingData:
     mean += batch[0][0, :, :, :]
     min = tf.math.minimum(min, batch[0][0, :, :, :])
     count += 1.0
+min *= 0
+min -= 0.0001
 
 mean /= count
 variance = tf.zeros([721, 1440, 1], dtype=tf.float32)
@@ -64,13 +66,13 @@ mean -= min
 fg_location = min
 fg_scale = variance / mean
 fg_shape = mean / fg_scale
-fg_location -= mean / 20
-
-# fg_location *=0
-fg_location -= 0.0001
+# fg_location -= mean / 20
+# fg_location -= 0.0001
 
 # Regularization
-shape_neighbour_factor = 10.0
+shape_neighbour_factor = 0.0
+scale_neighbour_factor = 0.0
+location_neighbour_factor = 0.0
 
 # Start training rate
 training_rate = 0.000001
@@ -90,7 +92,12 @@ with strategy.scope():
 
     # Instantiate the model
     fit_layer = GammaC(
-        fg_shape, fg_location, fg_scale, shape_neighbour_factor=shape_neighbour_factor
+        fg_shape,
+        fg_location,
+        fg_scale,
+        shape_neighbour_factor=shape_neighbour_factor,
+        scale_neighbour_factor=scale_neighbour_factor,
+        location_neighbour_factor=location_neighbour_factor,
     )
     fitter = Gamma_Fitter(fit_layer)
     optimizer = tf.keras.optimizers.Adam(training_rate)

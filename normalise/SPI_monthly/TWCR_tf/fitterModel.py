@@ -32,6 +32,9 @@ class GammaC(
         shape_neighbour_factor=0.0,
         scale_neighbour_factor=0.0,
         location_neighbour_factor=0.0,
+        train_location=False,
+        train_scale=True,
+        train_shape=True,
     ):
         super().__init__()
         self.fg_shape = fg_shape
@@ -44,24 +47,30 @@ class GammaC(
         self.shape_neighbour_factor = shape_neighbour_factor
         self.scale_neighbour_factor = scale_neighbour_factor
         self.location_neighbour_factor = location_neighbour_factor
+        self.train_location = train_location
+        self.train_scale = train_scale
+        self.train_shape = train_shape
+
+        # Normal dist for normalization functions
+        self.ndist = tfp.distributions.Normal(loc=0.5, scale=0.2)
 
     def build(self, input_shape):
         self.shape = self.add_weight(
             shape=input_shape[1:],
             initializer=ToTensor(self.fg_shape),
-            trainable=True,
+            trainable=self.train_shape,
             name="shape",
         )
         self.location = self.add_weight(
             shape=input_shape[1:],
             initializer=ToTensor(self.fg_location),
-            trainable=True,
+            trainable=self.train_location,
             name="location",
         )
         self.scale = self.add_weight(
             shape=input_shape[1:],
             initializer=ToTensor(self.fg_scale),
-            trainable=True,
+            trainable=self.train_scale,
             name="scale",
         )
 
@@ -113,6 +122,25 @@ class GammaC(
         # tf.print(tf.where(tf.math.is_nan(lp)))
         # tf.debugging.check_numerics(lp,"Bad probabilities")
         return lp * -1
+
+    # Functions to be called to do normalisation
+    def normalise(self, inputs):
+        gdist = tfp.distributions.Gamma(
+            concentration=tf.nn.relu(self.shape) + self.fg_shape / 100,
+            rate=1.0 / (tf.nn.relu(self.scale) + self.fg_scale / 100),
+        )
+        cumul = gdist.cdf(inputs - self.location)
+        cumul = tf.math.maximum(cumul, 0.0001)
+        cumul = tf.math.minimum(cumul, 0.9999)
+        return self.ndist.quantile(cumul)
+
+    def unnormalise(self, inputs):
+        gdist = tfp.distributions.Gamma(
+            concentration=tf.nn.relu(self.shape) + self.fg_shape / 100,
+            rate=1.0 / (tf.nn.relu(self.scale) + self.fg_scale / 100),
+        )
+        cumul = self.ndist.cdf(inputs)
+        return gdist.quantile(cumul) + self.location
 
 
 # Define the model

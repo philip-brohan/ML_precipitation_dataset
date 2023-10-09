@@ -36,7 +36,7 @@ def load_raw(year, month, member=None, variable="PRATE"):
 
 
 # Convert raw cube to tensor
-def raw_to_tensor(raw, month):
+def raw_to_tensor(raw):
     ict = tf.convert_to_tensor(raw.data, np.float32)
     return ict
 

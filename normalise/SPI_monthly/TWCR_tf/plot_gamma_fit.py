@@ -21,9 +21,8 @@ from matplotlib.patches import Rectangle
 import cmocean
 import argparse
 
-import tensorflow as tf
 
-from fitterModel import Gamma_Fitter, GammaC
+from normalise import normalise
 
 
 parser = argparse.ArgumentParser()
