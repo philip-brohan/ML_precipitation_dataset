@@ -51,8 +51,6 @@ for batch in trainingData:
     mean += batch[0][0, :, :, :]
     min = tf.math.minimum(min, batch[0][0, :, :, :])
     count += 1.0
-min *= 0
-min -= 0.0001
 
 mean /= count
 variance = tf.zeros([721, 1440, 1], dtype=tf.float32)
@@ -60,14 +58,16 @@ for batch in trainingData:
     variance += tf.math.squared_difference(batch[0][0, :, :, :], mean)
 
 variance /= count
-mean -= min
+# mean -= min
 
 # First guesses:
-fg_location = min
+fg_location = mean - tf.sqrt(variance) * 4
+mean -= fg_location
 fg_scale = variance / mean
 fg_shape = mean / fg_scale
 # fg_location -= mean / 20
 # fg_location -= 0.0001
+# fg_location = min+mean-tf.sqrt(variance)*4
 
 # Regularization
 shape_neighbour_factor = 0.0
@@ -75,7 +75,7 @@ scale_neighbour_factor = 0.0
 location_neighbour_factor = 0.0
 
 # Start training rate
-training_rate = 0.000001
+training_rate = 0.001 * tf.reduce_mean(mean)
 
 # Instantiate and run the fitter under the control of the distribution strategy
 with strategy.scope():

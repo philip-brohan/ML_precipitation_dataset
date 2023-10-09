@@ -32,7 +32,7 @@ class GammaC(
         shape_neighbour_factor=0.0,
         scale_neighbour_factor=0.0,
         location_neighbour_factor=0.0,
-        train_location=False,
+        train_location=True,
         train_scale=True,
         train_shape=True,
     ):
@@ -117,8 +117,14 @@ class GammaC(
                 )
             )
         )
-        loc_off = tf.nn.relu(self.fg_location - self.location)
-        lp = dists.log_prob(inputs - self.location + loc_off)
+        loc_min = 0.00000001
+        loc_off = tf.maximum(inputs - self.location, loc_min)
+        lp = dists.log_prob(loc_off)
+        # lp = tf.where(
+        #    (inputs - self.location < loc_min),
+        #    lp*((self.location - inputs + loc_min)/loc_min)+1,
+        #    lp,
+        # )
         # tf.print(tf.where(tf.math.is_nan(lp)))
         # tf.debugging.check_numerics(lp,"Bad probabilities")
         return lp * -1
@@ -129,9 +135,11 @@ class GammaC(
             concentration=tf.nn.relu(self.shape) + self.fg_shape / 100,
             rate=1.0 / (tf.nn.relu(self.scale) + self.fg_scale / 100),
         )
-        cumul = gdist.cdf(inputs - self.location)
-        cumul = tf.math.maximum(cumul, 0.0001)
-        cumul = tf.math.minimum(cumul, 0.9999)
+        loc_min = 0.00000001
+        loc_off = tf.maximum(inputs - self.location, loc_min)
+        cumul = gdist.cdf(loc_off)
+        # cumul = tf.math.maximum(cumul, 0.0001)
+        # cumul = tf.math.minimum(cumul, 0.9999)
         return self.ndist.quantile(cumul)
 
     def unnormalise(self, inputs):

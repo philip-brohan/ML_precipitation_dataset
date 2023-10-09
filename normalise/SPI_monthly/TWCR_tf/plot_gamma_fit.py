@@ -21,8 +21,7 @@ from matplotlib.patches import Rectangle
 import cmocean
 import argparse
 
-
-from normalise import normalise
+from fitterModel import Gamma_Fitter, GammaC
 
 
 parser = argparse.ArgumentParser()
