@@ -34,7 +34,7 @@ def getFileNames(variable, month, startyear=1950, endyear=2014):
 
 
 # Get a dataset - all the tensors for a given month and variable
-def getDataset(variable, month, startyear=1950, endyear=2014, cache=False):
+def getDataset(variable, month, startyear=1950, endyear=2014, blur=None, cache=False):
     # Get a list of years to include
     inFiles = getFileNames(variable, month, startyear=startyear, endyear=endyear)
 
@@ -48,6 +48,12 @@ def getDataset(variable, month, startyear=1950, endyear=2014, cache=False):
     ]
     ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(fnFiles))
     ts_data = ts_data.map(load_tensor, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    # Add noise to data - needed for some cases where the data is all zero
+    if blur is not None:
+        ts_data = ts_data.map(
+            lambda x: x + tf.random.normal([721, 1440, 1], stddev=blur),
+            num_parallel_calls=tf.data.experimental.AUTOTUNE,
+        )
 
     # Zip the data together with the years (so we can find the date and source of each
     #   data tensor if we need it).

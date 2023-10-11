@@ -67,15 +67,23 @@ fg_scale = variance / mean
 fg_shape = mean / fg_scale
 # fg_location -= mean / 20
 # fg_location -= 0.0001
-# fg_location = min+mean-tf.sqrt(variance)*4
+
+# Constraints
+data_blur = 1.0e-8
+min_scale = fg_scale / 1000
+min_shape = fg_shape / 1000
+min_location = tf.sqrt(variance) / 100
 
 # Regularization
+shape_regularization_factor = 0.0
 shape_neighbour_factor = 0.0
+scale_regularization_factor = 0.0
 scale_neighbour_factor = 0.0
+location_regularization_factor = 0.0
 location_neighbour_factor = 0.0
 
 # Start training rate
-training_rate = 0.001 * tf.reduce_mean(mean)
+training_rate = 0.01 * tf.reduce_mean(mean)
 
 # Instantiate and run the fitter under the control of the distribution strategy
 with strategy.scope():
@@ -85,6 +93,7 @@ with strategy.scope():
         args.month,
         startyear=args.startyear,
         endyear=args.endyear,
+        blur=data_blur,
         cache=True,
     ).repeat(nRepeatsPerEpoch)
     trainingData = trainingData.shuffle(bufferSize).batch(batchSize)
@@ -95,9 +104,16 @@ with strategy.scope():
         fg_shape,
         fg_location,
         fg_scale,
+        shape_minimum=min_shape,
+        scale_minimum=min_scale,
+        location_minimum=min_location,
+        shape_regularization_factor=shape_regularization_factor,
+        scale_regularization_factor=scale_regularization_factor,
+        location_regularization_factor=location_regularization_factor,
         shape_neighbour_factor=shape_neighbour_factor,
         scale_neighbour_factor=scale_neighbour_factor,
         location_neighbour_factor=location_neighbour_factor,
+        train_location=False,
     )
     fitter = Gamma_Fitter(fit_layer)
     optimizer = tf.keras.optimizers.Adam(training_rate)

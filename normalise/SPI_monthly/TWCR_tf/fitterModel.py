@@ -26,6 +26,9 @@ class GammaC(
         fg_location=tf.zeros([721, 1440, 1], tf.float32),
         fg_scale=tf.zeros([721, 1440, 1], tf.float32),
         fit_loss_scale=1.0,
+        shape_minimum=0.0,
+        scale_minimum=0.0,
+        location_minimum=0.0,
         shape_regularization_factor=0.0,
         scale_regularization_factor=0.0,
         location_regularization_factor=0.0,
@@ -41,6 +44,9 @@ class GammaC(
         self.fg_location = fg_location
         self.fg_scale = fg_scale
         self.fit_loss_scale = fit_loss_scale
+        self.shape_minimum = shape_minimum
+        self.scale_minimum = scale_minimum
+        self.location_minimum = location_minimum
         self.shape_regularization_factor = shape_regularization_factor
         self.scale_regularization_factor = scale_regularization_factor
         self.location_regularization_factor = location_regularization_factor
@@ -58,6 +64,7 @@ class GammaC(
         self.shape = self.add_weight(
             shape=input_shape[1:],
             initializer=ToTensor(self.fg_shape),
+            # initializer = tf.keras.initializers.Constant(0.5),
             trainable=self.train_shape,
             name="shape",
         )
@@ -70,6 +77,7 @@ class GammaC(
         self.scale = self.add_weight(
             shape=input_shape[1:],
             initializer=ToTensor(self.fg_scale),
+            # initializer = tf.keras.initializers.Constant(0.5),
             trainable=self.train_scale,
             name="scale",
         )
@@ -80,8 +88,8 @@ class GammaC(
         tf.debugging.check_numerics(self.scale, "Bad scale")
         tf.debugging.check_numerics(self.shape, "Bad shape")
         dists = tfp.distributions.Gamma(
-            concentration=tf.nn.relu(self.shape) + self.fg_shape / 100,
-            rate=1.0 / (tf.nn.relu(self.scale) + self.fg_scale / 100),
+            concentration=tf.maximum(self.shape, self.shape_minimum),
+            rate=1.0 / tf.maximum(self.scale, self.scale_minimum),
         )
         # Regularize
         self.add_loss(
@@ -117,38 +125,37 @@ class GammaC(
                 )
             )
         )
-        loc_min = 0.00000001
-        loc_off = tf.maximum(inputs - self.location, loc_min)
+        loc_off = tf.maximum(inputs - self.location, self.location_minimum)
         lp = dists.log_prob(loc_off)
+        # lp = dists.log_prob(inputs - self.location)
         # lp = tf.where(
         #    (inputs - self.location < loc_min),
         #    lp*((self.location - inputs + loc_min)/loc_min)+1,
         #    lp,
         # )
         # tf.print(tf.where(tf.math.is_nan(lp)))
-        # tf.debugging.check_numerics(lp,"Bad probabilities")
+        tf.debugging.check_numerics(lp, "Bad probabilities")
         return lp * -1
 
     # Functions to be called to do normalisation
     def normalise(self, inputs):
         gdist = tfp.distributions.Gamma(
-            concentration=tf.nn.relu(self.shape) + self.fg_shape / 100,
-            rate=1.0 / (tf.nn.relu(self.scale) + self.fg_scale / 100),
+            concentration=tf.maximum(self.shape, self.shape_minimum),
+            rate=1.0 / tf.maximum(self.scale, self.scale_minimum),
         )
-        loc_min = 0.00000001
-        loc_off = tf.maximum(inputs - self.location, loc_min)
+        loc_off = tf.maximum(inputs - self.location, self.location_minimum)
         cumul = gdist.cdf(loc_off)
-        # cumul = tf.math.maximum(cumul, 0.0001)
+        cumul = tf.math.maximum(cumul, 0.0001)
         # cumul = tf.math.minimum(cumul, 0.9999)
         return self.ndist.quantile(cumul)
 
     def unnormalise(self, inputs):
         gdist = tfp.distributions.Gamma(
-            concentration=tf.nn.relu(self.shape) + self.fg_shape / 100,
-            rate=1.0 / (tf.nn.relu(self.scale) + self.fg_scale / 100),
+            concentration=tf.maximum(self.shape, self.shape_minimum),
+            rate=1.0 / tf.maximum(self.scale, self.scale_minimum),
         )
         cumul = self.ndist.cdf(inputs)
-        return gdist.quantile(cumul) + self.location
+        return gdist.quantile(cumul) + tf.maximum(self.location, self.location_minimum)
 
 
 # Define the model
