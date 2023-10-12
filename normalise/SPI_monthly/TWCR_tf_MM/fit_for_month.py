@@ -42,6 +42,7 @@ trainingData = getDataset(
     startyear=args.startyear,
     endyear=args.endyear,
     cache=False,
+    blur=1.0e-9,
 ).batch(1)
 mean = tf.zeros([721, 1440, 1], dtype=tf.float32)
 count = tf.zeros([1], dtype=tf.float32)
