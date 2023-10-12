@@ -84,8 +84,6 @@ ax_location = fig.add_axes([0.02, 0.68, 0.8, 0.31])
 location_img = plots.plotFieldAxes(
     ax_location,
     location,
-    # vMin=np.percentile(location.data.data, 0.055),
-    # vMax=np.percentile(location.data.data, 99.95),
     cMap=cmocean.cm.balance,
 )
 ax_location_cb = fig.add_axes([0.85, 0.68, 0.13, 0.31])
@@ -102,8 +100,6 @@ ax_scale = fig.add_axes([0.02, 0.345, 0.8, 0.31])
 scale_img = plots.plotFieldAxes(
     ax_scale,
     scale,
-    # vMin=np.percentile(scale.data.data, 0.05),
-    # vMax=np.percentile(scale.data.data, 99.95),
     cMap=cmocean.cm.balance,
 )
 ax_scale_cb = fig.add_axes([0.85, 0.345, 0.13, 0.31])
@@ -116,8 +112,6 @@ ax_shape = fig.add_axes([0.02, 0.01, 0.8, 0.31])
 shape_img = plots.plotFieldAxes(
     ax_shape,
     shape,
-    # vMin=np.percentile(shape.data.data, 0.05),
-    # vMax=np.percentile(shape.data.data, 99.95),
     cMap=cmocean.cm.balance,
 )
 ax_shape_cb = fig.add_axes([0.85, 0.01, 0.13, 0.31])
