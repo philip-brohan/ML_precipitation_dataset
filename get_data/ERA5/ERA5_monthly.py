@@ -20,12 +20,11 @@ def add_coord_system(cbe):
     cbe.coord("longitude").coord_system = cs_ERA5
 
 
-def load(variable="total_precipitation", year=None, month=None, constraint=None):
+def load(variable="total_precipitation", year=None, month=None, constraint=None, grid=None):
     if variable == "land_mask":
-        varC = load("sea_surface_temperature", year=2020, month=3)
-        lm_ERA5.data.data[np.where(lm_ERA5.data.mask == True)] = 0
-        lm_ERA5.data.data[np.where(lm_ERA5.data.mask == False)] = 1
-        add_coord_system(varC)
+        varC = load("sea_surface_temperature", year=2020, month=3,grid=grid)
+        varC.data.data[np.where(varC.data.mask == True)] = 0
+        varC.data.data[np.where(varC.data.mask == False)] = 1
         return varC
     if year is None or month is None:
         raise Exception("Year and month must be specified")
@@ -37,14 +36,16 @@ def load(variable="total_precipitation", year=None, month=None, constraint=None)
     if not os.path.isfile(fname):
         raise Exception("No data file %s" % fname)
     ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
-    if constraint is not None:
-        ftt = ftt & constraint
     varC = iris.load_cube(fname, ftt)
     # Get rid of unnecessary height dimensions
     if len(varC.data.shape) == 3:
         varC = varC.extract(iris.Constraint(expver=1))
     add_coord_system(varC)
     varC.long_name = variable
+    if grid is not None:
+        varC = varC.regrid(grid,iris.analysis.Nearest())
+    if constraint is not None:
+        varC = varC.extract(constraint)
     return varC
 
 

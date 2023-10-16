@@ -12,6 +12,7 @@ args = parser.parse_args()
 
 for year in range(args.startyear, args.endyear + 1):
     for var in [
+        "2m_temperature",
         "sea_surface_temperature",
         "mean_sea_level_pressure",
         "total_precipitation",

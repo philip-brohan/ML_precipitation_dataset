@@ -4,11 +4,13 @@
 # For a specified month - shape, location, and scale.
 
 import os
+import sys
 import iris
 import iris.time
 import numpy as np
 
-from utilities import plots
+from utilities import plots, grids
+from get_data.ERA5 import ERA5_monthly
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -33,6 +35,9 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+if args.variable == "sea_surface_temperature":
+    mask = ERA5_monthly.load("land_mask", grid=grids.E5sCube)
+
 # Load the fitted values
 shape = iris.load_cube(
     "%s/MLP/normalisation/SPI_monthly/ERA5_tf_MM/%s/shape_m%02d.nc"
@@ -46,6 +51,10 @@ scale = iris.load_cube(
     "%s/MLP/normalisation/SPI_monthly/ERA5_tf_MM/%s/scale_m%02d.nc"
     % (os.getenv("SCRATCH"), args.variable, args.month),
 )
+if args.variable == "sea_surface_temperature":
+    shape.data = np.ma.masked_where(mask.data == 0, shape.data)
+    location.data = np.ma.masked_where(mask.data == 0, location.data)
+    scale.data = np.ma.masked_where(mask.data == 0, scale.data)
 
 # Make the plot
 fig = Figure(
