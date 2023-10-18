@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Find optimum gamma fit parameters bu fitting to the data moments
+# Find optimum gamma parameters by fitting to the data moments
 
 import os
 import sys

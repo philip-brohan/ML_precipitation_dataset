@@ -6,7 +6,7 @@ import os
 
 
 def is_done(month, variable):
-    fn = "%s/MLP/normalisation/SPI_monthly/TWCR_tf_MM/%s/shape_m%02d.nc" % (
+    fn = "%s/MLP/normalisation/SPI_monthly/ERA5_tf_MM/%s/shape_m%02d.nc" % (
         os.getenv("SCRATCH"),
         variable,
         month,
@@ -17,7 +17,7 @@ def is_done(month, variable):
 
 
 count = 0
-for variable in ("TMP2m", "PRMSL", "PRATE"):
+for variable in ("2m_temperature", "mean_sea_level_pressure", "total_precipitation"):
     for month in range(1, 13):
         if is_done(month, variable):
             continue
