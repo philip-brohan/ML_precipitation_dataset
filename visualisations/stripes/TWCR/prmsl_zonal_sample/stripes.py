@@ -4,6 +4,7 @@
 # Monthly, resolved in latitude, averaging in longitude,
 #  single ensemble member.
 
+import os
 import sys
 import numpy
 import datetime
@@ -16,12 +17,13 @@ rng = np.random.default_rng()
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
-from matplotlib.patches import Rectangle
 from matplotlib.lines import Line2D
+import cmocean
 
 start = datetime.datetime(1850, 1, 1, 0, 0)
 end = datetime.datetime(2023, 12, 31, 23)
 
+sys.path.append("%s/.." % os.path.dirname(__file__))
 from makeDataset import getDataset
 
 # Go through data and extract zonal mean for each month
@@ -61,6 +63,8 @@ fig = Figure(
     subplotpars=None,
     tight_layout=None,
 )
+font = {"size": 12}
+matplotlib.rc("font", **font)
 canvas = FigureCanvas(fig)
 matplotlib.rc("image", aspect="auto")
 
@@ -106,15 +110,13 @@ ax = fig.add_axes(
 )
 ax.set_axis_off()
 
-# Map normally distributed ndata to a uniform distribution for plotting
-#  (means plot has ~same amount of each colour).
-cdf = norm.cdf(ndata, loc=0.5, scale=0.2)
-ndata = uniform.ppf(cdf, loc=0, scale=1)
 s = ndata.shape
-y = numpy.linspace(0, 1, s[0] + 1)
+y = 1.0 - numpy.linspace(0, 1, s[0] + 1)
 x = [(a - datetime.timedelta(days=15)).timestamp() for a in dts]
 x.append((dts[-1] + datetime.timedelta(days=15)).timestamp())
-img = ax.pcolorfast(x, y, ndata, cmap="RdYlBu_r", alpha=1.0, vmin=0, vmax=1, zorder=100)
+img = ax.pcolorfast(
+    x, y, ndata, cmap=cmocean.cm.balance, alpha=1.0, vmin=0, vmax=1, zorder=100
+)
 
 
 # Add a latitude grid
@@ -173,7 +175,6 @@ def add_dateline(ax, year):
         horizontalalignment="center",
         verticalalignment="center",
         color="black",
-        size=14,
         clip_on=True,
         zorder=200,
     )
@@ -183,10 +184,8 @@ for year in range(1860, 2020, 10):
     add_dateline(axg, year)
 
 # ColourBar
-ticv = [0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99]
+ticv = [0.05, 0.25, 0.5, 0.75, 0.95]
 ticl = ["%3.2f" % x for x in ticv]
-cdf = uniform.cdf(ticv, loc=0, scale=1)
-tics = norm.ppf(cdf, loc=0.5, scale=0.2)
 ax_cb = fig.add_axes([0.925, 0.06125, 0.05, 0.9])
 ax_cb.set_axis_off()
 cb = fig.colorbar(
@@ -195,7 +194,7 @@ cb = fig.colorbar(
     location="right",
     orientation="vertical",
     fraction=1.0,
-    ticks=tics,
+    ticks=ticv,
     format=matplotlib.ticker.FixedFormatter(ticl),
     label="Quantile",
 )
