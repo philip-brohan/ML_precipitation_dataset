@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from get_data.ERA5 import ERA5_monthly
 from utilities import grids
-from normalise.SPI_monthly.ERA5.normalise import (
+from normalise.SPI_monthly.ERA5_tf_MM.normalise import (
     normalise_cube,
     unnormalise_cube,
     load_fitted,

@@ -13,10 +13,6 @@ import dask
 tf.config.threading.set_inter_op_parallelism_threads(1)
 dask.config.set(scheduler="single-threaded")
 
-import warnings
-
-# warnings.filterwarnings("ignore", message=".*TransverseMercator.*")
-
 from tensor_utils import load_raw, raw_to_tensor
 
 import argparse
@@ -30,9 +26,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 if args.opfile is None:
-    purpose = "training"
-    if args.test:
-        purpose = "test"
     args.opfile = ("%s/MLP/normalised_datasets/ERA5_tf_MM/%s/%04d-%02d.tfd") % (
         os.getenv("SCRATCH"),
         args.variable,
