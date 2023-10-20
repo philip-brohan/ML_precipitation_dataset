@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-# 20CRv3 stripes - normalised temperatures.
-# Monthly, resolved in latitude, averaging in longitude,
-#  single ensemble member.
+# 20CRv3 stripes - normalised values.
+# Monthly, resolved in latitude,
 
 import os
 import sys
@@ -10,7 +9,9 @@ import numpy
 import datetime
 import numpy as np
 import tensorflow as tf
-from scipy.stats import uniform, norm
+from scipy.ndimage import convolve
+
+rng = np.random.default_rng()
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -21,14 +22,68 @@ import cmocean
 start = datetime.datetime(1850, 1, 1, 0, 0)
 end = datetime.datetime(2023, 12, 31, 23)
 
-sys.path.append("%s/.." % os.path.dirname(__file__))
 from makeDataset import getDataset
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--reduce",
+    help="Longitude reduction method",
+    type=str,
+    required=False,
+    default="sample",
+)
+parser.add_argument(
+    "--convolve", help="Convolution filter", type=str, required=False, default="none"
+)
+parser.add_argument("--variable", help="Variable", type=str, required=True)
+args = parser.parse_args()
+
+
+# Longitude reduction
+def longitude_reduce(choice, ndata):
+    if choice == "sample":
+        nd2d = tf.squeeze(ndata)
+        nd2dt = tf.transpose(nd2d)
+        ndmo = tf.transpose(tf.random.shuffle(nd2dt)[0, :])
+        ndmo = tf.transpose(ndmo).numpy()
+        ndmo = np.reshape(ndmo, [721, 1])
+        return ndmo
+    if choice == "mean":
+        ndmo = tf.squeeze(tf.math.reduce_mean(ndata, axis=2)).numpy()
+        ndmo = np.reshape(ndmo, [721, 1])
+        return ndmo
+    raise Exception("Unsupported reduction choice %s" % choice)
+
+
+# Convolution smoothing
+def csmooth(choice, ndata):
+    if choice == "none":
+        return ndata
+    if choice == "annual":
+        filter = np.full((1, 12), 1 / 12)
+        return convolve(ndata, filter)
+    if choice == "sub-annual":
+        n2 = csmooth("annual", ndata)
+        return ndata - n2 + 0.5
+    raise Exception("Unsupported convolution choice %s" % choice)
+
+
+# Colourmap
+cmap = {
+    "TMP2m": cmocean.cm.balance,
+    "PRMSL": cmocean.cm.balance,
+    "PRATE": cmocean.cm.tarn,
+}.get(args.variable)
+if cmap is None:
+    cmap = cmocean.cm.balance
 
 # Go through data and extract zonal mean for each month
 dts = []
 ndata = None
 trainingData = getDataset(
-    "TMP2m",
+    args.variable,
     startyear=start.year,
     endyear=end.year,
     cache=False,
@@ -39,13 +94,14 @@ for batch in trainingData:
     year = int(batch[1].numpy()[0][:4])
     month = int(batch[1].numpy()[0][5:7])
     dts.append(datetime.datetime(year, month, 15, 0))
-    ndmo = tf.squeeze(tf.math.reduce_mean(batch[0], axis=2)).numpy()
-    ndmo = np.reshape(ndmo, [721, 1])
+    ndmo = longitude_reduce(args.reduce, batch[0])
     if ndata is None:
         ndata = ndmo
     else:
         ndata = np.concatenate((ndata, ndmo), axis=1)
 
+# Filter
+ndata = csmooth(args.convolve, ndata)
 
 # Plot the resulting array as a 2d colourmap
 fig = Figure(
@@ -109,10 +165,7 @@ s = ndata.shape
 y = 1.0 - numpy.linspace(0, 1, s[0] + 1)
 x = [(a - datetime.timedelta(days=15)).timestamp() for a in dts]
 x.append((dts[-1] + datetime.timedelta(days=15)).timestamp())
-img = ax.pcolorfast(
-    x, y, ndata, cmap=cmocean.cm.balance, alpha=1.0, vmin=0, vmax=1, zorder=100
-)
-
+img = ax.pcolorfast(x, y, ndata, cmap=cmap, alpha=1.0, vmin=0, vmax=1, zorder=100)
 
 # Add a latitude grid
 axg = fig.add_axes(
@@ -195,4 +248,4 @@ cb = fig.colorbar(
 )
 
 
-fig.savefig("TMP2m.png")
+fig.savefig("%s_%s_%s.png" % (args.variable, args.reduce, args.convolve))
