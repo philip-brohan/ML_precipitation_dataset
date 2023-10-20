@@ -7,6 +7,7 @@ import os
 import sys
 import numpy
 import datetime
+import re
 import numpy as np
 import tensorflow as tf
 from scipy.ndimage import convolve
@@ -59,14 +60,20 @@ def longitude_reduce(choice, ndata):
 
 # Convolution smoothing
 def csmooth(choice, ndata):
+    if choice[:3] == "sub":  # Want residual from smoothing
+        n2 = csmooth(choice[4:], ndata)
+        return ndata - n2 + 0.5
     if choice == "none":
         return ndata
     if choice == "annual":
         filter = np.full((1, 12), 1 / 12)
         return convolve(ndata, filter)
-    if choice == "sub-annual":
-        n2 = csmooth("annual", ndata)
-        return ndata - n2 + 0.5
+    result = re.search(r"(\d+)x(\d+)", choice)
+    if result is not None:
+        hv = int(result.groups()[0])
+        vv = int(result.groups()[1])
+        filter = np.full((vv, hv), 1 / (vv * hv))
+        return convolve(ndata, filter)
     raise Exception("Unsupported convolution choice %s" % choice)
 
 
