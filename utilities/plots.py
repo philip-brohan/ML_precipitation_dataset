@@ -190,7 +190,7 @@ def plotHistAxes(
     if vMin is None:
         vMin = np.min(var.data)
     ax.hist(
-        x=var.data.flatten(),
+        x=var.data.compressed(),
         range = (vMin,vMax),
         bins=bins,
         color='blue',

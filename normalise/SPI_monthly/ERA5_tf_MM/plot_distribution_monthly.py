@@ -92,14 +92,15 @@ if args.variable == "mean_sea_level_pressure":
 
 
 ax_raw = fig.add_axes([0.02, 0.515, 0.607, 0.455])
+if args.variable == "total_precipitation":
+    vMin = 0
+else:
+    vMin = np.percentile(raw.data.compressed(), 5)
 plots.plotFieldAxes(
     ax_raw,
     raw,
-    plotCube=grids.E5sCube,
-    vMin=0
-    if args.variable == "total_precipitation"
-    else np.percentile(raw.data.data, 5),
-    vMax=np.percentile(raw.data.data, 95),
+    vMin=vMin,
+    vMax=np.percentile(raw.data.compressed(), 95),
     cMap=cmaps[0],
 )
 
@@ -110,7 +111,6 @@ ax_normalised = fig.add_axes([0.02, 0.03, 0.607, 0.455])
 plots.plotFieldAxes(
     ax_normalised,
     normalised,
-    plotCube=grids.E5sCube,
     vMin=-0.25,
     vMax=1.25,
     # vMin=np.percentile(normalised.data.data, 5),
