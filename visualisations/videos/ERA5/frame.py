@@ -108,7 +108,7 @@ dt_points = np.linspace(
 cbe = grids.E5sCube.copy()
 for dtts in dt_points:
     ndata = interpolator(dtts)
-    cbe.data = ndata
+    cbe.data = np.ma.MaskedArray(ndata,ndata==0)
 
     fig = Figure(
         figsize=(20, 10),
