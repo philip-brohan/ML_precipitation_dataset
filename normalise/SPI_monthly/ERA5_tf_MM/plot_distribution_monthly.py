@@ -113,8 +113,6 @@ plots.plotFieldAxes(
     normalised,
     vMin=-0.25,
     vMax=1.25,
-    # vMin=np.percentile(normalised.data.data, 5),
-    # vMax=np.percentile(normalised.data.data, 95),
     cMap=cmaps[1],
 )
 

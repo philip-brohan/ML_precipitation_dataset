@@ -44,14 +44,12 @@ def match_original(normalised, gamma_p, norm_mean=0.5, norm_sd=0.2):
 # Normalise a cube (same as match_normal but for cubes)
 def normalise_cube(raw, shape, location, scale, norm_mean=0.5, norm_sd=0.2):
     cdf = gamma.cdf(raw.data, shape.data, loc=location.data, scale=scale.data)
-    dl = np.argwhere(~np.isfinite(cdf))
-    if len(dl) > 0:
-        raise Exception("Failure in gamma fit. First at %d %d" % (dl[0, 0], dl[0, 1]))
     cdf[cdf > 0.99999] = 0.99999  # cdf=0 or 1 causes numerical failure
-    cdf[cdf < 0.00001] = 0.00001  # Should fix the gamma fit so this never happens
+    cdf[cdf < 0.00001] = 0.00001  # Most of these will be missing data
     spi = norm.ppf(cdf, loc=norm_mean, scale=norm_sd)
     result = raw.copy()
-    result.data = spi
+    result.data = np.ma.MaskedArray(spi, np.logical_and(raw.data.mask, shape.data.mask))
+    result.data.data[result.data.mask] = 0.0
     return result
 
 
@@ -61,5 +59,5 @@ def unnormalise_cube(normalised, shape, location, scale, norm_mean=0.5, norm_sd=
     cdf = norm.cdf(normalised.data, loc=norm_mean, scale=norm_sd)
     raw = gamma.ppf(cdf, shape.data, location.data, scale.data)
     result = normalised.copy()
-    result.data = raw
+    result.data.data = raw
     return result

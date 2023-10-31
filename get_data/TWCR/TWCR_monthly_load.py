@@ -30,7 +30,6 @@ lm_TWCR.data = np.ma.masked_where(lm_TWCR.data > 0.0, lm_TWCR.data, copy=False)
 lm_TWCR.data.data[np.where(lm_TWCR.data.mask == True)] = 0
 lm_TWCR.data.data[np.where(lm_TWCR.data.mask == False)] = 1
 
-
 def load_monthly_member(
     variable="PRATE", year=None, month=None, member=1, constraint=None, grid=None
 ):
@@ -41,7 +40,12 @@ def load_monthly_member(
             month=month,
             member=member,
             constraint=constraint,
+            grid=grid,
         )
+        lmg = lm_TWCR.copy()
+        if grid is not None:
+            lmg = lmg.regrid(grid,iris.analysis.Nearest())
+        ts.data = np.ma.MaskedArray(ts.data,lmg.data.mask)
         return ts
     else:
         fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem%03d.nc" % (

@@ -18,9 +18,6 @@ from matplotlib.patches import Rectangle
 import cmocean
 import argparse
 
-# I don't care about datums.
-iris.FUTURE.datum_support = True
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--month", help="Month to plot", type=int, required=False, default=3

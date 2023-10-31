@@ -9,8 +9,7 @@ import iris
 import iris.time
 import numpy as np
 
-from utilities import plots, grids
-from get_data.ERA5 import ERA5_monthly
+from utilities import plots
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -19,9 +18,6 @@ from matplotlib.patches import Rectangle
 
 import cmocean
 import argparse
-
-# I don't care about datums.
-# iris.FUTURE.datum_support = True
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -35,8 +31,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# if args.variable == "sea_surface_temperature":
-#    mask = ERA5_monthly.load("land_mask", grid=grids.E5sCube)
 
 # Load the fitted values
 shape = iris.load_cube(
@@ -51,10 +45,6 @@ scale = iris.load_cube(
     "%s/MLP/normalisation/SPI_monthly/ERA5_tf_MM/%s/scale_m%02d.nc"
     % (os.getenv("SCRATCH"), args.variable, args.month),
 )
-# if args.variable == "sea_surface_temperature":
-#    shape.data = np.ma.masked_where(mask.data == 0, shape.data)
-#    location.data = np.ma.masked_where(mask.data == 0, location.data)
-#    scale.data = np.ma.masked_where(mask.data == 0, scale.data)
 
 # Make the plot
 fig = Figure(

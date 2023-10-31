@@ -26,21 +26,31 @@ def load_raw(year, month, member=None, variable="PRATE"):
         member=member,
         grid=grids.E5sCube,
     )
+    raw.data.data[raw.data.mask == True] = 0.0
     return raw
 
 
 # Convert raw cube to tensor
 def raw_to_tensor(raw, variable, month):
     (shape, location, scale) = load_fitted(month, variable=variable)
-    normalised = normalise_cube(raw, shape, location, scale)
-    ict = tf.convert_to_tensor(normalised.data, np.float32)
+    norm = normalise_cube(raw, shape, location, scale)
+    norm.data.data[raw.data.mask == True] = 0.0
+    ict = tf.convert_to_tensor(norm.data, tf.float32)
     return ict
 
 
-# Convert tensor to cube
-def tensor_to_cube(tensor, variable, month):
-    (shape, location, scale) = load_fitted(month, variable=variable)
+# Convert normalised tensor to cube
+def tensor_to_cube(tensor):
     cube = grids.E5sCube.copy()
     cube.data = tensor.numpy()
-    cube = unnormalise_cube(cube, shape, location, scale)
+    cube.data = np.ma.MaskedArray(cube.data, cube.data == 0.0)
     return cube
+
+
+# Convert normalised tensor to raw values
+def tensor_to_raw(tensor, variable, month):
+    (shape, location, scale) = load_fitted(month, variable=variable)
+    cube = tensor_to_cube(tensor)
+    raw = unnormalise_cube(cube, shape, location, scale)
+    raw.data.data[raw.data.mask == True] = 0.0
+    return raw
