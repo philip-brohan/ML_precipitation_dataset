@@ -16,9 +16,6 @@ from matplotlib.patches import Rectangle
 from utilities import plots, grids
 import cmocean
 
-start = datetime.datetime(1950, 1, 1, 0, 0)
-end = datetime.datetime(2023, 12, 31, 23)
-
 from makeDataset import getDataset
 
 import argparse
@@ -160,7 +157,7 @@ for dtts in dt_points:
         bbox=dict(
             facecolor=(0.6, 0.6, 0.6, 0.5), edgecolor="black", boxstyle="round", pad=0.5
         ),
-        size=14,
+        size=18,
         clip_on=True,
         zorder=500,
     )
