@@ -44,17 +44,21 @@ args = parser.parse_args()
 
 # Longitude reduction
 def longitude_reduce(choice, ndata):
+    result = np.zeros([721, 1])
     if choice == "sample":
-        nd2d = tf.squeeze(ndata)
-        nd2dt = tf.transpose(nd2d)
-        ndmo = tf.transpose(tf.random.shuffle(nd2dt)[0, :])
-        ndmo = tf.transpose(ndmo).numpy()
-        ndmo = np.reshape(ndmo, [721, 1])
-        return ndmo
+        nd2d = tf.squeeze(ndata).numpy()
+        for i in range(nd2d.shape[0]):  # Iterate over latitudes
+            alat = nd2d[i, :][nd2d[i, :] != 0]
+            if len(alat) > 0:
+                result[i, 0] = rng.choice(alat, size=1)
+        return result
     if choice == "mean":
-        ndmo = tf.squeeze(tf.math.reduce_mean(ndata, axis=2)).numpy()
-        ndmo = np.reshape(ndmo, [721, 1])
-        return ndmo
+        nd2d = tf.squeeze(ndata).numpy()
+        for i in range(nd2d.shape[0]):  # Iterate over latitudes
+            alat = nd2d[i, :][nd2d[i, :] != 0]
+            if len(alat) > 0:
+                result[i, 0] = np.mean(alat)
+        return result
     raise Exception("Unsupported reduction choice %s" % choice)
 
 
@@ -107,8 +111,11 @@ for batch in trainingData:
     else:
         ndata = np.concatenate((ndata, ndmo), axis=1)
 
+ndata = np.ma.MaskedArray(ndata, ndata == 0.0)
+omask = ndata.mask.copy()
 # Filter
 ndata = csmooth(args.convolve, ndata)
+ndata = np.ma.MaskedArray(ndata, omask)
 
 # Plot the resulting array as a 2d colourmap
 fig = Figure(
