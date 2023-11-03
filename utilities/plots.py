@@ -87,6 +87,8 @@ def plotFieldAxes(
     lMask=None,
     cMap=cmocean.cm.balance,
     plotCube=None,
+    f_alpha=1.0,
+    show_land=True,
 ):
     if plotCube is not None:
         field = field.regrid(plotCube, iris.analysis.Linear())
@@ -129,23 +131,24 @@ def plotFieldAxes(
         cmap=cMap,
         vmin=vMin,
         vmax=vMax,
-        alpha=1.0,
+        alpha=f_alpha,
         zorder=10,
     )
 
     # Overlay the land mask
-    mask_img = ax_map.pcolorfast(
-        lMask.coord("longitude").points,
-        lMask.coord("latitude").points,
-        lMask.data,
-        cmap=matplotlib.colors.ListedColormap(
-            ((0.4, 0.4, 0.4, 0), (0.4, 0.4, 0.4, 0.3))
-        ),
-        vmin=0,
-        vmax=1,
-        alpha=1.0,
-        zorder=100,
-    )
+    if show_land:
+        mask_img = ax_map.pcolorfast(
+            lMask.coord("longitude").points,
+            lMask.coord("latitude").points,
+            lMask.data,
+            cmap=matplotlib.colors.ListedColormap(
+                ((0.4, 0.4, 0.4, 0), (0.4, 0.4, 0.4, 0.3))
+            ),
+            vmin=0,
+            vmax=1,
+            alpha=1,
+            zorder=100,
+        )
     return T_img
 
 

@@ -26,3 +26,6 @@ echo -n 'Microwave, '
 (cd ./Copernicus/satellite_microwave && ./get_data_for_period.py | parallel -j 1)
 echo 'Land observations'
 (cd ./Copernicus/land_surface_observations && ./get_data_for_period.py | parallel -j 1)
+
+echo -n 'HadCRUT'
+(cd HadCRUT && ./get_members.py)
