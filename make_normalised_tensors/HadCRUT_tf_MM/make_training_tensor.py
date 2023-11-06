@@ -27,7 +27,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 if args.opfile is None:
-    args.opfile = ("%s/MLP/normalised_datasets/HadCRUT_tf_MM/%04d-%02d_%03d.tfd") % (
+    args.opfile = ("%s/MLP/normalised_datasets/HadCRUT_tf_MM/T/%04d-%02d_%03d.tfd") % (
         os.getenv("SCRATCH"),
         args.year,
         args.month,
