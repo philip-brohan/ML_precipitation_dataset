@@ -10,6 +10,8 @@ dependencies:
   - pandas=2.0
   - cmocean=3.0
   - parallel
+# For convolution with missing data
+  - astropy=5.3
 # Get data from ERA5
 # You'll need to register, see https://cds.climate.copernicus.eu/api-how-to
   - cdsapi=0.6
