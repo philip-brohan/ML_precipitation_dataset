@@ -11,7 +11,29 @@ version = "5.0.1.0"
 opdir = "%s/HadCRUT/%s" % (os.getenv("SCRATCH"), version)
 
 # Only using a subset of the members
-members = [1,2,3,4,5,6,7,8,9,10,151,152,153,154,155,156,157,158,159,160]
+members = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157,
+    158,
+    159,
+    160,
+]
+
 
 # And a function to add the coord system to a cube (in-place)
 def add_coord_system(cbe):
@@ -31,7 +53,7 @@ def load(year=None, month=None, member=None, grid=None):
     varC = iris.load_cube(fname, ftt)
     add_coord_system(varC)
     if grid is not None:
-        varC.coords('latitude')[0].bounds=None
-        varC.coords('longitude')[0].bounds=None
+        varC.coords("latitude")[0].bounds = None
+        varC.coords("longitude")[0].bounds = None
         varC = varC.regrid(grid, iris.analysis.Linear())
     return varC
