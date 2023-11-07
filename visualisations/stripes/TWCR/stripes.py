@@ -10,7 +10,7 @@ import datetime
 import re
 import numpy as np
 import tensorflow as tf
-from scipy.ndimage import convolve
+from astropy.convolution import convolve
 
 rng = np.random.default_rng()
 
@@ -64,20 +64,21 @@ def longitude_reduce(choice, ndata):
 
 # Convolution smoothing
 def csmooth(choice, ndata):
+    ndata[ndata == 0] = np.nan
     if choice[:3] == "sub":  # Want residual from smoothing
         n2 = csmooth(choice[4:], ndata)
         return ndata - n2 + 0.5
     if choice == "none":
         return ndata
     if choice == "annual":
-        filter = np.full((1, 12), 1 / 12)
-        return convolve(ndata, filter)
+        filter = np.full((1, 13), 1 / 13)
+        return convolve(ndata, filter, boundary="extend")
     result = re.search(r"(\d+)x(\d+)", choice)
     if result is not None:
         hv = int(result.groups()[0])
         vv = int(result.groups()[1])
         filter = np.full((vv, hv), 1 / (vv * hv))
-        return convolve(ndata, filter)
+        return convolve(ndata, filter, boundary="extend")
     raise Exception("Unsupported convolution choice %s" % choice)
 
 
@@ -115,6 +116,7 @@ ndata = np.ma.MaskedArray(ndata, ndata == 0.0)
 omask = ndata.mask.copy()
 # Filter
 ndata = csmooth(args.convolve, ndata)
+ndata = np.ma.MaskedArray(ndata, np.isnan(ndata))
 ndata = np.ma.MaskedArray(ndata, omask)
 
 # Plot the resulting array as a 2d colourmap

@@ -2,7 +2,7 @@
 
 for variable in TMP2m PRMSL PRATE SST
 do
-for convolve in none 12x12 sub-12x12
+for convolve in none 11x13 sub-11x13
 do
 ./stripes.py --variable=$variable --convolve=$convolve
 done

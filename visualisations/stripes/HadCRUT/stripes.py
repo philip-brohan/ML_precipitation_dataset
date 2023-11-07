@@ -72,7 +72,7 @@ def csmooth(choice, ndata):
     if choice == "none":
         return ndata
     if choice == "annual":
-        filter = np.full((1, 12), 1 / 12)
+        filter = np.full((1, 13), 1 / 13)
         return convolve(ndata, filter, boundary="extend")
     result = re.search(r"(\d+)x(\d+)", choice)
     if result is not None:
