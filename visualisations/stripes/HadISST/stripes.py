@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# ERA5 stripes - normalised values.
+# HadISST stripes - normalised values.
 # Monthly, resolved in latitude,
 
 import os
@@ -20,7 +20,7 @@ from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 import cmocean
 
-start = datetime.datetime(1950, 1, 1, 0, 0)
+start = datetime.datetime(1870, 1, 1, 0, 0)
 end = datetime.datetime(2023, 12, 31, 23)
 
 from makeDataset import getDataset
@@ -38,11 +38,10 @@ parser.add_argument(
 parser.add_argument(
     "--convolve", help="Convolution filter", type=str, required=False, default="none"
 )
-parser.add_argument("--variable", help="Variable", type=str, required=True)
 args = parser.parse_args()
 
 
-# Longitude reduction
+# Longitude  reduction
 def longitude_reduce(choice, ndata):
     result = np.zeros([721, 1])
     if choice == "sample":
@@ -83,19 +82,12 @@ def csmooth(choice, ndata):
 
 
 # Colourmap
-cmap = {
-    "2m_temperature": cmocean.cm.balance,
-    "mean_sea_level_pressure": cmocean.cm.balance,
-    "total_precipitation": cmocean.cm.tarn,
-}.get(args.variable)
-if cmap is None:
-    cmap = cmocean.cm.balance
+cmap = cmocean.cm.balance
 
-# Go through data and extract zonal mean for each month
+# Go through data and extract zonal values for each month
 dts = []
 ndata = None
 trainingData = getDataset(
-    args.variable,
     startyear=start.year,
     endyear=end.year,
     cache=False,
@@ -244,7 +236,7 @@ def add_dateline(ax, year):
     )
 
 
-for year in range(1960, 2020, 10):
+for year in range(1880, 2020, 10):
     add_dateline(axg, year)
 
 # ColourBar
@@ -264,4 +256,4 @@ cb = fig.colorbar(
 )
 
 
-fig.savefig("%s_%s_%s.png" % (args.variable, args.reduce, args.convolve))
+fig.savefig("v1_%s_%s.png" % (args.reduce, args.convolve))
