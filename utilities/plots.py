@@ -7,6 +7,7 @@ import iris
 import iris.util
 import iris.analysis
 import iris.coord_systems
+import iris.exceptions
 
 import matplotlib
 
@@ -93,9 +94,9 @@ def plotFieldAxes(
     if plotCube is not None:
         field = field.regrid(plotCube, iris.analysis.Linear())
     if vMax is None:
-        vMax = np.max(field.data)
+        vMax = np.max(field.data.compressed())
     if vMin is None:
-        vMin = np.min(field.data)
+        vMin = np.min(field.data.compressed())
     if lMask is None:
         cs = extract_pole(field)
         lMask = get_land_mask(
@@ -106,9 +107,12 @@ def plotFieldAxes(
                 npg_longitude=cs[2],
             )
         )
-
-    lons = field.coord("grid_longitude").points
-    lats = field.coord("grid_latitude").points
+    try:
+        lons = field.coord("grid_longitude").points
+        lats = field.coord("grid_latitude").points
+    except iris.exceptions.CoordinateNotFoundError:
+        lons = field.coord("longitude").points
+        lats = field.coord("latitude").points
     ax_map.set_ylim(min(lats), max(lats))
     ax_map.set_xlim(min(lons), max(lons))
     ax_map.set_axis_off()

@@ -8,7 +8,7 @@ import iris.time
 import numpy as np
 
 from utilities import plots, grids
-from HadCRUT import load
+from HadISST import load
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -25,13 +25,10 @@ parser.add_argument(
 parser.add_argument(
     "--year", help="Year to plot", type=int, required=False, default=1969
 )
-parser.add_argument(
-    "--member", help="Member to plot", type=int, required=False, default=1
-)
 args = parser.parse_args()
 
-ogrid = load(args.year, args.month, args.member)
-rgrid = load(args.year, args.month, args.member, grid=grids.E5sCube)
+ogrid = load(args.year, args.month)
+rgrid = load(args.year, args.month, grid=grids.E5sCube)
 
 # Make the plot
 fig = Figure(
@@ -69,8 +66,8 @@ ax_o = fig.add_axes([0.05, 0.03, 0.9, 0.45])
 plots.plotFieldAxes(
     ax_o,
     ogrid,
-    vMin=np.percentile(np.ma.compressed(ogrid.data), 1),
-    vMax=np.percentile(np.ma.compressed(ogrid.data), 99),
+    vMin=np.percentile(np.ma.compressed(ogrid.data), 0),
+    vMax=np.percentile(np.ma.compressed(ogrid.data), 100),
     cMap=cmocean.cm.balance,
 )
 
@@ -78,8 +75,8 @@ ax_r = fig.add_axes([0.05, 0.515, 0.9, 0.45])
 plots.plotFieldAxes(
     ax_r,
     rgrid,
-    vMin=np.percentile(np.ma.compressed(rgrid.data), 1),
-    vMax=np.percentile(np.ma.compressed(rgrid.data), 99),
+    vMin=np.percentile(np.ma.compressed(rgrid.data), 0),
+    vMax=np.percentile(np.ma.compressed(rgrid.data), 100),
     cMap=cmocean.cm.balance,
 )
 

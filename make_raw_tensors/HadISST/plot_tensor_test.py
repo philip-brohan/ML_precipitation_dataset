@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
-# Investigate regridding weirdness
+# Check tensor produced as expected
 
-import os
-import iris
-import iris.time
+import sys
 import numpy as np
 
-from utilities import plots, grids
-from HadCRUT import load
+from utilities import plots
+from tensor_utils import load_raw, raw_to_tensor, tensor_to_cube
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -25,13 +23,11 @@ parser.add_argument(
 parser.add_argument(
     "--year", help="Year to plot", type=int, required=False, default=1969
 )
-parser.add_argument(
-    "--member", help="Member to plot", type=int, required=False, default=1
-)
 args = parser.parse_args()
 
-ogrid = load(args.year, args.month, args.member)
-rgrid = load(args.year, args.month, args.member, grid=grids.E5sCube)
+raw = load_raw(args.year, args.month)
+ict = raw_to_tensor(raw)
+ast = tensor_to_cube(ict)
 
 # Make the plot
 fig = Figure(
@@ -68,20 +64,20 @@ axb.add_patch(
 ax_o = fig.add_axes([0.05, 0.03, 0.9, 0.45])
 plots.plotFieldAxes(
     ax_o,
-    ogrid,
-    vMin=np.percentile(np.ma.compressed(ogrid.data), 1),
-    vMax=np.percentile(np.ma.compressed(ogrid.data), 99),
+    ast,
+    vMin=np.percentile(np.ma.compressed(ast.data), 0),
+    vMax=np.percentile(np.ma.compressed(ast.data),100),
     cMap=cmocean.cm.balance,
 )
 
 ax_r = fig.add_axes([0.05, 0.515, 0.9, 0.45])
 plots.plotFieldAxes(
     ax_r,
-    rgrid,
-    vMin=np.percentile(np.ma.compressed(rgrid.data), 1),
-    vMax=np.percentile(np.ma.compressed(rgrid.data), 99),
+    raw,
+    vMin=np.percentile(np.ma.compressed(raw.data), 0),
+    vMax=np.percentile(np.ma.compressed(raw.data), 100),
     cMap=cmocean.cm.balance,
 )
 
 
-fig.savefig("rg_tst.png")
+fig.savefig("tensor_test.png")
