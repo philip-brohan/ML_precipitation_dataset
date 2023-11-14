@@ -45,8 +45,8 @@ args = parser.parse_args()
 start = datetime.date(args.start_year, 1, 15)
 end = datetime.date(args.end_year, 12, 15)
 
-ymin = 0.2
-ymax = 0.75
+ymin = 0.425
+ymax = 0.575
 
 # Make the plot
 fig = Figure(
@@ -70,12 +70,8 @@ matplotlib.rc("font", **font)
 
 # List of datasets to plot (and colour to use)
 datasets = {
-    "ERA5_t2m": (1, 0, 0, 1),
-    "ERA5_sst": (0, 0, 1, 1),
-    "20CR_t2m": (0.5, 0, 0, 1),
-    "20CR_sst": (0, 0, 0.5, 1),
-    "HadISST": (0, 0.5, 0.5, 1),
-    "HadCRUT": (0, 0, 0, 0.1),
+    "ERA5": (0, 0, 1, 1),
+    "20CR": (0, 0, 0.5, 1),
 }
 
 # Background
@@ -151,4 +147,4 @@ for ds in datasets.keys():
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
 
-fig.savefig("temperatures_%03d.png" % args.nmonths)
+fig.savefig("precipitation_%03d.png" % args.nmonths)
