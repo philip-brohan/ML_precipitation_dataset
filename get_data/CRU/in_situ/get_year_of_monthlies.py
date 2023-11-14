@@ -22,15 +22,15 @@ if not os.path.isdir(args.opdir):
 
 
 ctrlB = {
-        'origin': 'cru',
-        'region': 'global',
-        'variable': 'precipitation',
-        'time_aggregation': 'monthly',
-        'horizontal_aggregation': '0_5_x_0_5',
-        'year': "%04d" % args.year,
-        'version': 'v4.03',
-        'format': 'zip',
-    }
+    "origin": "cru",
+    "region": "global",
+    "variable": "precipitation",
+    "time_aggregation": "monthly",
+    "horizontal_aggregation": "0_5_x_0_5",
+    "year": "%04d" % args.year,
+    "version": "v4.03",
+    "format": "zip",
+}
 
 c = cdsapi.Client()
 
@@ -39,6 +39,6 @@ c.retrieve(
     ctrlB,
     "%s/download.zip" % args.opdir,
 )
-with zipfile.ZipFile("%s/download.zip" % args.opdir, 'r') as zip_ref:
+with zipfile.ZipFile("%s/download.zip" % args.opdir, "r") as zip_ref:
     zip_ref.extractall(args.opdir)
 os.remove("%s/download.zip" % args.opdir)

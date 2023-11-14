@@ -22,4 +22,4 @@ for members in ("1_to_10", "151_to_160"):
     urlretrieve(url, fname)
     with zipfile.ZipFile(fname, "r") as zip_ref:
         zip_ref.extractall(opdir)
-    os.remove("%s/download.zip" % args.opdir)
+    os.remove(fname)
