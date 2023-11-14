@@ -17,10 +17,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--month", help="Month to fit", type=int, required=True)
 parser.add_argument("--variable", help="Variable", type=str, required=True)
 parser.add_argument(
-    "--startyear", help="Start Year", type=int, required=False, default=1850
+    "--startyear", help="Start Year", type=int, required=False, default=1950
 )
 parser.add_argument(
-    "--endyear", help="End Year", type=int, required=False, default=2050
+    "--endyear", help="End Year", type=int, required=False, default=2014
 )
 
 parser.add_argument(

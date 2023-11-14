@@ -27,7 +27,7 @@ def is_done(year, month, variable):
     return False
 
 
-for year in range(1940, 2023):
+for year in range(1950, 2024):
     for month in range(1, 13):
         if is_done(year, month, args.variable):
             continue

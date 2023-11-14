@@ -7,7 +7,7 @@ from get_data.HadCRUT import HadCRUT
 
 
 def is_done(year, month, member):
-    fn = "%s/MLP/normalised_datasets/HadCRUT_tf_MM/%04d-%02d_%03d.tfd" % (
+    fn = "%s/MLP/normalised_datasets/HadCRUT_tf_MM/T/%04d-%02d_%03d.tfd" % (
         os.getenv("SCRATCH"),
         year,
         month,
