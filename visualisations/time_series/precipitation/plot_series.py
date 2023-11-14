@@ -72,6 +72,7 @@ matplotlib.rc("font", **font)
 datasets = {
     "ERA5": (0, 0, 1, 1),
     "20CR": (0, 0, 0.5, 1),
+    "CRU": (0, 0.5, 0.5, 1),
 }
 
 # Background
