@@ -18,7 +18,7 @@ def add_coord_system(cbe):
     cbe.coord("longitude").coord_system = GPCC_CMS
 
 
-def load(year=None, month=None):
+def load(year=None, month=None, grid=None):
     if year is None or month is None:
         raise Exception("Year and month must be specified")
     fname = (
@@ -34,4 +34,8 @@ def load(year=None, month=None):
     ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
     varC = iris.load_cube(fname, ftt)
     add_coord_system(varC)
+    # Without this regriding sometimes gives nonsense - why?
+    varC.data.data[varC.data.mask] = -1
+    if grid is not None:
+        varC = varC.regrid(grid, iris.analysis.Nearest())
     return varC
