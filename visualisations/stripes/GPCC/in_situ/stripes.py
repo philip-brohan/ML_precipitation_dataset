@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# 20CRv3 stripes - normalised values.
+# GPCC in-situ stripes - normalised values.
 # Monthly, resolved in latitude,
 
 import os
@@ -35,7 +35,6 @@ parser.add_argument(
 parser.add_argument(
     "--convolve", help="Convolution filter", type=str, required=False, default="none"
 )
-parser.add_argument("--variable", help="Variable", type=str, required=True)
 parser.add_argument(
     "--vmin",
     type=float,
@@ -52,7 +51,7 @@ parser.add_argument(
     "--startyear",
     type=int,
     required=False,
-    default=1901,
+    default=1891,
 )
 parser.add_argument(
     "--endyear",
@@ -106,19 +105,12 @@ def csmooth(choice, ndata):
 
 
 # Colourmap
-cmap = {
-    "TMP2m": cmocean.cm.balance,
-    "PRMSL": cmocean.cm.balance,
-    "PRATE": cmocean.cm.tarn,
-}.get(args.variable)
-if cmap is None:
-    cmap = cmocean.cm.balance
+cmap = cmocean.cm.tarn
 
 # Go through data and extract zonal mean for each month
 dts = []
 ndata = None
 trainingData = getDataset(
-    args.variable,
     startyear=start.year,
     endyear=end.year,
     cache=False,
@@ -287,4 +279,4 @@ cb = fig.colorbar(
 )
 
 
-fig.savefig("%s_%s_%s.png" % (args.variable, args.reduce, args.convolve))
+fig.savefig("in_situ_%s_%s.png" % (args.reduce, args.convolve))

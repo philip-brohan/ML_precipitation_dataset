@@ -20,9 +20,6 @@ from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 import cmocean
 
-start = datetime.datetime(1950, 1, 1, 0, 0)
-end = datetime.datetime(2023, 12, 31, 23)
-
 from makeDataset import getDataset
 
 import argparse
@@ -39,7 +36,34 @@ parser.add_argument(
     "--convolve", help="Convolution filter", type=str, required=False, default="none"
 )
 parser.add_argument("--variable", help="Variable", type=str, required=True)
+parser.add_argument(
+    "--vmin",
+    type=float,
+    required=False,
+    default=0.0,
+)
+parser.add_argument(
+    "--vmax",
+    type=float,
+    required=False,
+    default=1.0,
+)
+parser.add_argument(
+    "--startyear",
+    type=int,
+    required=False,
+    default=1950,
+)
+parser.add_argument(
+    "--endyear",
+    type=int,
+    required=False,
+    default=2023,
+)
 args = parser.parse_args()
+
+start = datetime.datetime(args.startyear, 1, 1, 0, 0)
+end = datetime.datetime(args.endyear, 12, 31, 23)
 
 
 # Longitude reduction
@@ -181,7 +205,9 @@ s = ndata.shape
 y = 1.0 - numpy.linspace(0, 1, s[0] + 1)
 x = [(a - datetime.timedelta(days=15)).timestamp() for a in dts]
 x.append((dts[-1] + datetime.timedelta(days=15)).timestamp())
-img = ax.pcolorfast(x, y, ndata, cmap=cmap, alpha=1.0, vmin=0, vmax=1, zorder=100)
+img = ax.pcolorfast(
+    x, y, ndata, cmap=cmap, alpha=1.0, vmin=args.vmin, vmax=args.vmax, zorder=100
+)
 
 # Add a latitude grid
 axg = fig.add_axes(
@@ -244,12 +270,12 @@ def add_dateline(ax, year):
     )
 
 
-for year in range(1960, 2020, 10):
+for year in range((args.startyear // 10) * 10, args.endyear, 10):
+    if year == args.startyear or year == args.endyear:
+        continue
     add_dateline(axg, year)
 
 # ColourBar
-ticv = [0.05, 0.25, 0.5, 0.75, 0.95]
-ticl = ["%3.2f" % x for x in ticv]
 ax_cb = fig.add_axes([0.925, 0.06125, 0.05, 0.9])
 ax_cb.set_axis_off()
 cb = fig.colorbar(
@@ -258,8 +284,6 @@ cb = fig.colorbar(
     location="right",
     orientation="vertical",
     fraction=1.0,
-    ticks=ticv,
-    format=matplotlib.ticker.FixedFormatter(ticl),
     label="Quantile",
 )
 

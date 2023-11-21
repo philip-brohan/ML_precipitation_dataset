@@ -39,14 +39,30 @@ parser.add_argument(
     required=False,
     default=1,
 )
+parser.add_argument(
+    "--ymin",
+    type=float,
+    required=False,
+    default=0.425,
+)
+parser.add_argument(
+    "--ymax",
+    type=float,
+    required=False,
+    default=0.575,
+)
+parser.add_argument(
+    "--linewidth",
+    type=float,
+    required=False,
+    default=1.0,
+)
 args = parser.parse_args()
 
 
 start = datetime.date(args.start_year, 1, 15)
 end = datetime.date(args.end_year, 12, 15)
 
-ymin = 0.425
-ymax = 0.575
 
 # Make the plot
 fig = Figure(
@@ -73,6 +89,7 @@ datasets = {
     "ERA5": (0, 0, 1, 1),
     "20CR": (0, 0, 0.5, 1),
     "CRU": (0, 0.5, 0.5, 1),
+    "GPCC_in-situ": (0, 0, 0, 1),
 }
 
 # Background
@@ -92,7 +109,7 @@ axb.add_patch(
 ax_ts = fig.add_axes(
     [0.05, 0.1, 0.9, 0.75],
     xlim=(start, end),
-    ylim=(ymin, ymax),
+    ylim=(args.ymin, args.ymax),
 )
 ax_ts.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
 
@@ -143,7 +160,7 @@ for ds in datasets.keys():
             ndata = pickle.load(dfile)
     except Exception:
         continue
-    plot_var(ndata, 1, col=datasets[ds], label=ds)
+    plot_var(ndata, args.linewidth, col=datasets[ds], label=ds)
 
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
