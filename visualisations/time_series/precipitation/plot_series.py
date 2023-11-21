@@ -90,6 +90,7 @@ datasets = {
     "20CR": (0, 0, 0.5, 1),
     "CRU": (0, 0.5, 0.5, 1),
     "GPCC_in-situ": (0, 0, 0, 1),
+    "GPCP": (0, 0.5, 1, 1),
 }
 
 # Background

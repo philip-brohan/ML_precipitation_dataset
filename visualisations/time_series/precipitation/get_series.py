@@ -57,6 +57,15 @@ elif args.source == "GPCC_in-situ":
         cache=False,
         blur=None,
     ).batch(1)
+elif args.source == "GPCP":
+    from visualisations.stripes.GPCP.makeDataset import getDataset
+
+    trainingData = getDataset(
+        startyear=1850,
+        endyear=2023,
+        cache=False,
+        blur=None,
+    ).batch(1)
 else:
     raise Exception("Unsupported source " + args.source)
 
