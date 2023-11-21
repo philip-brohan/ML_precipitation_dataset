@@ -18,7 +18,7 @@ def add_coord_system(cbe):
     cbe.coord("longitude").coord_system = GPCC_CMS
 
 
-def load(year=None, month=None, variable='precip'):
+def load(year=None, month=None, grid=None):
     if year is None or month is None:
         raise Exception("Year and month must be specified")
     fname = (
@@ -32,6 +32,10 @@ def load(year=None, month=None, variable='precip'):
     )
     if not os.path.isfile(fname):
         raise Exception("No data file %s" % fname)
-    varC = iris.load_cube(fname, variable)
+    varC = iris.load_cube(fname,iris.NameConstraint(var_name="precip"))
+    varC = iris.util.squeeze(varC)
     add_coord_system(varC)
+    varC.data.data[varC.data.mask] = -1
+    if grid is not None:
+        varC = varC.regrid(grid, iris.analysis.Nearest())
     return varC
