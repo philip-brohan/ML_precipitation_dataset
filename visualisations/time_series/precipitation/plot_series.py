@@ -86,10 +86,10 @@ matplotlib.rc("font", **font)
 
 # List of datasets to plot (and colour to use)
 datasets = {
-    "ERA5": (0, 0, 1, 1),
-    "20CR": (0, 0, 0.5, 1),
-    "CRU": (0, 0.5, 0.5, 1),
-    "GPCC_in-situ": (0, 0, 0, 1),
+    "ERA5": (0, 0, 1, 0),
+    "20CR": (0, 0, 0.5, 0),
+    "CRU": (0, 0.5, 0.5, 0),
+    "GPCC_in-situ": (0, 0, 0, 0),
     "GPCP": (0, 0.5, 1, 1),
 }
 
