@@ -29,3 +29,9 @@ echo 'Land observations'
 
 echo -n 'HadCRUT'
 (cd HadCRUT && ./get_members.py)
+
+echo -n 'HadISST'
+(cd HadISST/v1 && ./get_data.sh)
+
+echo -n 'GPCP'
+(cd GPCP/blended && ./get_means.py)
