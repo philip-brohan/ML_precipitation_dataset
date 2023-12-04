@@ -17,7 +17,7 @@ inputTensors = (
 )
 outputTensors = None  # If None, same as input
 
-outputNames = {"T2m", "SST", "SLP", "Prate"}  # For printout
+outputNames = ("T2m", "SST", "SLP", "Prate")  # For printout
 
 nInputChannels = len(inputTensors)
 if outputTensors is not None:

@@ -12,12 +12,15 @@ import specify
 
 # Load a pre-standardised tensor from a list of files
 def load_tensor(file_names):
-    imta = []
-    for file_name in file_names:
-        sict = tf.io.read_file(file_name)
+    sict = tf.io.read_file(file_names[0])
+    imt = tf.io.parse_tensor(sict, np.float32)
+    ima = tf.reshape(imt, [721, 1440, 1])
+    for fni in range(1, len(file_names)):
+        sict = tf.io.read_file(file_names[fni])
         imt = tf.io.parse_tensor(sict, np.float32)
-        imta.append(tf.reshape(imt, [721, 1440, 1]))
-    return tf.stack(imta, axis=2)
+        imt = tf.reshape(imt, [721, 1440, 1])
+        ima = tf.concat([ima, imt], 2)
+    return ima
 
 
 # Find out how many tensors available for each month from a source
@@ -30,7 +33,7 @@ def getDataAvailability(source):
     filesYM = {}
     for fN in aFiles:
         year = int(fN[:4])
-        month = int(fN[5:6])
+        month = int(fN[5:7])
         if year < firstYr:
             firstYr = year
         if year > lastYr:
@@ -38,8 +41,7 @@ def getDataAvailability(source):
         key = "%04d%02d" % (year, month)
         if key not in filesYM:
             filesYM[key] = []
-        else:
-            filesYM[key].append("%s/%s" % (dir, fN))
+        filesYM[key].append("%s/%s" % (dir, fN))
         if len(filesYM[key]) > maxCount:
             maxCount = len(filesYM[key])
     return (firstYr, lastYr, maxCount, filesYM)
@@ -53,9 +55,9 @@ def getFileNames(sources, purpose):
     maxCount = 1
     for source in sources:
         avail[source] = getDataAvailability(source)
-        if avail[source][0] > firstYr:
+        if firstYr is None or avail[source][0] > firstYr:
             firstYr = avail[source][0]
-        if avail[source][1] < lastYr:
+        if lastYr is None or avail[source][1] < lastYr:
             lastYr = avail[source][1]
         if specify.correlatedEnsembles:
             maxCount = avail[source][2]  # always the same
@@ -72,11 +74,11 @@ def getFileNames(sources, purpose):
                 smnth = []
                 bad = False
                 for source in sources:
-                    if mnth in avail[source[3]]:
+                    if mnth in avail[source][3]:
                         if specify.correlatedEnsembles:
-                            smnth.append(source[3][mnth][rep])
+                            smnth.append(avail[source][3][mnth][rep])
                         else:
-                            smnth.append(random.sample(source[3][mnth], 1))
+                            smnth.append(random.sample(avail[source][3][mnth], 1)[0])
                     else:
                         bad = True
                         break
@@ -88,33 +90,33 @@ def getFileNames(sources, purpose):
 
     # Test/Train split
     if purpose is not None:
-        test_ns = list(range(len(aMonths), specify.TestSplit))
+        test_ns = list(range(0, len(aMonths), specify.testSplit))
         if purpose == "Train":
-            aMonths = aMonths[~test_ns]
+            aMonths = [aMonths[x] for x in range(len(aMonths)) if x not in test_ns]
         elif purpose == "Test":
-            aMonths = aMonths[test_ns]
+            aMonths = [aMonths[x] for x in range(len(aMonths)) if x in test_ns]
         else:
             raise Exception("Unsupported purpose " + purpose)
 
     # Randomise the sequence of months
-    aMonths = random.shuffle(aMonths)
+    random.shuffle(aMonths)
 
     # Limit maximum data size
-    if purpose == "Train" and specify.nTrainingMonths is not None:
-        if len(aMonths) >= specify.nTrainingMonths:
-            aMonths = aMonths[0 : specify.nTrainingMonths]
+    if purpose == "Train" and specify.maxTrainingMonths is not None:
+        if len(aMonths) >= specify.maxTrainingMonths:
+            aMonths = aMonths[0 : specify.maxTrainingMonths]
         else:
             raise ValueError(
                 "Only %d months available, can't provide %d"
-                % (len(aMonths), specify.nTrainingMonths)
+                % (len(aMonths), specify.maxTrainingMonths)
             )
-    if purpose == "Test" and specify.nTestMonths is not None:
-        if len(aMonths) >= specify.nTestMonths:
-            aMonths = aMonths[0 : specify.nTestMonths]
+    if purpose == "Test" and specify.maxTestMonths is not None:
+        if len(aMonths) >= specify.maxTestMonths:
+            aMonths = aMonths[0 : specify.maxTestMonths]
         else:
             raise ValueError(
                 "Only %d months available, can't provide %d"
-                % (len(aMonths), specify.nTestMonths)
+                % (len(aMonths), specify.maxTestMonths)
             )
     # Return a list of lists of filenames
     result = []

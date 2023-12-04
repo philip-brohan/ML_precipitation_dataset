@@ -154,7 +154,7 @@ class DCVAE(tf.keras.Model):
 
     # Run the full VAE - convert a batch of inputs to one of outputs
     def call(self, x, training=True):
-        mean, logvar = self.encode(x, training=training)
+        mean, logvar = self.encode(x[1], training=training)
         latent = self.reparameterize(mean, logvar, training=training)
         generated = self.generate(latent, training=training)
         return generated
@@ -188,13 +188,13 @@ class DCVAE(tf.keras.Model):
     #  on a single value (their sum).
     @tf.function
     def compute_loss(self, x, training):
-        mean, logvar = self.encode(x[0], training=training)
+        mean, logvar = self.encode(x[1], training=training)
         latent = self.reparameterize(mean, logvar, training=training)
         generated = self.generate(latent, training=training)
 
         gV = generated
         cV = gV * 0.0 + 0.5  # Climatology
-        tV = x[0]
+        tV = x[-1]
         fit_metric = self.fit_loss(gV, tV, cV)
 
         logpz = (
@@ -220,7 +220,7 @@ class DCVAE(tf.keras.Model):
                 tf.math.reduce_sum(loss_values[0], axis=0)  # RMSE
                 + loss_values[1]  # logpz
                 + loss_values[2]  # logqz_x
-                + tf.add_n(self.losses)  # Regularization
+                #    + tf.add_n(self.losses)  # Regularization
             )
         gradients = tape.gradient(overall_loss, self.trainable_variables)
         # Clip the gradients - helps against sudden numerical problems

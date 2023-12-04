@@ -24,13 +24,17 @@ from autoencoderModel import DCVAE
 # Instantiate and run the model under the control of the distribution strategy
 with specify.strategy.scope():
     # Set up the training data
-    trainingData = getDataset(specify.inputTensors, purpose="Training")
-    trainingData = trainingData.shuffle(specify.bufferSize).batch(specify.batchSize)
+    trainingData = getDataset(
+        specify.inputTensors, specify.outputTensors, purpose="Train"
+    )
+    trainingData = trainingData.shuffle(specify.shuffleBufferSize).batch(
+        specify.batchSize
+    )
     trainingData = specify.strategy.experimental_distribute_dataset(trainingData)
 
     # Set up the test data
-    testData = getDataset(specify.inputTensors, purpose="Test")
-    testData = testData.shuffle(specify.bufferSize).batch(specify.batchSize)
+    testData = getDataset(specify.inputTensors, specify.outputTensors, purpose="Test")
+    testData = testData.shuffle(specify.shuffleBufferSize).batch(specify.batchSize)
     testData = specify.strategy.experimental_distribute_dataset(testData)
 
     # Instantiate the model
@@ -92,7 +96,11 @@ with specify.strategy.scope():
             train_rmse.assign_add(batch_losses[0])
             train_logpz.assign_add(batch_losses[1])
             train_logqz_x.assign_add(batch_losses[2])
-            train_loss.assign_add(tf.math.reduce_sum(batch_losses, axis=0))
+            train_loss.assign_add(
+                tf.math.reduce_sum(batch_losses[0], axis=0)
+                + batch_losses[1]
+                + batch_losses[2]
+            )
             validation_batch_count += 1
 
         # Same, but for the test data
@@ -111,10 +119,14 @@ with specify.strategy.scope():
             test_rmse.assign_add(batch_losses[0])
             test_logpz.assign_add(batch_losses[1])
             test_logqz_x.assign_add(batch_losses[2])
-            test_loss.assign_add(tf.math.reduce_sum(batch_losses, axis=0))
+            test_loss.assign_add(
+                tf.math.reduce_sum(batch_losses[0], axis=0)
+                + batch_losses[1]
+                + batch_losses[2]
+            )
             test_batch_count += 1
 
-        regularization_loss = tf.add_n(autoencoder.losses)
+        # regularization_loss = tf.add_n(autoencoder.losses)
 
         # Save model state and current metrics
         save_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
@@ -126,7 +138,7 @@ with specify.strategy.scope():
             os.makedirs(save_dir)
         autoencoder.save_weights("%s/ckpt" % save_dir)
         with logfile_writer.as_default():
-            tf.summary.scalar(
+            tf.summary.write(
                 "Train_RMSE",
                 100 * train_rmse / validation_batch_count,
                 step=epoch,
@@ -140,7 +152,7 @@ with specify.strategy.scope():
             tf.summary.scalar(
                 "Train_loss", train_loss / validation_batch_count, step=epoch
             )
-            tf.summary.scalar(
+            tf.summary.write(
                 "Test_RMSE",
                 100 * test_rmse / (test_batch_count),
                 step=epoch,
@@ -158,7 +170,7 @@ with specify.strategy.scope():
         print("Epoch: {}".format(epoch))
         for i in range(specify.nOutputChannels):
             print(
-                "{10s}: {:>9.3f}, {:>9.3f}, {:>6.1f}, {:>6.1f}".format(
+                "{:<10s}: {:>9.3f}, {:>9.3f}, {:>6.1f}, {:>6.1f}".format(
                     specify.outputNames[i],
                     train_rmse.numpy()[i] / validation_batch_count,
                     test_rmse.numpy()[i] / test_batch_count,
