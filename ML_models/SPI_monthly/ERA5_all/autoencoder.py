@@ -67,6 +67,12 @@ with specify.strategy.scope():
     if not os.path.isdir(os.path.dirname(log_FN)):
         os.makedirs(os.path.dirname(log_FN))
     logfile_writer = tf.summary.create_file_writer(log_FN)
+    with logfile_writer.as_default():
+        tf.summary.write(
+            "OutputNames",
+            specify.outputNames,
+            step=0,
+        )
 
     # For each Epoch: train, save state, and report progress
     for epoch in range(args.epoch, specify.nEpochs + 1):
@@ -97,9 +103,10 @@ with specify.strategy.scope():
             train_logpz.assign_add(batch_losses[1])
             train_logqz_x.assign_add(batch_losses[2])
             train_loss.assign_add(
-                tf.math.reduce_sum(batch_losses[0], axis=0)
+                tf.math.reduce_mean(batch_losses[0], axis=0)
                 + batch_losses[1]
                 + batch_losses[2]
+                + batch_losses[3]
             )
             validation_batch_count += 1
 
@@ -119,14 +126,14 @@ with specify.strategy.scope():
             test_rmse.assign_add(batch_losses[0])
             test_logpz.assign_add(batch_losses[1])
             test_logqz_x.assign_add(batch_losses[2])
+            regularization_loss.assign(batch_losses[3])
             test_loss.assign_add(
-                tf.math.reduce_sum(batch_losses[0], axis=0)
+                tf.math.reduce_mean(batch_losses[0], axis=0)
                 + batch_losses[1]
                 + batch_losses[2]
+                + batch_losses[3]
             )
             test_batch_count += 1
-
-        # regularization_loss = tf.add_n(autoencoder.losses)
 
         # Save model state and current metrics
         save_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
@@ -140,7 +147,7 @@ with specify.strategy.scope():
         with logfile_writer.as_default():
             tf.summary.write(
                 "Train_RMSE",
-                100 * train_rmse / validation_batch_count,
+                train_rmse / validation_batch_count,
                 step=epoch,
             )
             tf.summary.scalar(
@@ -154,7 +161,7 @@ with specify.strategy.scope():
             )
             tf.summary.write(
                 "Test_RMSE",
-                100 * test_rmse / (test_batch_count),
+                test_rmse / (test_batch_count),
                 step=epoch,
             )
             tf.summary.scalar("Test_logpz", test_logpz / test_batch_count, step=epoch)
@@ -170,12 +177,10 @@ with specify.strategy.scope():
         print("Epoch: {}".format(epoch))
         for i in range(specify.nOutputChannels):
             print(
-                "{:<10s}: {:>9.3f}, {:>9.3f}, {:>6.1f}, {:>6.1f}".format(
+                "{:<10s}: {:>9.3f}, {:>9.3f}".format(
                     specify.outputNames[i],
                     train_rmse.numpy()[i] / validation_batch_count,
                     test_rmse.numpy()[i] / test_batch_count,
-                    100 * train_rmse.numpy()[i] / validation_batch_count,
-                    100 * test_rmse.numpy()[i] / test_batch_count,
                 )
             )
         print(

@@ -17,7 +17,12 @@ inputTensors = (
 )
 outputTensors = None  # If None, same as input
 
-outputNames = ("T2m", "SST", "SLP", "Prate")  # For printout
+outputNames = (
+    "T2m",
+    "SST",
+    "MSLP",
+    "Precip",
+)  # For printout
 
 nInputChannels = len(inputTensors)
 if outputTensors is not None:
@@ -45,12 +50,13 @@ nMonthsInEpoch = None  # Length of an epoch - if None, use all the data once
 nEpochs = 250  # How many epochs to train for
 shuffleBufferSize = 100  # Already shuffled data, so not so important
 batchSize = 32  # Arbitrary
-beta = 1.0  # Weighting factor for KL divergence error term
+beta = 0.001  # Weighting factor for KL divergence error term
+regularizationScale = 0.01  # Weighting factor for regularization loss
 latentDimension = 100  # Embedding dimension
-maxGradient = 2.0  # Numerical instability protection
+maxGradient = 5  # Numerical instability protection
 
 # Optimization
 strategy = tf.distribute.MirroredStrategy()
-optimizer = tf.keras.optimizers.Adam(1e-4)
+optimizer = tf.keras.optimizers.Adam(1e-3)
 trainCache = False
 testCache = False

@@ -23,8 +23,8 @@ class DCVAE(tf.keras.Model):
                     strides=(2, 2),
                     padding="same",
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Conv2D(
                     filters=10,
@@ -32,8 +32,8 @@ class DCVAE(tf.keras.Model):
                     strides=(2, 2),
                     padding="same",
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Conv2D(
                     filters=10,
@@ -41,8 +41,8 @@ class DCVAE(tf.keras.Model):
                     strides=(2, 2),
                     padding="same",
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Conv2D(
                     filters=20,
@@ -50,8 +50,8 @@ class DCVAE(tf.keras.Model):
                     strides=(2, 2),
                     padding="same",
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Conv2D(
                     filters=40,
@@ -59,15 +59,15 @@ class DCVAE(tf.keras.Model):
                     strides=(2, 2),
                     padding="same",
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Flatten(),
                 # No activation
                 tf.keras.layers.Dense(
                     specify.latentDimension + specify.latentDimension,
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
             ]
         )
@@ -79,8 +79,8 @@ class DCVAE(tf.keras.Model):
                 tf.keras.layers.Dense(
                     units=23 * 45 * 40,
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Reshape(target_shape=(23, 45, 40)),
                 tf.keras.layers.Conv2DTranspose(
@@ -90,8 +90,8 @@ class DCVAE(tf.keras.Model):
                     padding="same",
                     output_padding=(1, 1),
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Conv2DTranspose(
                     filters=10,
@@ -100,8 +100,8 @@ class DCVAE(tf.keras.Model):
                     padding="same",
                     output_padding=(0, 1),
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Conv2DTranspose(
                     filters=10,
@@ -110,8 +110,8 @@ class DCVAE(tf.keras.Model):
                     padding="same",
                     output_padding=(0, 1),
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Conv2DTranspose(
                     filters=5,
@@ -120,8 +120,8 @@ class DCVAE(tf.keras.Model):
                     padding="same",
                     output_padding=(0, 1),
                     activation="elu",
-                    kernel_regularizer=tf.keras.regularizers.L2(0.01),
-                    activity_regularizer=tf.keras.regularizers.L2(0.01),
+                    kernel_regularizer=tf.keras.regularizers.L2(0.001),
+                    activity_regularizer=tf.keras.regularizers.L2(0.001),
                 ),
                 tf.keras.layers.Conv2DTranspose(
                     filters=specify.nOutputChannels,
@@ -204,10 +204,13 @@ class DCVAE(tf.keras.Model):
             tf.reduce_mean(self.log_normal_pdf(latent, mean, logvar)) * specify.beta
         )
 
+        regularization = tf.add_n(self.losses) * specify.regularizationScale
+
         return (
             fit_metric,
             logpz,
             logqz_x,
+            regularization,
         )
 
     # Run the autoencoder for one batch, calculate the errors, calculate the
@@ -217,10 +220,10 @@ class DCVAE(tf.keras.Model):
         with tf.GradientTape() as tape:
             loss_values = self.compute_loss(x, training=True)
             overall_loss = (
-                tf.math.reduce_sum(loss_values[0], axis=0)  # RMSE
+                tf.math.reduce_mean(loss_values[0], axis=0)  # RMSE
                 + loss_values[1]  # logpz
                 + loss_values[2]  # logqz_x
-                #    + tf.add_n(self.losses)  # Regularization
+                + loss_values[3]  # Regularization
             )
         gradients = tape.gradient(overall_loss, self.trainable_variables)
         # Clip the gradients - helps against sudden numerical problems
