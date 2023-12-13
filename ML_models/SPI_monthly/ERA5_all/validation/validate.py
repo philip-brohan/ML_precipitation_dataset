@@ -2,11 +2,10 @@
 
 # Plot a validation figure for the autoencoder.
 
-# For normalised and unnormalised fields:
-#  1) Input field
+# For all outputs:
+#  1) Target field
 #  2) Autoencoder output
 #  3) scatter plot
-#
 
 import os
 import sys
@@ -23,7 +22,7 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 
 sys.path.append("%s/.." % os.path.dirname(__file__))
-from localise import ModelName
+import specify
 
 # I don't need all the messages about a missing font (on Isambard)
 import logging
@@ -34,41 +33,66 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--epoch", help="Epoch", type=int, required=False, default=250)
-parser.add_argument("--year", help="Test year", type=int, required=False, default=2004)
-parser.add_argument("--month", help="Test month", type=int, required=False, default=12)
+parser.add_argument("--year", help="Test year", type=int, required=False, default=None)
+parser.add_argument(
+    "--month", help="Test month", type=int, required=False, default=None
+)
+parser.add_argument(
+    "--training",
+    help="Use training data (not test)",
+    default=False,
+    action="store_true",
+)
 args = parser.parse_args()
 
-from utilities import plots
+from utilities import plots, grids
 
+from makeDataset import getDataset
 from autoencoderModel import DCVAE
-from make_tensors.tensor_utils import (
-    load_raw,
-    raw_to_tensor,
-    unnormalise,
-    sCube,
-)
 
+purpose = "Test"
+if args.training:
+    purpose = "Train"
+# Go through data and get the desired month
+dataset = getDataset(
+    specify.inputTensors, specify.outputTensors, purpose=purpose
+).batch(1)
+input = None
+year = None
+month = None
+for batch in dataset:
+    dateStr = tf.strings.split(batch[0][0][0], sep="/")[-1].numpy()
+    year = int(dateStr[:4])
+    month = int(dateStr[5:7])
+    if (args.month is None or month == args.month) and (
+        args.year is None or year == args.year
+    ):
+        input = batch
+        break
 
-# Load and standardise data
-qd = load_raw(args.year, args.month)
-ic_source = raw_to_tensor(qd,args.month)
+if input is None:
+    raise Exception("Month %04d-%02d not in %s dataset" % (year, month, purpose))
 
 autoencoder = DCVAE()
 weights_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
     os.getenv("SCRATCH"),
-    ModelName,
+    specify.modelName,
     args.epoch,
 )
 load_status = autoencoder.load_weights("%s/ckpt" % weights_dir)
 # Check the load worked
 load_status.assert_existing_objects_matched()
 
-# Get autoencoded tensor
-encoded = autoencoder.call(tf.reshape(ic_source, [1, 721, 1440, 1]), training=False)
+# Get autoencoded tensors
+output = autoencoder.call(input, training=False)
+
+nFields = specify.nOutputChannels
 
 # Make the plot
+figScale = 3.0
+wRatios = (2, 2, 1.25)
 fig = Figure(
-    figsize=(25, 11),
+    figsize=(figScale * sum(wRatios), figScale * nFields),
     dpi=100,
     facecolor=(0.5, 0.5, 0.5, 1),
     edgecolor=None,
@@ -82,7 +106,7 @@ font = {
     "family": "sans-serif",
     "sans-serif": "Arial",
     "weight": "normal",
-    "size": 20,
+    "size": 12,
 }
 matplotlib.rc("font", **font)
 axb = fig.add_axes([0, 0, 1, 1])
@@ -99,96 +123,52 @@ axb.add_patch(
 )
 
 
-# Top left - raw original
-varx = qd.regrid(sCube, iris.analysis.Nearest())
-(dmin, dmax) = (0, 0.03)
-ax_ro = fig.add_axes([0.000 / 3, 0.125 / 2 + 0.5, 0.95 * 2 / 5, 0.85 / 2])
-ax_ro.set_axis_off()
-ro_img = plots.plotFieldAxes(
-    ax_ro,
-    varx,
-    vMax=dmax,
-    vMin=dmin,
-    cMap=cmocean.cm.rain,
-)
-ax_ro_cb = fig.add_axes([0.10 / 3, 0.06 / 2 + 0.5, 0.75 * 2 / 5, 0.05 / 2])
-ax_ro_cb.set_axis_off()
-cb = fig.colorbar(
-    ro_img, ax=ax_ro_cb, location="bottom", orientation="horizontal", fraction=1.0
-)
+# Choose colourmap based on variable name
+def get_cmap(name):
+    if name == "PRATE" or name == "Precip":
+        return cmocean.cm.tarn
+    elif name == "MSLP":
+        return cmocean.cm.diff
+    else:
+        return cmocean.cm.balance
 
-# Top centre - raw encoded
-vary = sCube.copy()
-vary.data = np.squeeze(encoded[0, :, :, 0].numpy())
-vary = unnormalise(vary,args.month)
-ax_re = fig.add_axes(
-    [0.000 / 3 + 2 / 5 - 0.02, 0.125 / 2 + 0.5, 0.95 * 2 / 5, 0.85 / 2]
-)
-ax_re.set_axis_off()
-re_img = plots.plotFieldAxes(
-    ax_re,
-    vary,
-    vMax=dmax,
-    vMin=dmin,
-    cMap=cmocean.cm.rain,
-)
-ax_re_cb = fig.add_axes(
-    [0.100 / 3 + 2 / 5 - 0.02, 0.06 / 2 + 0.5, 0.75 * 2 / 5, 0.05 / 2]
-)
-ax_re_cb.set_axis_off()
-cb = fig.colorbar(
-    re_img,
-    ax=ax_re_cb,
-    location="bottom",
-    orientation="horizontal",
-    fraction=1.0,
-)
 
-# Top right - raw scatter
-ax_rs = fig.add_axes([0.005 / 3 + 4 / 5, 0.125 / 2 + 0.5, 0.95 / 5, 0.85 / 2])
-ax_rs.set_xticks([0.005, 0.015, 0.025])
-ax_rs.set_yticks([0.0, 0.01, 0.02, 0.03])
-vary.data[vary.data > dmax] = dmax  # Scatter plot fn can't cope with bad data
-plots.plotScatterAxes(ax_rs, varx, vary, vMin=dmin, vMax=dmax, bins="log")
+# Each variable a row in it's own subfigure
+subfigs = fig.subfigures(nFields, 1, wspace=0.01)
 
-# Bottom left - normalised original
-varx.data = np.squeeze(ic_source.numpy())
-(dmin, dmax) = (-0.25, 1.25)
-ax_no = fig.add_axes([0.000 / 3, 0.125 / 2, 0.95 * 2 / 5, 0.85 / 2])
-ax_no.set_axis_off()
-no_img = plots.plotFieldAxes(
-    ax_no,
-    varx,
-    vMax=dmax,
-    vMin=dmin,
-    cMap=cmocean.cm.tarn,
-)
-ax_no_cb = fig.add_axes([0.10 / 3, 0.06 / 2, 0.75 * 2 / 5, 0.05 / 2])
-ax_no_cb.set_axis_off()
-cb = fig.colorbar(
-    no_img, ax=ax_no_cb, location="bottom", orientation="horizontal", fraction=1.0
-)
-
-# Bottom centre - normalised encoded
-vary.data = encoded.numpy()[0, :, :, 0]
-ax_ne = fig.add_axes([0.000 / 3 + 2 / 5 - 0.02, 0.125 / 2, 0.95 * 2 / 5, 0.85 / 2])
-ax_ne.set_axis_off()
-ne_img = plots.plotFieldAxes(
-    ax_ne,
-    vary,
-    vMax=dmax,
-    vMin=dmin,
-    cMap=cmocean.cm.tarn,
-)
-ax_ne_cb = fig.add_axes([0.1 / 3 + 2 / 5 - 0.02, 0.06 / 2, 0.75 * 2 / 5, 0.05 / 2])
-ax_ne_cb.set_axis_off()
-cb = fig.colorbar(
-    ne_img, ax=ax_ne_cb, location="bottom", orientation="horizontal", fraction=1.0
-)
-
-# Bottom right - normalised scatter
-ax_ns = fig.add_axes([0.005 / 3 + 4 / 5, 0.125 / 2, 0.95 / 5, 0.85 / 2])
-plots.plotScatterAxes(ax_ns, varx, vary, vMin=dmin, vMax=dmax, bins="log")
+for varI in range(nFields):
+    ax_var = subfigs[varI].subplots(nrows=1, ncols=3, width_ratios=wRatios)
+    # Left - map of target
+    varx = grids.E5sCube.copy()
+    varx.data = np.squeeze(input[-1][:, :, :, varI].numpy())
+    varx.data = np.ma.masked_where(varx.data == 0.0, varx.data, copy=False)
+    if varI == 0:
+        ax_var[0].set_title("%04d-%02d" % (year, month))
+    ax_var[0].set_axis_off()
+    x_img = plots.plotFieldAxes(
+        ax_var[0],
+        varx,
+        vMax=1.25,
+        vMin=-0.25,
+        cMap=get_cmap(specify.outputNames[varI]),
+    )
+    # Centre - map of model output
+    vary = grids.E5sCube.copy()
+    vary.data = np.squeeze(output[:, :, :, varI].numpy())
+    vary.data = np.ma.masked_where(varx.data == 0.0, vary.data, copy=False)
+    ax_var[1].set_axis_off()
+    ax_var[1].set_title(specify.outputNames[varI])
+    x_img = plots.plotFieldAxes(
+        ax_var[1],
+        vary,
+        vMax=1.25,
+        vMin=-0.25,
+        cMap=get_cmap(specify.outputNames[varI]),
+    )
+    # Right - scatter plot of input::output
+    ax_var[2].set_xticks([0, 0.25, 0.5, 0.75, 1])
+    ax_var[2].set_yticks([0, 0.25, 0.5, 0.75, 1])
+    plots.plotScatterAxes(ax_var[2], varx, vary, vMin=-0.25, vMax=1.25, bins="log")
 
 
 fig.savefig("comparison.png")
