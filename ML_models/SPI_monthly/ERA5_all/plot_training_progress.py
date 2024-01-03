@@ -133,10 +133,11 @@ if args.ymin is not None:
 
 
 def addLine(ax, dta, key, col, z, idx=0, rscale=1):
-    dtp = [listify(x)[idx] for x in dta[key]]
+    dtp = [listify(x)[idx] for x in dta[key] if len(listify(x))>idx]
+    dta2 = [dta['epoch'][i] for i in range(len(dta[key])) if len(listify(dta[key][i]))>idx]
     ax.add_line(
         Line2D(
-            dta["epoch"],
+            dta2,
             np.array(dtp) * rscale,
             linewidth=2,
             color=col,

@@ -38,4 +38,4 @@ dependencies:
 # Replace with the path to your project directory root.
 
 variables:
-  PYTHONPATH: /net/home/h03/hadpb/Projects/ML_precipitation_dataset
+  PYTHONPATH: /home/mo-hadpb/Projects/ML_precipitation_dataset

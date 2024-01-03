@@ -167,8 +167,8 @@ def plotScatterAxes(
     ax.set_xlim(vMin, vMax)
     ax.set_ylim(vMin, vMax)
     ax.hexbin(
-        x=var_in.data.flatten(),
-        y=var_out.data.flatten(),
+        x=var_in.data.compressed(),
+        y=var_out.data.compressed(),
         cmap=cmocean.tools.crop_by_percent(cmocean.cm.ice_r, 5, which="min"),
         bins=bins,
         gridsize=50,

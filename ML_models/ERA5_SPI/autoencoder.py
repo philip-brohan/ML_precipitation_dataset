@@ -33,7 +33,7 @@ nTestMonths = None
 nEpochs = 250
 # Length of an epoch - if None, same as nTrainingMonths
 nMonthsInEpoch = None
-nRepeatsPerEpoch = 1  # Show each month this many times
+nRepeatsPerEpoch = 3  # Show each month this many times
 
 if nMonthsInEpoch is None:
     nMonthsInEpoch = nTrainingMonths

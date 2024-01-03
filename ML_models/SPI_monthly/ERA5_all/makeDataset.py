@@ -48,7 +48,7 @@ def getDataAvailability(source):
 
 
 # Make a set of input filenames
-def getFileNames(sources, purpose):
+def getFileNames(sources, purpose, shuffle=True):
     avail = {}
     firstYr = specify.startYear
     lastYr = specify.endYear
@@ -98,8 +98,10 @@ def getFileNames(sources, purpose):
         else:
             raise Exception("Unsupported purpose " + purpose)
 
-    # Randomise the sequence of months
-    random.shuffle(aMonths)
+    if(shuffle):
+        random.shuffle(aMonths) # Randomise the sequence of months (training, default)
+    else:
+        aMonths.sort() # Months in time order (validation plots)
 
     # Limit maximum data size
     if purpose == "Train" and specify.maxTrainingMonths is not None:
@@ -126,9 +128,9 @@ def getFileNames(sources, purpose):
 
 
 # Get a dataset
-def getDataset(inputSources, outputSources, purpose):
+def getDataset(inputSources, outputSources, purpose,shuffle=True):
     # Get a list of filename sets
-    inFiles = getFileNames(inputSources, purpose)
+    inFiles = getFileNames(inputSources, purpose,shuffle=shuffle)
 
     # Create TensorFlow Dataset object from the source file names
     tnIData = tf.data.Dataset.from_tensor_slices(tf.constant(inFiles))

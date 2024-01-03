@@ -33,7 +33,7 @@ else:
 startYear = None  # Start and end years of training period
 endYear = None  # (if None, use all available)
 
-testSplit = 11  # Keep back test case evey n months
+testSplit = 11  # Keep back test case every n months
 
 # Can use less than all the data (for testing)
 maxTrainingMonths = None
@@ -47,12 +47,12 @@ correlatedEnsembles = (
 
 # Fit parameters
 nMonthsInEpoch = None  # Length of an epoch - if None, use all the data once
-nEpochs = 250  # How many epochs to train for
+nEpochs = 1000  # How many epochs to train for
 shuffleBufferSize = 100  # Already shuffled data, so not so important
 batchSize = 32  # Arbitrary
 beta = 0.001  # Weighting factor for KL divergence error term
 regularizationScale = 0.01  # Weighting factor for regularization loss
-latentDimension = 100  # Embedding dimension
+latentDimension = 200  # Embedding dimension
 maxGradient = 5  # Numerical instability protection
 
 # Optimization
@@ -60,3 +60,4 @@ strategy = tf.distribute.MirroredStrategy()
 optimizer = tf.keras.optimizers.Adam(1e-3)
 trainCache = False
 testCache = False
+
