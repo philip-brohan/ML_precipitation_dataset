@@ -17,7 +17,7 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 from matplotlib.lines import Line2D
 
-import specify
+from specify import specification
 
 import argparse
 
@@ -111,11 +111,11 @@ def loadHistory(LSC, offset=-1):
 
 
 (hts, ymax, ymin, epoch) = loadHistory(
-    specify.modelName,
+    specification["modelName"],
 )
 
 if args.selfc is not None:
-    (chts, cymax, cymin, cepoch) = loadHistory(specify.modelName, args.selfc)
+    (chts, cymax, cymin, cepoch) = loadHistory(specification["modelName"], args.selfc)
     epoch = max(epoch, cepoch)
     ymax = max(ymax, cymax)
     ymin = min(ymin, cymin)
@@ -133,8 +133,10 @@ if args.ymin is not None:
 
 
 def addLine(ax, dta, key, col, z, idx=0, rscale=1):
-    dtp = [listify(x)[idx] for x in dta[key] if len(listify(x))>idx]
-    dta2 = [dta['epoch'][i] for i in range(len(dta[key])) if len(listify(dta[key][i]))>idx]
+    dtp = [listify(x)[idx] for x in dta[key] if len(listify(x)) > idx]
+    dta2 = [
+        dta["epoch"][i] for i in range(len(dta[key])) if len(listify(dta[key][i])) > idx
+    ]
     ax.add_line(
         Line2D(
             dta2,
