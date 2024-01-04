@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 
-# Convolutional Variational Autoencoder for ERA5
+# Convolutional Variational Autoencoder for the Precip work.
+
+# This is a generic model that can be used for any set of input and output fields
+# To make a specific model, copy this file, specify.py, validate.py, and validate_multi.py
+# to a new directory (makeDataset and autoencoderModel are generic - don't copy them).
+# Then edit specify.py to choose the input and output fields, and the training parameters.
+# Then run this file to train the model, and the validate scripts to test the result.
 
 import os
 import sys
@@ -17,8 +23,8 @@ args = parser.parse_args()
 
 # Load the data path, data source, and model specification
 from specify import specification
-from makeDataset import getDataset
-from autoencoderModel import DCVAE
+from ML_models.SPI_monthly.generic_model.makeDataset import getDataset
+from ML_models.SPI_monthly.generic_model.autoencoderModel import DCVAE, getModel
 
 
 # Get Datasets
@@ -40,24 +46,6 @@ def getDatasets():
     testData = specification["strategy"].experimental_distribute_dataset(testData)
 
     return (trainingData, testData)
-
-
-# Load model and initial weights
-def getModel(epoch=1):
-    # Instantiate the model
-    autoencoder = DCVAE(specification)
-
-    # If we are doing a restart, load the weights
-    if epoch > 1:
-        weights_dir = ("%s/MLP/%s/weights/Epoch_%04d") % (
-            os.getenv("SCRATCH"),
-            specification["modelName"],
-            args.epoch,
-        )
-        load_status = autoencoder.load_weights("%s/ckpt" % weights_dir)
-        load_status.assert_existing_objects_matched()
-
-    return autoencoder
 
 
 # Instantiate and run the model under the control of the distribution strategy

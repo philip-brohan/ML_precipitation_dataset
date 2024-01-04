@@ -10,13 +10,14 @@ import iris
 import iris.fileformats
 import iris.analysis
 import datetime
-from statistics import mean
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 from matplotlib.lines import Line2D
+
+from specify import specification
 
 # I don't need all the messages about a missing font
 import logging
@@ -71,29 +72,19 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-sys.path.append("%s/.." % os.path.dirname(__file__))
-import specify
 from utilities import grids
-from autoencoderModel import DCVAE
-from makeDataset import getDataset
+
+from ML_models.SPI_monthly.generic_model.makeDataset import getDataset
+from ML_models.SPI_monthly.generic_model.autoencoderModel import DCVAE, getModel
 
 # Set up the test data
 purpose = "Test"
 if args.training:
     purpose = "Train"
-dataset = getDataset(
-    specify.inputTensors, specify.outputTensors, purpose=purpose, shuffle=False
-)
+dataset = getDataset(specification, purpose=purpose)
 dataset = dataset.batch(1)
 
-autoencoder = DCVAE()
-weights_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
-    os.getenv("SCRATCH"),
-    specify.modelName,
-    args.epoch,
-)
-load_status = autoencoder.load_weights("%s/ckpt" % weights_dir)
-load_status.assert_existing_objects_matched()
+autoencoder = getModel(specification, args.epoch)
 
 
 def tensor_to_cube(t):
@@ -119,7 +110,7 @@ def field_to_scalar(field):
     return np.mean(field.data)
 
 
-nFields = specify.nOutputChannels
+nFields = specification["nOutputChannels"]
 
 
 # Get target and encoded statistics for one test case
@@ -137,10 +128,10 @@ def compute_stats(model, x):
     stats["target"] = {}
     stats["generated"] = {}
     for varI in range(nFields):
-        stats["target"][specify.outputNames[varI]] = field_to_scalar(
+        stats["target"][specification["outputNames"][varI]] = field_to_scalar(
             tensor_to_cube(tf.squeeze(x[-1][:, :, :, varI])),
         )
-        stats["generated"][specify.outputNames[varI]] = field_to_scalar(
+        stats["generated"][specification["outputNames"][varI]] = field_to_scalar(
             tensor_to_cube(tf.squeeze(generated[:, :, :, varI])),
         )
     return stats
@@ -251,7 +242,7 @@ def plot_var(sfig, ts, t, m, label):
 # Each variable in its own subfig
 subfigs = fig.subfigures(nFields, 1, wspace=0.01)
 for varI in range(nFields):
-    vName = specify.outputNames[varI]
+    vName = specification["outputNames"][varI]
     plot_var(
         subfigs[varI],
         all_stats["dtp"],

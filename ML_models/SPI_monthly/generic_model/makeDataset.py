@@ -1,5 +1,8 @@
 # Make tf.data.Datasets from ERA5 monthly precip
 
+# This is a generic script to make a TensorFlow Dataset
+# Follow the instructions in autoencoder.py to use it.
+
 import os
 import sys
 import random

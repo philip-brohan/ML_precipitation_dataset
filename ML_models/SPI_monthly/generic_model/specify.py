@@ -2,8 +2,8 @@
 
 # As far as possible, everything specific to the model should be in here
 
-# Then the model spec, training control, and dataset input scripts
-#  can be generic.
+# Then the model spec. and dataset input scripts can be generic.
+# Follow the instructions in autoencoder.py to use this.
 
 import tensorflow as tf
 

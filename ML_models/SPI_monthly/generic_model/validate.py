@@ -11,9 +11,6 @@ import os
 import sys
 import numpy as np
 import tensorflow as tf
-import iris
-import iris.fileformats
-import iris.analysis
 import cmocean
 
 import matplotlib
@@ -21,8 +18,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 
-sys.path.append("%s/.." % os.path.dirname(__file__))
-import specify
+from specify import specification
 
 # I don't need all the messages about a missing font (on Isambard)
 import logging
@@ -47,16 +43,14 @@ args = parser.parse_args()
 
 from utilities import plots, grids
 
-from makeDataset import getDataset
-from autoencoderModel import DCVAE
+from ML_models.SPI_monthly.generic_model.makeDataset import getDataset
+from ML_models.SPI_monthly.generic_model.autoencoderModel import DCVAE, getModel
 
 purpose = "Test"
 if args.training:
     purpose = "Train"
 # Go through data and get the desired month
-dataset = getDataset(
-    specify.inputTensors, specify.outputTensors, purpose=purpose
-).batch(1)
+dataset = getDataset(specification, purpose=purpose).batch(1)
 input = None
 year = None
 month = None
@@ -73,20 +67,12 @@ for batch in dataset:
 if input is None:
     raise Exception("Month %04d-%02d not in %s dataset" % (year, month, purpose))
 
-autoencoder = DCVAE()
-weights_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
-    os.getenv("SCRATCH"),
-    specify.modelName,
-    args.epoch,
-)
-load_status = autoencoder.load_weights("%s/ckpt" % weights_dir)
-# Check the load worked
-load_status.assert_existing_objects_matched()
+autoencoder = getModel(specification, args.epoch)
 
 # Get autoencoded tensors
 output = autoencoder.call(input, training=False)
 
-nFields = specify.nOutputChannels
+nFields = specification["nOutputChannels"]
 
 # Make the plot
 figScale = 3.0
@@ -150,20 +136,20 @@ for varI in range(nFields):
         varx,
         vMax=1.25,
         vMin=-0.25,
-        cMap=get_cmap(specify.outputNames[varI]),
+        cMap=get_cmap(specification["outputNames"][varI]),
     )
     # Centre - map of model output
     vary = grids.E5sCube.copy()
     vary.data = np.squeeze(output[:, :, :, varI].numpy())
     vary.data = np.ma.masked_where(varx.data == 0.0, vary.data, copy=False)
     ax_var[1].set_axis_off()
-    ax_var[1].set_title(specify.outputNames[varI])
+    ax_var[1].set_title(specification["outputNames"][varI])
     x_img = plots.plotFieldAxes(
         ax_var[1],
         vary,
         vMax=1.25,
         vMin=-0.25,
-        cMap=get_cmap(specify.outputNames[varI]),
+        cMap=get_cmap(specification["outputNames"][varI]),
     )
     # Right - scatter plot of input::output
     ax_var[2].set_xticks([0, 0.25, 0.5, 0.75, 1])

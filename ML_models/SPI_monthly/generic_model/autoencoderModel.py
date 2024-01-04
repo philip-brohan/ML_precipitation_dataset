@@ -1,5 +1,9 @@
 # Specify a Deep Convolutional Variational AutoEncoder
 
+# This is a generic model that can be used for any set of input and output fields
+# Follow the instructions in autoencoder.py to use it for a specific model.
+
+import os
 import tensorflow as tf
 
 
@@ -367,3 +371,21 @@ class DCVAE(tf.keras.Model):
                 self.test_loss.numpy(),
             )
         )
+
+
+# Load model and initial weights
+def getModel(specification, epoch=1):
+    # Instantiate the model
+    autoencoder = DCVAE(specification)
+
+    # If we are doing a restart, load the weights
+    if epoch > 1:
+        weights_dir = ("%s/MLP/%s/weights/Epoch_%04d") % (
+            os.getenv("SCRATCH"),
+            specification["modelName"],
+            epoch,
+        )
+        load_status = autoencoder.load_weights("%s/ckpt" % weights_dir)
+        load_status.assert_existing_objects_matched()
+
+    return autoencoder
