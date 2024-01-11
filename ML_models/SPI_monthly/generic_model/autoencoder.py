@@ -52,7 +52,7 @@ def getDatasets():
 with specification["strategy"].scope():
     trainingData, testData = getDatasets()
 
-    autoencoder = getModel(epoch=args.epoch)
+    autoencoder = getModel(specification, epoch=args.epoch)
 
     # logfile to output the metrics
     log_FN = ("%s/MLP/%s/logs/Training") % (
