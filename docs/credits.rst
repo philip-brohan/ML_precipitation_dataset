@@ -14,11 +14,12 @@ All blame should go to the maintainer; credit is more widely distributed:
 * The `TensorFlow <https://www.tensorflow.org/>`_ library is used throughout.
   
 * Training data used came from: 
+
   * The `ERA5 reanalysis <https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5>`_ 
   * The `20th Century Reanalysis (version 2c) <https://www.esrl.noaa.gov/psd/data/20thC_Rean/>`_ 
   * `HadCRUT5 <https://www.metoffice.gov.uk/hadobs/hadcrut5/>`_
   * `HadISST <https://www.metoffice.gov.uk/hadobs/hadisst/>`_
-  * `CRU TS https://crudata.uea.ac.uk/cru/data/hrg/>`_
+  * `CRU TS <https://crudata.uea.ac.uk/cru/data/hrg/>`_
   * `GPCC <https://www.esrl.noaa.gov/psd/data/gridded/data.gpcc.html>`_
   * `GCPC <https://www.esrl.noaa.gov/psd/data/gridded/data.gpcc.html>`_
   * `CMORPH <https://www.cpc.ncep.noaa.gov/products/janowiak/cmorph_description.html>`_

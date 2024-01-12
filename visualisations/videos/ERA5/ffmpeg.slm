@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-core=1
 #SBATCH --time=12
 
-variable='2m_temperature'
+variable='sea_surface_temperature'
 
 cd $SCRATCH/MLP/normalised_datasets/ERA5_tf_MM/videos/
 

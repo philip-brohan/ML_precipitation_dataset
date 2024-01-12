@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-core=1
 #SBATCH --time=30
 
-variable='PRATE'
+variable='SST'
 
 cd $SCRATCH/MLP/normalised_datasets/TWCR_tf_MM/videos/
 
