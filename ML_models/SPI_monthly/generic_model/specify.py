@@ -58,7 +58,7 @@ specification["shuffleBufferSize"] = 1000  # Buffer size for shuffling
 specification["batchSize"] = 32  # Arbitrary
 specification["beta"] = 0.001  # Weighting factor for KL divergence error term
 specification["regularizationScale"] = 0.01  # Weighting factor for regularization loss
-specification["latentDimension"] = 200  # Embedding dimension
+specification["latentDimension"] = 100  # Embedding dimension
 specification["maxGradient"] = 5  # Numerical instability protection
 
 # Optimization
