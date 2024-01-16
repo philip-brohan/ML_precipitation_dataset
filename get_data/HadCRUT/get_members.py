@@ -7,7 +7,7 @@ from urllib.request import urlretrieve
 import zipfile
 
 # When this changes, probably check the HadCRUT web site for other changes
-version = "5.0.1.0"
+version = "5.0.2.0"
 
 opdir = "%s/HadCRUT/%s" % (os.getenv("SCRATCH"), version)
 if not os.path.isdir(opdir):
@@ -15,9 +15,9 @@ if not os.path.isdir(opdir):
 
 for members in ("1_to_10", "151_to_160"):
     url = (
-        "https://www.metoffice.gov.uk/hadobs/hadcrut5/data/current/"
-        + "analysis/HadCRUT.%s.analysis.anomalies.%s_netcdf.zip"
-    ) % (version, members)
+        "https://www.metoffice.gov.uk/hadobs/hadcrut5/data/HadCRUT.%s/"
+        +"analysis/HadCRUT.%s.analysis.anomalies.%s_netcdf.zip"
+    ) % (version, version,members)
     fname = "%s/%s.zip" % (opdir, members)
     urlretrieve(url, fname)
     with zipfile.ZipFile(fname, "r") as zip_ref:
