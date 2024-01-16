@@ -1,6 +1,7 @@
 # Model utility functions
 
 import os
+import sys
 import numpy as np
 
 import datetime
@@ -45,6 +46,7 @@ def loadHistory(LSC, offset=-1, max_epoch=None):
     filename = Rfiles[offset]
     path = os.path.join(summary_dir, filename)
     serialized_records = tf.data.TFRecordDataset(path)
+    history["epoch"] = []
     for srecord in serialized_records:
         event = event_pb2.Event.FromString(srecord.numpy())
         for value in event.summary.value:
@@ -56,9 +58,12 @@ def loadHistory(LSC, offset=-1, max_epoch=None):
                 continue
             if len(history[value.tag]) < event.step + 1:
                 history[value.tag].extend(
-                    [0.0] * (event.step + 1 - len(history[value.tag]))
+                    [None] * (event.step + 1 - len(history[value.tag]))
                 )
             history[value.tag][event.step] = t
+        if len(history["epoch"]) < event.step + 1:
+            history["epoch"].extend([None] * (event.step + 1 - len(history["epoch"])))
+        history["epoch"][event.step] = event.step
 
     ymax = 0
     ymin = 1000000
@@ -67,11 +72,12 @@ def loadHistory(LSC, offset=-1, max_epoch=None):
     if max_epoch is not None:
         n_epochs = min(max_epoch, n_epochs)
     hts["epoch"] = list(range(n_epochs))[1:]
+    hts["epoch"] = history["epoch"]
     for key in history:
         if key == "OutputNames":
             hts[key] = [str(t, "utf-8") for t in history[key]]
         else:
-            hts[key] = [abs(t) for t in history[key][1:n_epochs]]
+            hts[key] = [abs(t) for t in history[key][1:n_epochs] if t is not None]
     for key in ("Train_logpz", "Train_logqz_x", "Test_logpz", "Test_logqz_x"):
         ymax = max(ymax, max(hts[key]))
         ymin = min(ymin, min(hts[key]))
@@ -210,6 +216,8 @@ def plotTrainingMetrics(
             for i in range(len(dta[key]))
             if len(listify(dta[key][i])) > idx
         ]
+        # print(dtp)
+        # sys.exit(0)
         ax.add_line(
             Line2D(
                 dta2,
@@ -285,10 +293,20 @@ def plotTrainingMetrics(
         ax_rmse[varI].grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
         addLine(ax_rmse[varI], hts, "Train_RMSE", (1, 0.5, 0.5, 1), 10, idx=varI)
         addLine(ax_rmse[varI], hts, "Test_RMSE", (1, 0, 0, 1), 20, idx=varI)
+        if chts is not None:
+            for idx in range(len(chts["OutputNames"])):
+                if chts["OutputNames"][idx] == hts["OutputNames"][varI]:
+                    addLine(
+                        ax_rmse[varI], chts, "Train_RMSE", (0.5, 0.5, 1, 1), 10, idx=idx
+                    )
+                    addLine(ax_rmse[varI], chts, "Test_RMSE", (0, 0, 1, 1), 20, idx=idx)
+                    break
     ax_rmse[nvar].tick_params(axis="both", labelsize=comp_font_size)
     ax_rmse[nvar].set_title("Regularization", fontsize=comp_font_size)
     ax_rmse[nvar].grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
     addLine(ax_rmse[nvar], hts, "Regularization_loss", (1, 0, 0, 1), 20)
+    if chts is not None:
+        addLine(ax_rmse[nvar], chts, "Regularization_loss", (0, 0, 1, 1), 20)
     for varI in range(nvar + 1, len(ax_rmse)):
         ax_rmse[varI].set_axis_off()
 

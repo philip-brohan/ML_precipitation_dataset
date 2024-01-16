@@ -56,13 +56,25 @@ specification[
 specification["nEpochs"] = 1000  # How many epochs to train for
 specification["shuffleBufferSize"] = 1000  # Buffer size for shuffling
 specification["batchSize"] = 32  # Arbitrary
-specification["beta"] = 0.001  # Weighting factor for KL divergence error term
-specification["regularizationScale"] = 0.01  # Weighting factor for regularization loss
+specification["beta"] = 0.01  # Weighting factor for KL divergence error term
 specification["latentDimension"] = 100  # Embedding dimension
-specification["maxGradient"] = 5  # Numerical instability protection
+specification["maxGradient"] = None  # Numerical instability protection
+
+# Output control
+specification[
+    "printInterval"
+] = 10  # How often to print metrics and save weights (epochs)
 
 # Optimization
 specification["strategy"] = tf.distribute.MirroredStrategy()
 specification["optimizer"] = tf.keras.optimizers.Adam(1e-3)
-specification["trainCache"] = False
-specification["testCache"] = False
+specification["trainCache"] = True
+specification["testCache"] = True
+
+# Regularization
+specification["regularization"] = {
+    "encoder_activity": 0.0,
+    "encoder_kernel": 0.0,
+    "generator_activity": 0.0,
+    "generator_kernel": 0.0,
+}

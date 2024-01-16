@@ -30,7 +30,7 @@ from ML_models.SPI_monthly.generic_model.autoencoderModel import DCVAE, getModel
 # Get Datasets
 def getDatasets():
     # Set up the training data
-    trainingData = getDataset(specification, purpose="Train")
+    trainingData = getDataset(specification, purpose="Train").repeat(2)
     trainingData = trainingData.shuffle(specification["shuffleBufferSize"]).batch(
         specification["batchSize"]
     )
@@ -51,6 +51,7 @@ def getDatasets():
 # Instantiate and run the model under the control of the distribution strategy
 with specification["strategy"].scope():
     trainingData, testData = getDatasets()
+    trainingData = trainingData
 
     autoencoder = getModel(specification, epoch=args.epoch)
 
@@ -80,6 +81,10 @@ with specification["strategy"].scope():
             )
 
         end_training_time = time.time()
+
+        # Validation and output only every printInterval epochs
+        if epoch % specification["printInterval"] != 0:
+            continue
 
         # Accumulate average losses over all batches in the validation data
         autoencoder.update_metrics(trainingData, testData)
