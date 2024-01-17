@@ -5,6 +5,8 @@
 import os
 from get_data.HadCRUT import HadCRUT
 
+sDir = os.path.dirname(os.path.realpath(__file__))
+
 
 def is_done(year, month, member):
     fn = "%s/MLP/raw_datasets/HadCRUT/%04d-%02d_%03d.tfd" % (
@@ -23,7 +25,8 @@ for year in range(1850, 2024):
         for member in HadCRUT.members:
             if is_done(year, month, member):
                 continue
-            cmd = "./make_training_tensor.py --year=%04d --month=%02d --member=%d" % (
+            cmd = "%s/make_training_tensor.py --year=%04d --month=%02d --member=%d" % (
+                sDir,
                 year,
                 month,
                 member,

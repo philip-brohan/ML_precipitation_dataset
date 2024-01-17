@@ -5,6 +5,8 @@
 import os
 import argparse
 
+sDir = os.path.dirname(os.path.realpath(__file__))
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--variable",
@@ -31,7 +33,8 @@ for year in range(1850, 2014):
     for month in range(1, 13):
         if is_done(year, month, args.variable):
             continue
-        cmd = "./make_training_tensor.py --year=%04d --month=%02d --variable=%s" % (
+        cmd = "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s" % (
+            sDir,
             year,
             month,
             args.variable,

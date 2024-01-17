@@ -4,6 +4,7 @@
 
 import os
 
+sDir = os.path.dirname(os.path.realpath(__file__))
 
 def is_done(month, variable):
     fn = "%s/MLP/normalisation/SPI_monthly/ERA5_tf_MM/%s/shape_m%02d.nc" % (
@@ -26,7 +27,7 @@ for variable in (
     for month in range(1, 13):
         if is_done(month, variable):
             continue
-        cmd = "./fit_for_month.py --month=%02d --variable=%s" % (
+        cmd = "sDir/fit_for_month.py --month=%02d --variable=%s" % (
             month,
             variable,
         )

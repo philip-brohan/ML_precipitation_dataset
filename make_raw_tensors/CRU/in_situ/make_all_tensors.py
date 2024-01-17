@@ -4,6 +4,8 @@
 
 import os
 
+sDir = os.path.dirname(os.path.realpath(__file__))
+
 
 def is_done(year, month):
     fn = "%s/MLP/raw_datasets/CRU/precip/%04d-%02d.tfd" % (
@@ -16,11 +18,12 @@ def is_done(year, month):
     return False
 
 
-for year in range(1901, 2024):
+for year in range(1901, 2020):
     for month in range(1, 13):
         if is_done(year, month):
             continue
-        cmd = "./make_training_tensor.py --year=%04d --month=%02d" % (
+        cmd = "%s/make_training_tensor.py --year=%04d --month=%02d" % (
+            sDir,
             year,
             month,
         )

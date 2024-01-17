@@ -66,7 +66,7 @@ plots.plotFieldAxes(
     ax_o,
     ast,
     vMin=np.percentile(np.ma.compressed(ast.data), 0),
-    vMax=np.percentile(np.ma.compressed(ast.data),100),
+    vMax=np.percentile(np.ma.compressed(ast.data), 100),
     cMap=cmocean.cm.balance,
 )
 

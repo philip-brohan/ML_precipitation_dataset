@@ -6,6 +6,7 @@ import tensorflow as tf
 from get_data.ERA5 import ERA5_monthly
 from utilities import grids
 
+
 # Load the data for 1 month (on the standard cube).
 def load_raw(year, month, member=None, variable="total_precipitation"):
     raw = ERA5_monthly.load(
@@ -14,7 +15,7 @@ def load_raw(year, month, member=None, variable="total_precipitation"):
         month=month,
         grid=grids.E5sCube,
     )
-    raw.data.data[raw.data.mask==True]=np.nan
+    raw.data.data[raw.data.mask == True] = np.nan
     return raw
 
 
@@ -28,5 +29,5 @@ def raw_to_tensor(raw):
 def tensor_to_cube(tensor):
     cube = grids.E5sCube.copy()
     cube.data = tensor.numpy()
-    cube.data = np.ma.MaskedArray(cube.data,np.isnan(cube.data))
+    cube.data = np.ma.MaskedArray(cube.data, np.isnan(cube.data))
     return cube

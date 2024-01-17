@@ -3,6 +3,9 @@
 # Make raw data tensors for normalisation
 
 import os
+import sys
+
+sDir = os.path.dirname(os.path.realpath(__file__))
 
 
 def is_done(year, month):
@@ -20,7 +23,8 @@ for year in range(1979, 2024):
     for month in range(1, 13):
         if is_done(year, month):
             continue
-        cmd = "./make_training_tensor.py --year=%04d --month=%02d" % (
+        cmd = "%s/make_training_tensor.py --year=%04d --month=%02d" % (
+            sDir,
             year,
             month,
         )
