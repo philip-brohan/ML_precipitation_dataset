@@ -12,6 +12,8 @@ import numpy as np
 import tensorflow as tf
 from astropy.convolution import convolve
 
+sDir = os.path.dirname(os.path.realpath(__file__))
+
 rng = np.random.default_rng()
 
 import matplotlib
@@ -280,4 +282,4 @@ cb = fig.colorbar(
 )
 
 
-fig.savefig("Precip_%s_%s.png" % (args.reduce, args.convolve))
+fig.savefig("%s/Precip_%s_%s.png" % (sDir, args.reduce, args.convolve))

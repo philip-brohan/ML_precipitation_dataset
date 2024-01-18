@@ -12,6 +12,8 @@ import numpy as np
 import tensorflow as tf
 from astropy.convolution import convolve
 
+sDir = os.path.dirname(os.path.realpath(__file__))
+
 rng = np.random.default_rng()
 
 import matplotlib
@@ -64,6 +66,7 @@ args = parser.parse_args()
 
 start = datetime.datetime(args.startyear, 1, 1, 0, 0)
 end = datetime.datetime(args.endyear, 12, 31, 23)
+
 
 # Longitude reduction
 def longitude_reduce(choice, ndata):
@@ -269,8 +272,8 @@ def add_dateline(ax, year):
     )
 
 
-for year in range((args.startyear//10)*10, args.endyear, 10):
-    if year==args.startyear or year==args.endyear:
+for year in range((args.startyear // 10) * 10, args.endyear, 10):
+    if year == args.startyear or year == args.endyear:
         continue
     add_dateline(axg, year)
 
@@ -287,4 +290,4 @@ cb = fig.colorbar(
 )
 
 
-fig.savefig("%s_%s_%s.png" % (args.variable, args.reduce, args.convolve))
+fig.savefig("%s/%s_%s_%s.png" % (sDir, args.variable, args.reduce, args.convolve))
