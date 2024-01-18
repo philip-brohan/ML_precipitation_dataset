@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
 # Make all the raw tensors
+# Requires downloaded data
 
 (cd ./CRU/in_situ && ./make_all_tensors.py)
 

@@ -20,7 +20,7 @@ def load_raw(year, month, variable="total_precipitation"):
         month=month,
         grid=grids.E5sCube,
     )
-    raw.data.data[raw.data.mask==True]=0.0
+    raw.data.data[raw.data.mask == True] = 0.0
     return raw
 
 
@@ -28,7 +28,7 @@ def load_raw(year, month, variable="total_precipitation"):
 def raw_to_tensor(raw, variable, month):
     (shape, location, scale) = load_fitted(month, variable=variable)
     norm = normalise_cube(raw, shape, location, scale)
-    norm.data.data[raw.data.mask==True]=0.0
+    norm.data.data[raw.data.mask == True] = 0.0
     ict = tf.convert_to_tensor(norm.data, tf.float32)
     return ict
 
@@ -37,7 +37,7 @@ def raw_to_tensor(raw, variable, month):
 def tensor_to_cube(tensor):
     cube = grids.E5sCube.copy()
     cube.data = tensor.numpy()
-    cube.data = np.ma.MaskedArray(cube.data,cube.data==0.0)
+    cube.data = np.ma.MaskedArray(cube.data, cube.data == 0.0)
     return cube
 
 
@@ -46,5 +46,5 @@ def tensor_to_raw(tensor, variable, month):
     (shape, location, scale) = load_fitted(month, variable=variable)
     cube = tensor_to_cube(tensor)
     raw = unnormalise_cube(cube, shape, location, scale)
-    raw.data.data[raw.data.mask==True]=0.0
+    raw.data.data[raw.data.mask == True] = 0.0
     return raw
