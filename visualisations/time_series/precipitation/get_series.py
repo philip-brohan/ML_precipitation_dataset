@@ -2,9 +2,12 @@
 
 # Get global mean series of normalised values and store as pickle
 
+import os
 import numpy as np
 import tensorflow as tf
 import pickle
+
+sDir = os.path.dirname(os.path.realpath(__file__))
 
 rng = np.random.default_rng()
 
@@ -29,7 +32,7 @@ if args.source == "ERA5":
         cache=False,
         blur=None,
     ).batch(1)
-elif args.source == "20CR":
+elif args.source == "TWCR":
     from visualisations.stripes.TWCR.makeDataset import getDataset
 
     trainingData = getDataset(
@@ -102,5 +105,5 @@ for year in range(1850, 2050):
             if key not in ndata:
                 ndata[key] = np.nan
 
-with open("%s.pkl" % args.source, "wb") as dfile:
+with open("%s/%s.pkl" % (sDir, args.source), "wb") as dfile:
     pickle.dump(ndata, dfile)

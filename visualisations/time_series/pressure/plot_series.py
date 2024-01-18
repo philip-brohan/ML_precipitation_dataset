@@ -2,10 +2,13 @@
 
 # Plot normalised time-series
 
+import os
 import datetime
 import pickle
 import numpy as np
 from astropy.convolution import convolve
+
+sDir = os.path.dirname(os.path.realpath(__file__))
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -86,7 +89,7 @@ matplotlib.rc("font", **font)
 # List of datasets to plot (and colour to use)
 datasets = {
     "ERA5": (0, 0, 1, 1),
-    "20CR": (0, 0, 0.5, 1),
+    "TWCR": (0, 0, 0.5, 1),
 }
 
 # Background
@@ -162,4 +165,4 @@ for ds in datasets.keys():
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
 
-fig.savefig("pressure_%03d.png" % args.nmonths)
+fig.savefig("%s/pressure_%03d.png" % (sDir, args.nmonths))

@@ -2,10 +2,13 @@
 
 # Plot normalised time-series
 
+import os
 import datetime
 import pickle
 import numpy as np
 from astropy.convolution import convolve
+
+sDir = os.path.dirname(os.path.realpath(__file__))
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -87,7 +90,7 @@ matplotlib.rc("font", **font)
 # List of datasets to plot (and colour to use)
 datasets = {
     "ERA5": (0, 0, 1, 1),
-    "20CR": (0, 0, 0.5, 1),
+    "TWCR": (0, 0, 0.5, 1),
     "CRU": (0, 0.5, 0.5, 1),
     "GPCC_in-situ": (0, 0, 0, 1),
     "GPCP": (0, 0.5, 1, 1),
@@ -166,4 +169,4 @@ for ds in datasets.keys():
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
 
-fig.savefig("precipitation_%03d.png" % args.nmonths)
+fig.savefig("%s/precipitation_%03d.png" % (sDir, args.nmonths))
