@@ -26,9 +26,12 @@ parser.add_argument(
 parser.add_argument(
     "--member", help="Member to plot", type=int, required=False, default=1
 )
+parser.add_argument(
+    "--variable", help="Variable to plot", type=str, required=False, default="PRATE"
+)
 args = parser.parse_args()
 
-raw = load_raw(args.year, args.month, args.member)
+raw = load_raw(args.year, args.month, member=args.member, variable=args.variable)
 ict = raw_to_tensor(raw)
 ast = tensor_to_cube(ict)
 
