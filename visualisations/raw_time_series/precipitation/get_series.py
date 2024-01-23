@@ -97,6 +97,5 @@ for year in range(1850, 2050):
             if key not in ndata:
                 ndata[key] = np.nan
 
-print(ndata)
 with open("%s/%s.pkl" % (sDir, args.source), "wb") as dfile:
     pickle.dump(ndata, dfile)
