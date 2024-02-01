@@ -46,19 +46,19 @@ parser.add_argument(
     "--ymin",
     type=float,
     required=False,
-    default=0.2,
+    default=250,
 )
 parser.add_argument(
     "--ymax",
     type=float,
     required=False,
-    default=0.75,
+    default=300,
 )
 parser.add_argument(
     "--linewidth",
     type=float,
     required=False,
-    default=1.0,
+    default=1,
 )
 args = parser.parse_args()
 
@@ -123,6 +123,8 @@ def plot_var(ndata, width, col, label):
     ts = {}
     t = {}
     for dk in sorted(ndata.keys()):
+        # if np.isnan(ndata[dk]):
+        #    continue
         year = int(dk[:4])
         month = int(dk[4:6])
         if year < args.start_year or year > args.end_year:

@@ -17,10 +17,11 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def is_done(year, month, variable):
-    fn = "%s/MLP/normalised_datasets/TWCR_tf_MM/%s/%04d-%02d.tfd" % (
+def is_done(year, month, variable, member):
+    fn = "%s/MLP/normalised_datasets/TWCR_tf_MM/%s/%02d/%04d-%02d.tfd" % (
         os.getenv("SCRATCH"),
         variable,
+        member,
         year,
         month,
     )
@@ -32,12 +33,11 @@ def is_done(year, month, variable):
 count = 0
 for year in range(1850, 2014):
     for month in range(1, 13):
-        if is_done(year, month, args.variable):
-            continue
-        cmd = "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s" % (
-            sDir,
-            year,
-            month,
-            args.variable,
-        )
-        print(cmd)
+        for member in range(1, 81):
+            if is_done(year, month, args.variable, member):
+                continue
+            cmd = (
+                "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s --member=%02d"
+                % (sDir, year, month, args.variable, member)
+            )
+            print(cmd)

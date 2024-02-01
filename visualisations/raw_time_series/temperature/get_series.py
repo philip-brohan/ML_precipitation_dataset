@@ -3,6 +3,7 @@
 # Get global mean series of normalised values and store as pickle
 
 import os
+import sys
 import numpy as np
 import tensorflow as tf
 import pickle
@@ -54,7 +55,7 @@ elif args.source == "TWCR_t2m":
         blur=None,
     ).batch(1)
 elif args.source == "TWCR_sst":
-    from visualisations.stripes.TWCR.makeDataset import getDataset
+    from TWCRDataset import getDataset
 
     trainingData = getDataset(
         "SST",
@@ -96,6 +97,7 @@ for batch in trainingData:
     key = "%04d%02d%03d" % (year, month, member)
     members[member] += 1
     ndmo = batch[0].numpy().flatten()
+    ndmo = ndmo[~np.isnan(ndmo)]
     ndmo = ndmo[ndmo != 0]
     ndata[key] = np.mean(ndmo)
 

@@ -20,15 +20,17 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--year", help="Year", type=int, required=True)
 parser.add_argument("--month", help="Integer month", type=int, required=True)
+parser.add_argument("--member", help="Ensemble member", type=int, required=True)
 parser.add_argument("--variable", help="Variable name", type=str, required=True)
 parser.add_argument(
     "--opfile", help="tf data file name", default=None, type=str, required=False
 )
 args = parser.parse_args()
 if args.opfile is None:
-    args.opfile = ("%s/MLP/raw_datasets/TWCR/%s/%04d-%02d.tfd") % (
+    args.opfile = ("%s/MLP/raw_datasets/TWCR/%s/%02d/%04d-%02d.tfd") % (
         os.getenv("SCRATCH"),
         args.variable,
+        args.member,
         args.year,
         args.month,
     )
@@ -37,7 +39,7 @@ if not os.path.isdir(os.path.dirname(args.opfile)):
     os.makedirs(os.path.dirname(args.opfile))
 
 # Load and standardise data
-qd = load_raw(args.year, args.month, variable=args.variable)
+qd = load_raw(args.year, args.month, member=args.member, variable=args.variable)
 ict = raw_to_tensor(qd)
 
 # Write to file
