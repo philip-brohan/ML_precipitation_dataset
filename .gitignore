@@ -130,6 +130,9 @@ dmypy.json
 
 # Figures
 *.png 
+*.pdf
+*.webp
+*.jpg
 
 # Apple crap
 Thumbs.db
