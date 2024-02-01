@@ -13,15 +13,14 @@ specification["modelName"] = "Generic"
 
 specification["inputTensors"] = (
     "ERA5_tf_MM/2m_temperature",
-    "ERA5_tf_MM/sea_surface_temperature",
     "ERA5_tf_MM/mean_sea_level_pressure",
     "ERA5_tf_MM/total_precipitation",
 )
+
 specification["outputTensors"] = None  # If None, same as input
 
 specification["outputNames"] = (
     "T2m",
-    "SST",
     "MSLP",
     "Precip",
 )  # For printout
@@ -56,14 +55,15 @@ specification[
 specification["nEpochs"] = 1000  # How many epochs to train for
 specification["shuffleBufferSize"] = 1000  # Buffer size for shuffling
 specification["batchSize"] = 32  # Arbitrary
-specification["beta"] = 0.01  # Weighting factor for KL divergence error term
+specification["beta"] = 0.01  # Weighting factor for KL divergence of latent space
+specification["gamma"] = 0.0025  # Weighting factor for KL divergence of output
 specification["latentDimension"] = 100  # Embedding dimension
 specification["maxGradient"] = None  # Numerical instability protection
 
 # Output control
 specification[
     "printInterval"
-] = 10  # How often to print metrics and save weights (epochs)
+] = 1  # How often to print metrics and save weights (epochs)
 
 # Optimization
 specification["strategy"] = tf.distribute.MirroredStrategy()

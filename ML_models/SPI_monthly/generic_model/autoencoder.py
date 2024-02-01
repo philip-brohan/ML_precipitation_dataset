@@ -30,7 +30,7 @@ from ML_models.SPI_monthly.generic_model.autoencoderModel import DCVAE, getModel
 # Get Datasets
 def getDatasets():
     # Set up the training data
-    trainingData = getDataset(specification, purpose="Train").repeat(2)
+    trainingData = getDataset(specification, purpose="Train").repeat(5)
     trainingData = trainingData.shuffle(specification["shuffleBufferSize"]).batch(
         specification["batchSize"]
     )
