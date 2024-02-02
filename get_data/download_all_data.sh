@@ -35,3 +35,6 @@ echo -n 'HadISST'
 
 echo -n 'GPCP'
 (cd GPCP/blended && ./get_means.py)
+
+echo -n 'land mask'
+(cd land_mask && ./get_land_mask_from_ERA5_land.py)
