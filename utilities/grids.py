@@ -30,7 +30,9 @@ lon_values = np.arange(xmin, xmax, resolution)
 longitude = iris.coords.DimCoord(
     lon_values, standard_name="grid_longitude", units="degrees_east", coord_system=cs
 )
-dummy_data = np.ma.MaskedArray(np.zeros((len(lat_values), len(lon_values))),False)
+dummy_data = np.ma.MaskedArray(np.zeros((len(lat_values), len(lon_values))), False)
 
-E5sCube = iris.cube.Cube(dummy_data, dim_coords_and_dims=[(latitude, 0), (longitude, 1)])
+E5sCube = iris.cube.Cube(
+    dummy_data, dim_coords_and_dims=[(latitude, 0), (longitude, 1)]
+)
 E5scs = cs

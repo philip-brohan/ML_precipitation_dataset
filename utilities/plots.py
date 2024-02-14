@@ -19,15 +19,16 @@ import cmocean
 # I don't care about datums.
 iris.FUTURE.datum_support = True
 
+
 # Get the pole location from a cube
 #  Assumes an equirectangular projection
 def extract_pole(cube):
     try:
         lat = cube.coord("grid_latitude")
         if lat.coord_system is None:
-            return(90,180,0)
+            return (90, 180, 0)
     except Exception:
-            return(90,180,0)
+        return (90, 180, 0)
     if lat.coord_system.grid_mapping_name == "rotated_latitude_longitude":
         return (
             lat.coord_system.grid_north_pole_latitude,
@@ -73,9 +74,14 @@ def plot_cube(
 # High res land mask for plots
 def get_land_mask(grid_cube=None):
     lm = iris.load_cube(
-        "%s/fixed_fields/land_mask/opfc_global_2019.nc" % os.getenv("DATADIR")
+        "%s/ERA5/monthly/reanalysis/land_mask.nc" % os.getenv("SCRATCH")
     )
-    lm = lm.regrid(grid_cube, iris.analysis.Linear())
+    lm = iris.util.squeeze(lm)
+    lm.coord("latitude").coord_system =iris.coord_systems.RotatedGeogCS(90, 180, 0)
+    lm.coord("longitude").coord_system =iris.coord_systems.RotatedGeogCS(90, 180, 0)
+    lm.data = np.where(lm.data.mask, 0, 1)
+    if grid_cube is not None:
+        lm = lm.regrid(grid_cube, iris.analysis.Linear())
     return lm
 
 
@@ -187,20 +193,18 @@ def plotScatterAxes(
     ax.set(ylabel=ylabel, xlabel=xlabel)
     ax.grid(color="black", alpha=0.2, linestyle="-", linewidth=0.5)
 
+
 # Histogram in provided axes
-def plotHistAxes(
-    ax, var, vMax=None, vMin=None, xlabel="", ylabel="", bins=100
-):
-    
+def plotHistAxes(ax, var, vMax=None, vMin=None, xlabel="", ylabel="", bins=100):
     if vMax is None:
         vMax = np.max(var.data)
     if vMin is None:
         vMin = np.min(var.data)
     ax.hist(
         x=var.data.compressed(),
-        range = (vMin,vMax),
+        range=(vMin, vMax),
         bins=bins,
-        color='blue',
+        color="blue",
         density=True,
     )
     ax.set(ylabel=ylabel, xlabel=xlabel)
