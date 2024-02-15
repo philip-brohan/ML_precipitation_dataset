@@ -12,7 +12,8 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Monthly DataSets of Historical Precipitation" href="get_data.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -20,6 +21,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="get_data.html" title="Monthly DataSets of Historical Precipitation"
+             accesskey="N">next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">ML for Precipitation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Machine Learning for Precipitation Datasets</a></li> 
       </ul>
@@ -33,7 +37,51 @@
   <section id="machine-learning-for-precipitation-datasets">
 <h1>Machine Learning for Precipitation Datasets<a class="headerlink" href="#machine-learning-for-precipitation-datasets" title="Permalink to this heading">¶</a></h1>
 <p>Dummy text to test the formatting</p>
+<section id="difficulties-with-observed-precipitation">
+<h2>Difficulties with observed precipitation<a class="headerlink" href="#difficulties-with-observed-precipitation" title="Permalink to this heading">¶</a></h2>
+<figure class="align-center" id="id1" style="width: 100%">
+<a class="reference internal image-reference" href="_images/raw_precip.png"><img alt="_images/raw_precip.png" src="_images/raw_precip.png" style="width: 55%;" /></a>
+<figcaption>
+<p><span class="caption-text">Precipitation distribution for March 1983 from 5 datasets</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id2" style="width: 100%">
+<a class="reference internal image-reference" href="_images/precipitation_039.png"><img alt="_images/precipitation_039.png" src="_images/precipitation_039.png" style="width: 75%;" /></a>
+<figcaption>
+<p><span class="caption-text">Global mean monthly mean precipitation time-series from five datasets (with 39-month smoothing)</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="get_data.html">Monthly datasets of historical precipitation</a></li>
+</ul>
+</div>
+<p>Another sentence goes here:</p>
+</section>
+<section id="quantile-normalization">
+<h2>Quantile Normalization<a class="headerlink" href="#quantile-normalization" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="appendices">
+<h2>Appendices<a class="headerlink" href="#appendices" title="Permalink to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ML_generic.html">A flexible Machine Learning model for data transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualizations/index.html">Visualizations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">Utility functions for plotting and re-gridding</a></li>
+</ul>
+</div>
+</section>
+<section id="small-print">
+<h2>Small print<a class="headerlink" href="#small-print" title="Permalink to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="how_to.html">How to reproduce or extend this work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Authors and acknowledgements</a></li>
+</ul>
+</div>
 <p>This document is crown copyright (2024). It is published under the terms of the <a class="reference external" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/">Open Government Licence</a>. Source code included is published under the terms of the <a class="reference external" href="https://opensource.org/licenses/BSD-2-Clause">BSD licence</a>.</p>
+</section>
 </section>
 
 
@@ -43,7 +91,23 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/MLP.webp" alt="Logo"/>
+            </a></p>
 <h3><a href="#">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="get_data.html">Monthly datasets of historical precipitation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ML_generic.html">A flexible Machine Learning model for data transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualizations/index.html">Visualizations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">Utility functions for plotting and re-gridding</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="how_to.html">How to reproduce or extend this work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Authors and acknowledgements</a></li>
+</ul>
 <h3><a href="https://github.com/philip-brohan/ML_precipitation_dataset">Get a copy</a></h3>
 
 <ul>
@@ -63,6 +127,9 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="get_data.html" title="Monthly DataSets of Historical Precipitation"
+             >next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">ML for Precipitation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Machine Learning for Precipitation Datasets</a></li> 
       </ul>
