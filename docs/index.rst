@@ -40,7 +40,7 @@ Appendices
    :maxdepth: 1
 
    Selecting, downloading, and handling the data <get_data/index>
-   A flexible Machine Learning model for data transformations <ML_generic>
+   A flexible Machine Learning model for data transformations <ML_generic/index>
    Visualizations <visualizations/index>
    Utility functions for plotting and re-gridding <utils/index>
 

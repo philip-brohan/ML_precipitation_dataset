@@ -6,3 +6,8 @@ figwidth
 center
 precip
 utils
+CRU
+GPCC
+GPCP
+PRMSL
+TWCR
