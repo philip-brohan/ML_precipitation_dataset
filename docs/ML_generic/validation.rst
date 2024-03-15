@@ -1,20 +1,23 @@
-ERA5 T2m - validate the trained VAE
-===================================
+Generic model - validate trained model on test data for a single month
+======================================================================
 
-.. figure:: ../../figures/DCVAE_validation.jpg
+.. figure:: ../../ML_models/SPI_monthly/generic_model/comparison.webp
    :width: 95%
    :align: center
    :figwidth: 95%
 
-   VAE validation: top left - original field, top right - generator output, bottom left - difference, bottom right - scatter original::output. (Note that a substantially better result could be produced with more model-building effort and a larger latent space, but this is good enough for present purposes).
+   Left-hand column is the target, centre column is the DCVAE output, right-hand column a scatterplot of the two.
 
-Script to make the validation figure
+Script (`validate.py`) to make the validation figure
 
-.. literalinclude:: ../../../models/DCVAE_single_ERA5_T2m/validation/validate.py
+By default, it will use a random month from the test set, but you can specify a month using the `--year` and `--month` arguments. The `--training` argument will take months from the training set instead of the test set.
+
+.. literalinclude:: ../../ML_models/SPI_monthly/generic_model/validate.py
 
 Utility functions used in the plot
 
-.. literalinclude:: ../../../models/DCVAE_single_ERA5_T2m/validation/plot_ERA5_comparison.py
+.. literalinclude:: ../../ML_models/SPI_monthly/generic_model/gmUtils.py
+
 
 
 

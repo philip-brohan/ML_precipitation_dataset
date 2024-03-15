@@ -154,4 +154,4 @@ for i, k in enumerate(rawMonths.keys()):
 
 ax_var[5].axis("off")
 
-fig.savefig("normalised_precip.png")
+fig.savefig("normalized_precip.png")

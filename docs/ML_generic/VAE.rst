@@ -1,5 +1,7 @@
-ERA5 T2m - specify a Variational AutoEncoder
-============================================
+Generic model fixed structure
+=============================
 
-.. literalinclude:: ../../../models/DCVAE_single_ERA5_T2m/autoencoderModel.py
+This script defines a Deep Convolutional Variational Autoencoder, with inputs, outputs, and hyperparameters taken from the :doc:`configuration file <specify>`.
+
+.. literalinclude:: ../../ML_models/SPI_monthly/generic_model/autoencoderModel.py
 

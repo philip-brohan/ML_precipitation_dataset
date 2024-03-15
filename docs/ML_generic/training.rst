@@ -1,5 +1,7 @@
-ERA5 T2m - train the Variational AutoEncoder
-============================================
+Generic model training script
+=============================
 
-.. literalinclude:: ../../../models/DCVAE_single_ERA5_T2m/autoencoder.py
+Script (`autoencoder.py`) to train the model specified in the :doc:`configuration file <specify>`.
+
+.. literalinclude:: ../../ML_models/SPI_monthly/generic_model/autoencoder.py
 
