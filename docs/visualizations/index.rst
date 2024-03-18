@@ -25,9 +25,10 @@ Visualizations of time-series of near-surface temperature, pressure, and precipi
    :titlesonly:
    :maxdepth: 1
 
+    Raw precipitation time-series <raw_precipitation_time_series>
     Normalized temperature time-series <normalized_temperature_time_series>
     Normalized pressure time-series <normalized_pressure_time_series>
-    Normalized pressure time-series <normalized_precipitation_time_series>
+    Normalized precipitation time-series <normalized_precipitation_time_series>
 
 
 
@@ -37,6 +38,6 @@ Stripes plots: Latitude-time plots following the design of the `generalised clim
    :titlesonly:
    :maxdepth: 1
 
-    Temperature stripes <temperature stripes>
-    Pressure stripes <pressure stripes>
-    Precipitation stripes <precipitation stripes>   
+    Temperature stripes <temperature_stripes>
+    Pressure stripes <pressure_stripes>
+    Precipitation stripes <precipitation_stripes>   
