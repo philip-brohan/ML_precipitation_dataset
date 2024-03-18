@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-# Make all the normalised tensors
-# Requires pre-made normalisation parameters.
+# Make all the normalized tensors
+# Requires pre-made normalization parameters.
 
 (cd ./CRU_tf_MM && ./make_all_tensors.py)
 
