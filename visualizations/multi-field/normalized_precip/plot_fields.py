@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-# Get the same field from all the normalised datasets and plot the comparison
+# Get the same field from all the normalized datasets and plot the comparison
 
 import os
 import numpy as np
 import tensorflow as tf
-from make_normalised_tensors.ERA5_tf_MM.tensor_utils import tensor_to_cube
+from make_normalized_tensors.ERA5_tf_MM.tensor_utils import tensor_to_cube
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -108,7 +108,7 @@ rawMonths["GPCP"] = get_month(rawDS, args.year, args.month)
 gMin = -0.25
 gMax = 1.25
 
-# Plot the set of normalised tensors
+# Plot the set of normalized tensors
 fig = Figure(
     figsize=(40, 30),
     dpi=100,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Get the gamma fit parameters needed for SPI normalisation
+# Get the gamma fit parameters needed for SPI normalization
 
 # This is slow, and extravagant in RAM usage, but with luck we won't need to run it often.
 
@@ -43,7 +43,7 @@ parser.add_argument(
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/MLP/normalisation/SPI_monthly/ERA5" % os.getenv("SCRATCH"),
+    default="%s/MLP/normalization/SPI_monthly/ERA5" % os.getenv("SCRATCH"),
 )
 args = parser.parse_args()
 if not os.path.isdir(args.opdir):

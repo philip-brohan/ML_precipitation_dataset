@@ -27,7 +27,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 if args.opfile is None:
-    args.opfile = ("%s/MLP/normalisation/datasets/raw/%s/%04d-%02d.tfd") % (
+    args.opfile = ("%s/MLP/normalization/datasets/raw/%s/%04d-%02d.tfd") % (
         os.getenv("SCRATCH"),
         args.variable,
         args.year,
@@ -37,7 +37,7 @@ if args.opfile is None:
 if not os.path.isdir(os.path.dirname(args.opfile)):
     os.makedirs(os.path.dirname(args.opfile))
 
-# Load and standardise data
+# Load and standardize data
 qd = load_raw(args.year, args.month, variable=args.variable)
 ict = raw_to_tensor(qd, args.month)
 tf.debugging.check_numerics(ict, "Bad data %04d-%02d" % (args.year, args.month))

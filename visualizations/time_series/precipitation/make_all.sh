@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Make all the time-series plots
-# Uses pre-made pickle files, instead of the normalised tensors if possible
+# Uses pre-made pickle files, instead of the normalized tensors if possible
 # Delete the .pkl files to force their recreation from the current tensors
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Merge the normalisation parameters across latitude bands and months
+# Merge the normalization parameters across latitude bands and months
 
 import os
 import sys
@@ -22,7 +22,7 @@ for param in ("shape", "location", "scale"):
         merged = iris.cube.CubeList()
         for max_lat in range(-89, 91, 1):
             ipfile = (
-                "%s/MLP/normalisation/SPI_monthly/TWCR/%s/%s_m%02d_%03d_%03d.nc"
+                "%s/MLP/normalization/SPI_monthly/TWCR/%s/%s_m%02d_%03d_%03d.nc"
                 % (
                     os.getenv("SCRATCH"),
                     args.variable,
@@ -41,7 +41,7 @@ for param in ("shape", "location", "scale"):
         mmerged.append(merged)
     junk = iris.util.equalise_attributes(mmerged)
     mmerged = mmerged.merge_cube()
-    opfile = "%s/MLP/normalisation/SPI_monthly/TWCR/%s/%s.nc" % (
+    opfile = "%s/MLP/normalization/SPI_monthly/TWCR/%s/%s.nc" % (
         os.getenv("SCRATCH"),
         args.variable,
         param,

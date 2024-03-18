@@ -77,7 +77,7 @@ from autoencoderModel import DCVAE
 from makeDataset import getDataset
 from make_tensors.tensor_utils import (
     tensor_to_cube,
-    unnormalise,
+    unnormalize,
     sCube,
 )
 
@@ -101,9 +101,9 @@ load_status = autoencoder.load_weights("%s/ckpt" % weights_dir)
 load_status.assert_existing_objects_matched()
 
 
-def field_to_scalar(field, month, normalised=False):
-    if normalised:
-        field = unnormalise(field,month)
+def field_to_scalar(field, month, normalized=False):
+    if normalized:
+        field = unnormalize(field,month)
     field = field.extract(
         iris.Constraint(
             coord_values={"latitude": lambda cell: args.min_lat <= cell <= args.max_lat}
@@ -132,22 +132,22 @@ def compute_stats(model, x):
     stats["n_target"] = field_to_scalar(
         tensor_to_cube(tf.squeeze(x[0])),
         month,
-        normalised=False,
+        normalized=False,
     )
     stats["n_model"] = field_to_scalar(
         tensor_to_cube(tf.squeeze(generated)),
         month,
-        normalised=False,
+        normalized=False,
     )
     stats["r_target"] = field_to_scalar(
         tensor_to_cube(tf.squeeze(x[0])),
         month,
-        normalised=True,
+        normalized=True,
     )
     stats["r_model"] = field_to_scalar(
         tensor_to_cube(tf.squeeze(generated)),
         month,
-        normalised=True,
+        normalized=True,
     )
     return stats
 
@@ -265,7 +265,7 @@ my = [x / 100 for x in all_stats["r_model"]]
 plot_var(tsx, ty, my, 1, 2, "Raw")
 
 
-# Bottom - normalised
+# Bottom - normalized
 offset = 0
 ty = [x - offset for x in all_stats["n_target"]]
 my = [x - offset for x in all_stats["n_model"]]

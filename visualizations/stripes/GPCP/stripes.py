@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# GPCP precip. stripes - normalised values.
+# GPCP precip. stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os

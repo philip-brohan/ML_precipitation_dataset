@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# GPCC in-situ stripes - normalised values.
+# GPCC in-situ stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os

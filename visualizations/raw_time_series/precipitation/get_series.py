@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Get global mean series of normalised values and store as pickle
+# Get global mean series of normalized values and store as pickle
 
 import os
 import numpy as np

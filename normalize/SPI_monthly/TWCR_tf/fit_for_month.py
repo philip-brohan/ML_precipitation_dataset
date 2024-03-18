@@ -140,7 +140,7 @@ with strategy.scope():
     loss_m = tf.Variable(0.0, trainable=False)
 
     # logfile to output the metrics
-    log_FN = ("%s/MLP/normalisation/TWCR/logs/%s/%02d/Fitting") % (
+    log_FN = ("%s/MLP/normalization/TWCR/logs/%s/%02d/Fitting") % (
         os.getenv("SCRATCH"),
         args.variable,
         args.month,

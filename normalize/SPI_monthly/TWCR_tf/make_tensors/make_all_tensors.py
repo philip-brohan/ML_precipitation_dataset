@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Make raw data tensors for normalisation
+# Make raw data tensors for normalization
 
 import os
 import argparse
@@ -16,7 +16,7 @@ args = parser.parse_args()
 
 
 def is_done(year, month, variable):
-    fn = "%s/MLP/normalisation/datasets/raw/%s/%04d-%02d.tfd" % (
+    fn = "%s/MLP/normalization/datasets/raw/%s/%04d-%02d.tfd" % (
         os.getenv("SCRATCH"),
         variable,
         year,

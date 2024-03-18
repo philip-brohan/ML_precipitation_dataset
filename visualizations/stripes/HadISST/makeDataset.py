@@ -1,4 +1,4 @@
-# Create normalised data dataset for analysis
+# Create normalized data dataset for analysis
 
 import os
 import tensorflow as tf
@@ -16,7 +16,7 @@ def load_tensor(file_name):
 def getFileNames(startyear=1850, endyear=2050):
     inFiles = sorted(
         os.listdir(
-            "%s/MLP/normalised_datasets/HadISST_tf_MM/v1" % (os.getenv("SCRATCH"))
+            "%s/MLP/normalized_datasets/HadISST_tf_MM/v1" % (os.getenv("SCRATCH"))
         )
     )
     inFiles = [
@@ -35,7 +35,7 @@ def getDataset(startyear=1950, endyear=2014, blur=None, cache=False):
 
     # Convert from list of file names to Dataset of source file contents
     fnFiles = [
-        "%s/MLP/normalised_datasets/HadISST_tf_MM/v1/%s" % (os.getenv("SCRATCH"), x)
+        "%s/MLP/normalized_datasets/HadISST_tf_MM/v1/%s" % (os.getenv("SCRATCH"), x)
         for x in inFiles
     ]
     ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(fnFiles))

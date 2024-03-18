@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Make normalised data tensors for analysis
+# Make normalized data tensors for analysis
 
 import os
 import argparse
@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 
 def is_done(year, month, variable, member):
-    fn = "%s/MLP/normalised_datasets/TWCR_tf_MM/%s/%02d/%04d-%02d.tfd" % (
+    fn = "%s/MLP/normalized_datasets/TWCR_tf_MM/%s/%02d/%04d-%02d.tfd" % (
         os.getenv("SCRATCH"),
         variable,
         member,

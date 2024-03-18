@@ -21,7 +21,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-opdir = "%s/MLP/normalised_datasets/TWCR_tf_MM/videos/%s" % (
+opdir = "%s/MLP/normalized_datasets/TWCR_tf_MM/videos/%s" % (
     os.getenv("SCRATCH"),
     args.variable,
 )

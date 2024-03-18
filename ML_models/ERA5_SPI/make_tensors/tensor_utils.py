@@ -11,7 +11,7 @@ import tensorflow as tf
 import numpy as np
 
 from get_data import load_monthly
-from normalise.SPI_monthly.ERA5.normalise import normalise_cube, unnormalise_cube, load_fitted
+from normalize.SPI_monthly.ERA5.normalize import normalize_cube, unnormalize_cube, load_fitted
 
 import warnings
 
@@ -41,7 +41,7 @@ longitude = iris.coords.DimCoord(
 dummy_data = np.zeros((len(lat_values), len(lon_values)))
 sCube = iris.cube.Cube(dummy_data, dim_coords_and_dims=[(latitude, 0), (longitude, 1)])
 
-# Get fitted normalisation parameters and regrid to standard cube
+# Get fitted normalization parameters and regrid to standard cube
 shape = []
 location=[]
 scale= []
@@ -60,30 +60,30 @@ def load_raw(year, month):
 
 
 # Normalise the data
-def normalise(cube,month):
-    return normalise_cube(cube, shape[month-1], location[month-1], scale[month-1])
+def normalize(cube,month):
+    return normalize_cube(cube, shape[month-1], location[month-1], scale[month-1])
 
 
-def unnormalise(cube,month):
-    return unnormalise_cube(cube, shape[month-1], location[month-1], scale[month-1])
+def unnormalize(cube,month):
+    return unnormalize_cube(cube, shape[month-1], location[month-1], scale[month-1])
 
 
-# Convert raw cube to normalised tensor
+# Convert raw cube to normalized tensor
 def raw_to_tensor(raw,month):
-    norm = normalise(raw,month)
+    norm = normalize(raw,month)
     ict = tf.convert_to_tensor(norm.data, np.float32)
     return ict
 
 
-# Convert normalised tensor to cube
+# Convert normalized tensor to cube
 def tensor_to_cube(tensor):
     cube = sCube.copy()
     cube.data = tensor.numpy()
     return cube
 
 
-# Convert normalised tensor to raw precip
+# Convert normalized tensor to raw precip
 def tensor_to_raw(tensor,month):
     cube = tensor_to_cube(tensor)
-    raw = unnormalise(cube,month)
+    raw = unnormalize(cube,month)
     return raw

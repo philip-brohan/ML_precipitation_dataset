@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Plot maps of the three parameters in the gamma normalisation fit
+# Plot maps of the three parameters in the gamma normalization fit
 # For a specified month - shape, location, and scale.
 
 import os

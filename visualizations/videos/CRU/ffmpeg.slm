@@ -7,7 +7,7 @@
 
 variable='precip'
 
-cd $SCRATCH/MLP/normalised_datasets/CRU_tf_MM/videos/
+cd $SCRATCH/MLP/normalized_datasets/CRU_tf_MM/videos/
 
 rm $variable.mp4
 # Get rid of empty images - they make ffmpeg stop processing

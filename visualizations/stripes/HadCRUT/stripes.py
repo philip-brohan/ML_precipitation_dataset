@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HadCRUT stripes - normalised values.
+# HadCRUT stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os

@@ -7,7 +7,7 @@
 
 variable='T'
 
-cd $SCRATCH/MLP/normalised_datasets/HadCRUT_tf_MM/videos/
+cd $SCRATCH/MLP/normalized_datasets/HadCRUT_tf_MM/videos/
 
 rm $HadCRUT.mp4
 # Get rid of empty images - they make ffmpeg stop processing

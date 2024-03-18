@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# ERA5 stripes - normalised values.
+# ERA5 stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os

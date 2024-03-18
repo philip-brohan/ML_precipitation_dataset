@@ -1,4 +1,4 @@
-# Create normalised CRU dataset for analysis
+# Create normalized CRU dataset for analysis
 
 import os
 import tensorflow as tf
@@ -15,7 +15,7 @@ def load_tensor(file_name):
 # Get a list of filenames containing tensors
 def getFileNames(startyear=1850, endyear=2050):
     inFiles = sorted(
-        os.listdir("%s/MLP/normalised_datasets/CRU_tf_MM/precip" % os.getenv("SCRATCH"))
+        os.listdir("%s/MLP/normalized_datasets/CRU_tf_MM/precip" % os.getenv("SCRATCH"))
     )
     inFiles = [
         fn for fn in inFiles if (int(fn[:4]) >= startyear and int(fn[:4]) <= endyear)
@@ -33,7 +33,7 @@ def getDataset(startyear=1850, endyear=2050, blur=None, cache=False):
 
     # Convert from list of file names to Dataset of source file contents
     fnFiles = [
-        "%s/MLP/normalised_datasets/CRU_tf_MM/precip/%s" % (os.getenv("SCRATCH"), x)
+        "%s/MLP/normalized_datasets/CRU_tf_MM/precip/%s" % (os.getenv("SCRATCH"), x)
         for x in inFiles
     ]
     ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(fnFiles))

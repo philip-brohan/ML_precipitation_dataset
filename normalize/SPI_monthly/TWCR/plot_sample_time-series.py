@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Plot time-series of the sample data points (raw and normalised)
+# Plot time-series of the sample data points (raw and normalized)
 
 import os
 import sys
@@ -9,7 +9,7 @@ import iris.cube
 import numpy as np
 import argparse
 
-from normalise import match_normal
+from normalize import match_normal
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas

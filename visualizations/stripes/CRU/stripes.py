@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# CRU precip. stripes - normalised values.
+# CRU precip. stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os

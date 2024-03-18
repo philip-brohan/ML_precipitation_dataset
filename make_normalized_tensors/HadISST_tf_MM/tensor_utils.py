@@ -1,4 +1,4 @@
-# Utility functions for creating and manipulating normalised tensors
+# Utility functions for creating and manipulating normalized tensors
 
 import tensorflow as tf
 import numpy as np
@@ -6,10 +6,10 @@ import numpy as np
 from get_data.HadISST.v1 import HadISST
 from utilities import grids
 
-from normalise.SPI_monthly.HadISST_tf_MM.normalise import (
+from normalize.SPI_monthly.HadISST_tf_MM.normalize import (
     load_fitted,
-    normalise_cube,
-    unnormalise_cube,
+    normalize_cube,
+    unnormalize_cube,
 )
 
 rng = np.random.default_rng()
@@ -29,13 +29,13 @@ def load_raw(year, month):
 # Convert raw cube to tensor
 def raw_to_tensor(raw, month):
     (shape, location, scale) = load_fitted(month)
-    norm = normalise_cube(raw, shape, location, scale)
+    norm = normalize_cube(raw, shape, location, scale)
     norm.data.data[raw.data.mask == True] = 0.0
     ict = tf.convert_to_tensor(norm.data, tf.float32)
     return ict
 
 
-# Convert normalised tensor to cube
+# Convert normalized tensor to cube
 def tensor_to_cube(tensor):
     cube = grids.E5sCube.copy()
     cube.data = tensor.numpy()
@@ -43,10 +43,10 @@ def tensor_to_cube(tensor):
     return cube
 
 
-# Convert normalised tensor to raw values
+# Convert normalized tensor to raw values
 def tensor_to_raw(tensor, variable, month):
     (shape, location, scale) = load_fitted(month, variable=variable)
     cube = tensor_to_cube(tensor)
-    raw = unnormalise_cube(cube, shape, location, scale)
+    raw = unnormalize_cube(cube, shape, location, scale)
     raw.data.data[raw.data.mask == True] = 0.0
     return raw

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 # Read in monthly data from ERA5
-# Normalise: convert to normally distributed values on the range ~0-1
+# Normalize: convert to normally distributed values on the range ~0-1
 # Convert into a TensorFlow tensor.
-# Serialise and store on $SCRATCH.
+# Serialize and store on $SCRATCH.
 
 import os
 import tensorflow as tf
@@ -26,7 +26,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 if args.opfile is None:
-    args.opfile = ("%s/MLP/normalised_datasets/ERA5_tf_MM/%s/%04d-%02d.tfd") % (
+    args.opfile = ("%s/MLP/normalized_datasets/ERA5_tf_MM/%s/%04d-%02d.tfd") % (
         os.getenv("SCRATCH"),
         args.variable,
         args.year,
@@ -36,7 +36,7 @@ if args.opfile is None:
 if not os.path.isdir(os.path.dirname(args.opfile)):
     os.makedirs(os.path.dirname(args.opfile))
 
-# Load and standardise data
+# Load and standardize data
 qd = load_raw(args.year, args.month, args.variable)
 ict = raw_to_tensor(qd, args.variable, args.month)
 tf.debugging.check_numerics(ict, "Bad data %04d-%02d" % (args.year, args.month))

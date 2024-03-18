@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-# Make normalisation constants for all the datasets
+# Make normalization constants for all the datasets
 # Requires pre-made raw tensors
 
 (cd ./CRU_tf_MM/in_situ && ./make_all_fits.py)

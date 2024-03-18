@@ -137,8 +137,8 @@ class GammaC(
         tf.debugging.check_numerics(lp, "Bad probabilities")
         return lp * -1
 
-    # Functions to be called to do normalisation
-    def normalise(self, inputs):
+    # Functions to be called to do normalization
+    def normalize(self, inputs):
         gdist = tfp.distributions.Gamma(
             concentration=tf.maximum(self.shape, self.shape_minimum),
             rate=1.0 / tf.maximum(self.scale, self.scale_minimum),
@@ -149,7 +149,7 @@ class GammaC(
         # cumul = tf.math.minimum(cumul, 0.9999)
         return self.ndist.quantile(cumul)
 
-    def unnormalise(self, inputs):
+    def unnormalize(self, inputs):
         gdist = tfp.distributions.Gamma(
             concentration=tf.maximum(self.shape, self.shape_minimum),
             rate=1.0 / tf.maximum(self.scale, self.scale_minimum),

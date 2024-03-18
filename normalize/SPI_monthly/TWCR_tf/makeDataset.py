@@ -1,4 +1,4 @@
-# Create raw data dataset for normalisation
+# Create raw data dataset for normalization
 
 import os
 import sys
@@ -18,7 +18,7 @@ def load_tensor(file_name):
 def getFileNames(variable, month, startyear=1950, endyear=2014):
     inFiles = sorted(
         os.listdir(
-            "%s/MLP/normalisation/datasets/raw/%s" % (os.getenv("SCRATCH"), variable)
+            "%s/MLP/normalization/datasets/raw/%s" % (os.getenv("SCRATCH"), variable)
         )
     )
     inFiles = [
@@ -43,7 +43,7 @@ def getDataset(variable, month, startyear=1950, endyear=2014, blur=None, cache=F
 
     # Convert from list of file names to Dataset of source file contents
     fnFiles = [
-        "%s/MLP/normalisation/datasets/raw/%s/%s" % (os.getenv("SCRATCH"), variable, x)
+        "%s/MLP/normalization/datasets/raw/%s/%s" % (os.getenv("SCRATCH"), variable, x)
         for x in inFiles
     ]
     ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(fnFiles))

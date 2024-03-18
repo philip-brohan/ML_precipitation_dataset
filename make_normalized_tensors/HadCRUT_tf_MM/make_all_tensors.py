@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Make normalised data tensors for analysis
+# Make normalized data tensors for analysis
 
 import os
 from get_data.HadCRUT import HadCRUT
@@ -9,7 +9,7 @@ sDir = os.path.dirname(os.path.realpath(__file__))
 
 
 def is_done(year, month, member):
-    fn = "%s/MLP/normalised_datasets/HadCRUT_tf_MM/T/%04d-%02d_%03d.tfd" % (
+    fn = "%s/MLP/normalized_datasets/HadCRUT_tf_MM/T/%04d-%02d_%03d.tfd" % (
         os.getenv("SCRATCH"),
         year,
         month,

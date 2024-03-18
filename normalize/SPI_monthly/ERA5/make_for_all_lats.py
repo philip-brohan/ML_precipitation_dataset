@@ -12,7 +12,7 @@ args = parser.parse_args()
 
 for month in range(1, 13):
     for max_lat in range(-89, 91):
-        opfile = "%s/MLP/normalisation/SPI_monthly/ERA5/shape_m%02d_%03d_%03d.nc" % (
+        opfile = "%s/MLP/normalization/SPI_monthly/ERA5/shape_m%02d_%03d_%03d.nc" % (
             os.getenv("SCRATCH"),
             month,
             max_lat - 1,
@@ -24,7 +24,7 @@ for month in range(1, 13):
                 mll = 90.1
             print(
                 (
-                    "./make_normalisation_parameters.py --startyear=%04d --endyear=%04d "
+                    "./make_normalization_parameters.py --startyear=%04d --endyear=%04d "
                     + "--min_lat=%04.1f --max_lat=%04.1f --month=%d"
                 )
                 % (

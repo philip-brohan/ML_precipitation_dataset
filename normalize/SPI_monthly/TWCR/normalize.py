@@ -1,5 +1,5 @@
-# Functions to normalise a data distribution based on SPI
-# The aim is to make a normalised distribution that is normally distributed
+# Functions to normalize a data distribution based on SPI
+# The aim is to make a normalized distribution that is normally distributed
 #  with mean=0.5 and sd=0.2 (so almost all the data is in 0-1)
 from scipy.stats import gamma, norm
 import numpy as np
@@ -12,17 +12,17 @@ from get_data.TWCR import TWCR_monthly_load
 # Load the pre-calculated fitted values
 def load_fitted(month, variable="PRATE"):
     shape = iris.load_cube(
-        "%s/MLP/normalisation/SPI_monthly/TWCR/%s/shape.nc"
+        "%s/MLP/normalization/SPI_monthly/TWCR/%s/shape.nc"
         % (os.getenv("SCRATCH"), variable),
         iris.Constraint(time=lambda cell: cell.point.month == month),
     )
     location = iris.load_cube(
-        "%s/MLP/normalisation/SPI_monthly/TWCR/%s/location.nc"
+        "%s/MLP/normalization/SPI_monthly/TWCR/%s/location.nc"
         % (os.getenv("SCRATCH"), variable),
         iris.Constraint(time=lambda cell: cell.point.month == month),
     )
     scale = iris.load_cube(
-        "%s/MLP/normalisation/SPI_monthly/TWCR/%s/scale.nc"
+        "%s/MLP/normalization/SPI_monthly/TWCR/%s/scale.nc"
         % (os.getenv("SCRATCH"), variable),
         iris.Constraint(time=lambda cell: cell.point.month == month),
     )
@@ -47,15 +47,15 @@ def match_normal(raw, gamma_p, norm_mean=0.5, norm_sd=0.2):
     return spi
 
 
-# Find the original value from the normalised one
-def match_original(normalised, gamma_p, norm_mean=0.5, norm_sd=0.2):
-    cdf = norm.cdf(normalised, loc=norm_mean, scale=norm_sd)
+# Find the original value from the normalized one
+def match_original(normalized, gamma_p, norm_mean=0.5, norm_sd=0.2):
+    cdf = norm.cdf(normalized, loc=norm_mean, scale=norm_sd)
     original = gamma.ppf(cdf, gamma_p[0], gamma_p[1], gamma_p[2])
     return original
 
 
 # Normalise a cube (same as match_normal but for cubes)
-def normalise_cube(raw, shape, location, scale, norm_mean=0.5, norm_sd=0.2):
+def normalize_cube(raw, shape, location, scale, norm_mean=0.5, norm_sd=0.2):
     cdf = gamma.cdf(raw.data, shape.data, loc=location.data, scale=scale.data)
     dl = np.argwhere(~np.isfinite(cdf))
     if len(dl) > 0: 
@@ -68,11 +68,11 @@ def normalise_cube(raw, shape, location, scale, norm_mean=0.5, norm_sd=0.2):
     return result
 
 
-# Convert a cube from normalised value to raw precip
+# Convert a cube from normalized value to raw precip
 #  (same as match_original but for cubes)
-def unnormalise_cube(normalised, shape, location, scale, norm_mean=0.5, norm_sd=0.2):
-    cdf = norm.cdf(normalised.data, loc=norm_mean, scale=norm_sd)
+def unnormalize_cube(normalized, shape, location, scale, norm_mean=0.5, norm_sd=0.2):
+    cdf = norm.cdf(normalized.data, loc=norm_mean, scale=norm_sd)
     raw = gamma.ppf(cdf, shape.data, location.data, scale.data)
-    result = normalised.copy()
+    result = normalized.copy()
     result.data = raw
     return result

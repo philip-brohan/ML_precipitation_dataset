@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HadISST stripes - normalised values.
+# HadISST stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os

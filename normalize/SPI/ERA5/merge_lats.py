@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Merge the normalisation parameters across latitude bands
+# Merge the normalization parameters across latitude bands
 
 import os
 import iris
@@ -13,7 +13,7 @@ iris.FUTURE.datum_support = True
 for param in ("shape", "location", "scale"):
     merged = iris.cube.CubeList()
     for max_lat in range(-89, 91):
-        ipfile = "%s/MLP/normalisation/SPI/ERA5/%s_%03d_%03d.nc" % (
+        ipfile = "%s/MLP/normalization/SPI/ERA5/%s_%03d_%03d.nc" % (
             os.getenv("SCRATCH"),
             param,
             max_lat - 1,
@@ -25,7 +25,7 @@ for param in ("shape", "location", "scale"):
 
     junk = iris.util.equalise_attributes(merged)
     merged = merged.concatenate_cube()
-    opfile = "%s/MLP/normalisation/SPI/ERA5/%s.nc" % (
+    opfile = "%s/MLP/normalization/SPI/ERA5/%s.nc" % (
         os.getenv("SCRATCH"),
         param,
     )

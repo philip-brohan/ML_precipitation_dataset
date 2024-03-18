@@ -26,7 +26,7 @@ parser.add_argument(
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/MLP/normalisation/SPI_monthly/HadISST_tf_MM/v1" % os.getenv("SCRATCH"),
+    default="%s/MLP/normalization/SPI_monthly/HadISST_tf_MM/v1" % os.getenv("SCRATCH"),
 )
 args = parser.parse_args()
 opdir = args.opdir

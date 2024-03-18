@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# GPCC blended stripes - normalised values.
+# GPCC blended stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os

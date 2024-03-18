@@ -7,7 +7,7 @@
 
 variable='sea_surface_temperature'
 
-cd $SCRATCH/MLP/normalised_datasets/ERA5_tf_MM/videos/
+cd $SCRATCH/MLP/normalized_datasets/ERA5_tf_MM/videos/
 
 rm $variable.mp4
 # Get rid of empty images - they make ffmpeg stop processing

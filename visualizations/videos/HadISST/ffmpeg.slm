@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-core=1
 #SBATCH --time=30
 
-cd $SCRATCH/MLP/normalised_datasets/HadISST_tf_MM/videos/
+cd $SCRATCH/MLP/normalized_datasets/HadISST_tf_MM/videos/
 
 rm $HadISST.mp4
 # Get rid of empty images - they make ffmpeg stop processing

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Plot raw and normalised variable for a selected month
+# Plot raw and normalized variable for a selected month
 # Map and distribution.
 
 import os
@@ -10,7 +10,7 @@ import numpy as np
 from utilities import plots, grids
 from get_data.TWCR import TWCR_monthly_load
 
-from normalise import load_fitted, normalise_cube
+from normalize import load_fitted, normalize_cube
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -56,8 +56,8 @@ raw = TWCR_monthly_load.load_monthly_member(
     grid=grids.E5sCube,
 )
 
-# Make the normalised version
-normalised = normalise_cube(raw, fitter)
+# Make the normalized version
+normalized = normalize_cube(raw, fitter)
 
 # Make the plot
 fig = Figure(
@@ -91,7 +91,7 @@ axb.add_patch(
     )
 )
 
-# choose actual and normalised data colour maps based on variable
+# choose actual and normalized data colour maps based on variable
 cmaps = (cmocean.cm.balance, cmocean.cm.balance)
 if args.variable == "PRATE":
     cmaps = (cmocean.cm.rain, cmocean.cm.tarn)
@@ -112,20 +112,20 @@ plots.plotFieldAxes(
 ax_hist_raw = fig.add_axes([0.683, 0.535, 0.303, 0.435])
 plots.plotHistAxes(ax_hist_raw, raw, bins=25)
 
-ax_normalised = fig.add_axes([0.02, 0.03, 0.607, 0.455])
+ax_normalized = fig.add_axes([0.02, 0.03, 0.607, 0.455])
 plots.plotFieldAxes(
-    ax_normalised,
-    normalised,
+    ax_normalized,
+    normalized,
     plotCube=grids.E5sCube,
     vMin=-0.25,
     vMax=1.25,
-    # vMin=np.percentile(normalised.data.data, 5),
-    # vMax=np.percentile(normalised.data.data, 95),
+    # vMin=np.percentile(normalized.data.data, 5),
+    # vMax=np.percentile(normalized.data.data, 95),
     cMap=cmaps[1],
 )
 
-ax_hist_normalised = fig.add_axes([0.683, 0.05, 0.303, 0.435])
-plots.plotHistAxes(ax_hist_normalised, normalised, vMin=-0.25, vMax=1.25, bins=25)
+ax_hist_normalized = fig.add_axes([0.683, 0.05, 0.303, 0.435])
+plots.plotHistAxes(ax_hist_normalized, normalized, vMin=-0.25, vMax=1.25, bins=25)
 
 
 fig.savefig("monthly.png")

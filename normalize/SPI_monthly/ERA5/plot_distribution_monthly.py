@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Plot raw and normalised precipitation for a selected month
+# Plot raw and normalized precipitation for a selected month
 # Map and distribution.
 
 import os
@@ -10,7 +10,7 @@ import numpy as np
 from utilities import plots
 from get_data import load_monthly
 
-from normalise import load_fitted, normalise_cube
+from normalize import load_fitted, normalize_cube
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -37,8 +37,8 @@ args = parser.parse_args()
 # Load the precip for the selected month
 raw = load_monthly.load(organisation="ERA5", year=args.year, month=args.month)
 
-# Make the normalised version
-normalised = normalise_cube(raw, shape, location, scale)
+# Make the normalized version
+normalized = normalize_cube(raw, shape, location, scale)
 
 # Make the plot
 fig = Figure(
@@ -86,20 +86,20 @@ plots.plotFieldAxes(
 ax_hist_raw = fig.add_axes([0.683, 0.535, 0.303, 0.435])
 plots.plotHistAxes(ax_hist_raw, raw, bins=25)
 
-ax_normalised = fig.add_axes([0.02, 0.03, 0.607, 0.455])
+ax_normalized = fig.add_axes([0.02, 0.03, 0.607, 0.455])
 plots.plotFieldAxes(
-    ax_normalised,
-    normalised,
+    ax_normalized,
+    normalized,
     plotCube=plots.plot_cube(),
     vMin=-0.25,
     vMax=1.25,
-    # vMin=np.percentile(normalised.data.data, 5),
-    # vMax=np.percentile(normalised.data.data, 95),
+    # vMin=np.percentile(normalized.data.data, 5),
+    # vMax=np.percentile(normalized.data.data, 95),
     cMap=cmocean.cm.tarn,
 )
 
-ax_hist_normalised = fig.add_axes([0.683, 0.05, 0.303, 0.435])
-plots.plotHistAxes(ax_hist_normalised, normalised, vMin=-0.25, vMax=1.25, bins=25)
+ax_hist_normalized = fig.add_axes([0.683, 0.05, 0.303, 0.435])
+plots.plotHistAxes(ax_hist_normalized, normalized, vMin=-0.25, vMax=1.25, bins=25)
 
 
 fig.savefig("monthly.png")

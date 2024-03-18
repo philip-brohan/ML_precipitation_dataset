@@ -26,7 +26,7 @@ parser.add_argument(
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/MLP/normalisation/SPI_monthly/GPCC_tf_MM/blended"
+    default="%s/MLP/normalization/SPI_monthly/GPCC_tf_MM/blended"
     % os.getenv("SCRATCH"),
 )
 args = parser.parse_args()

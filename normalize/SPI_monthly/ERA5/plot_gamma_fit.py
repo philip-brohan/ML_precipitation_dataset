@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Plot maps of the three parameters in the gamma normalisation fit
+# Plot maps of the three parameters in the gamma normalization fit
 # For a specified month - shape, location, and scale.
 
 import os
@@ -27,17 +27,17 @@ args = parser.parse_args()
 
 # Load the fitted values
 shape = iris.load_cube(
-    "%s/MLP/normalisation/SPI_monthly/ERA5/shape.nc" % os.getenv("SCRATCH"),
+    "%s/MLP/normalization/SPI_monthly/ERA5/shape.nc" % os.getenv("SCRATCH"),
     iris.Constraint(time=iris.time.PartialDateTime(month=args.month)),
 )
 ERA5_monthly.add_coord_system(shape)
 location = iris.load_cube(
-    "%s/MLP/normalisation/SPI_monthly/ERA5/location.nc" % os.getenv("SCRATCH"),
+    "%s/MLP/normalization/SPI_monthly/ERA5/location.nc" % os.getenv("SCRATCH"),
     iris.Constraint(time=iris.time.PartialDateTime(month=args.month)),
 )
 ERA5_monthly.add_coord_system(location)
 scale = iris.load_cube(
-    "%s/MLP/normalisation/SPI_monthly/ERA5/scale.nc" % os.getenv("SCRATCH"),
+    "%s/MLP/normalization/SPI_monthly/ERA5/scale.nc" % os.getenv("SCRATCH"),
     iris.Constraint(time=iris.time.PartialDateTime(month=args.month)),
 )
 ERA5_monthly.add_coord_system(scale)

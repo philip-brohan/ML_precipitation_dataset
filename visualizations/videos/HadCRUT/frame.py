@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Make a month's worth of frames for a video of normalised values
+# Make a month's worth of frames for a video of normalized values
 # Use cubic interpolation to smooth between months.
 
 import os
@@ -40,7 +40,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-opdir = "%s/MLP/normalised_datasets/HadCRUT_tf_MM/videos/T" % (os.getenv("SCRATCH"),)
+opdir = "%s/MLP/normalized_datasets/HadCRUT_tf_MM/videos/T" % (os.getenv("SCRATCH"),)
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 

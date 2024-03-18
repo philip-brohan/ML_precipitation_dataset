@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Make all the stripes plots
-# Requires pre-made normalised tensors.
+# Requires pre-made normalized tensors.
 
 (cd ./CRU && ./make_all.sh)
 

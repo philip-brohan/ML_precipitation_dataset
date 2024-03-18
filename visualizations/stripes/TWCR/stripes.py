@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# 20CRv3 stripes - normalised values.
+# 20CRv3 stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os

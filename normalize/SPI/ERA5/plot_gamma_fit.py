@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Plot maps of the three parameters in the gamma normalisation fit
+# Plot maps of the three parameters in the gamma normalization fit
 #  shape, location, and scale.
 
 import os
@@ -18,13 +18,13 @@ from matplotlib.patches import Rectangle
 import cmocean
 
 # Load the fitted values
-shape = iris.load_cube("%s/MLP/normalisation/SPI/ERA5/shape.nc" % os.getenv("SCRATCH"))
+shape = iris.load_cube("%s/MLP/normalization/SPI/ERA5/shape.nc" % os.getenv("SCRATCH"))
 ERA5_monthly.add_coord_system(shape)
 location = iris.load_cube(
-    "%s/MLP/normalisation/SPI/ERA5/location.nc" % os.getenv("SCRATCH")
+    "%s/MLP/normalization/SPI/ERA5/location.nc" % os.getenv("SCRATCH")
 )
 ERA5_monthly.add_coord_system(location)
-scale = iris.load_cube("%s/MLP/normalisation/SPI/ERA5/scale.nc" % os.getenv("SCRATCH"))
+scale = iris.load_cube("%s/MLP/normalization/SPI/ERA5/scale.nc" % os.getenv("SCRATCH"))
 ERA5_monthly.add_coord_system(scale)
 
 # Make the plot

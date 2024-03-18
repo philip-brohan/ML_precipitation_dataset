@@ -11,7 +11,7 @@ parser.add_argument("--endyear", type=int, required=False, default=2022)
 args = parser.parse_args()
 
 for max_lat in range(-89, 91):
-    opfile = "%s/MLP/normalisation/SPI/ERA5/shape_%03d_%03d.nc" % (
+    opfile = "%s/MLP/normalization/SPI/ERA5/shape_%03d_%03d.nc" % (
         os.getenv("SCRATCH"),
         max_lat - 1,
         max_lat,
@@ -22,7 +22,7 @@ for max_lat in range(-89, 91):
             mll = 90.1
         print(
             (
-                "./make_normalisation_parameters.py --startyear=%04d --endyear=%04d "
+                "./make_normalization_parameters.py --startyear=%04d --endyear=%04d "
                 + "--min_lat=%04.1f --max_lat=%04.1f"
             )
             % (

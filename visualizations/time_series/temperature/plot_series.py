@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Plot normalised time-series
+# Plot normalized time-series
 
 import os
 import datetime
