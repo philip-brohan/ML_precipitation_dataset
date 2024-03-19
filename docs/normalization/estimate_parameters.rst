@@ -1,7 +1,7 @@
 Estimate normalization parameters
 =================================
 
-.. figure:: ../../normalize/SPI_monthly/ERA5/gamma.png
+.. figure:: ../../normalize/SPI_monthly/ERA5_tf_MM/gamma.png
    :width: 95%
    :align: center
    :figwidth: 95%

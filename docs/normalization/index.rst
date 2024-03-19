@@ -1,7 +1,7 @@
 Normalization
 ==============
 
-.. figure:: ../../normalize/SPI_monthly/ERA5/monthly.png
+.. figure:: ../../normalize/SPI_monthly/ERA5_tf_MM/monthly.png
    :width: 95%
    :align: center
    :figwidth: 95%
