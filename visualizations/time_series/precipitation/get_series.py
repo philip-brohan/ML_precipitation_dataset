@@ -23,7 +23,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 if args.source == "ERA5":
-    from visualisations.stripes.ERA5.makeDataset import getDataset
+    from visualizations.stripes.ERA5.makeDataset import getDataset
 
     trainingData = getDataset(
         "total_precipitation",
@@ -33,7 +33,7 @@ if args.source == "ERA5":
         blur=None,
     ).batch(1)
 elif args.source == "TWCR":
-    from visualisations.stripes.TWCR.makeDataset import getDataset
+    from visualizations.stripes.TWCR.makeDataset import getDataset
 
     trainingData = getDataset(
         "PRATE",
@@ -43,7 +43,7 @@ elif args.source == "TWCR":
         blur=None,
     ).batch(1)
 elif args.source == "CRU":
-    from visualisations.stripes.CRU.makeDataset import getDataset
+    from visualizations.stripes.CRU.makeDataset import getDataset
 
     trainingData = getDataset(
         startyear=1850,
@@ -52,7 +52,7 @@ elif args.source == "CRU":
         blur=None,
     ).batch(1)
 elif args.source == "GPCC_in-situ":
-    from visualisations.stripes.GPCC.in_situ.makeDataset import getDataset
+    from visualizations.stripes.GPCC.in_situ.makeDataset import getDataset
 
     trainingData = getDataset(
         startyear=1850,
@@ -61,7 +61,7 @@ elif args.source == "GPCC_in-situ":
         blur=None,
     ).batch(1)
 elif args.source == "GPCC_blended":
-    from visualisations.stripes.GPCC.blended.makeDataset import getDataset
+    from visualizations.stripes.GPCC.blended.makeDataset import getDataset
 
     trainingData = getDataset(
         startyear=1850,
@@ -70,7 +70,7 @@ elif args.source == "GPCC_blended":
         blur=None,
     ).batch(1)
 elif args.source == "GPCP":
-    from visualisations.stripes.GPCP.makeDataset import getDataset
+    from visualizations.stripes.GPCP.makeDataset import getDataset
 
     trainingData = getDataset(
         startyear=1850,

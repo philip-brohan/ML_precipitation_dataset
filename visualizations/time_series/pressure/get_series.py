@@ -23,7 +23,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 if args.source == "ERA5":
-    from visualisations.stripes.ERA5.makeDataset import getDataset
+    from visualizations.stripes.ERA5.makeDataset import getDataset
 
     trainingData = getDataset(
         "mean_sea_level_pressure",
@@ -33,7 +33,7 @@ if args.source == "ERA5":
         blur=None,
     ).batch(1)
 elif args.source == "TWCR":
-    from visualisations.stripes.TWCR.makeDataset import getDataset
+    from visualizations.stripes.TWCR.makeDataset import getDataset
 
     trainingData = getDataset(
         "PRMSL",

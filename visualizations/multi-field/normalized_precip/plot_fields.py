@@ -52,9 +52,9 @@ def get_month(dataset, year, month):
 # Go through the raw sources and get the desired month from each
 rawMonths = {}
 # ERA5
-import visualisations.stripes.ERA5.makeDataset
+import visualizations.stripes.ERA5.makeDataset
 
-rawDS = visualisations.stripes.ERA5.makeDataset.getDataset(
+rawDS = visualizations.stripes.ERA5.makeDataset.getDataset(
     "total_precipitation",
     startyear=1950,
     endyear=2023,
@@ -63,9 +63,9 @@ rawDS = visualisations.stripes.ERA5.makeDataset.getDataset(
 ).batch(1)
 rawMonths["ERA5"] = get_month(rawDS, args.year, args.month)
 # TWCR
-import visualisations.stripes.TWCR.makeDataset
+import visualizations.stripes.TWCR.makeDataset
 
-rawDS = visualisations.stripes.TWCR.makeDataset.getDataset(
+rawDS = visualizations.stripes.TWCR.makeDataset.getDataset(
     "PRATE",
     startyear=1850,
     endyear=2023,
@@ -74,9 +74,9 @@ rawDS = visualisations.stripes.TWCR.makeDataset.getDataset(
 ).batch(1)
 rawMonths["TWCR"] = get_month(rawDS, args.year, args.month)
 # CRU
-import visualisations.stripes.CRU.makeDataset
+import visualizations.stripes.CRU.makeDataset
 
-rawDS = visualisations.stripes.CRU.makeDataset.getDataset(
+rawDS = visualizations.stripes.CRU.makeDataset.getDataset(
     startyear=1850,
     endyear=2023,
     cache=False,
@@ -84,9 +84,9 @@ rawDS = visualisations.stripes.CRU.makeDataset.getDataset(
 ).batch(1)
 rawMonths["CRU"] = get_month(rawDS, args.year, args.month)
 # GPCC_in-situ
-import visualisations.stripes.GPCC.in_situ.makeDataset
+import visualizations.stripes.GPCC.in_situ.makeDataset
 
-rawDS = visualisations.stripes.GPCC.in_situ.makeDataset.getDataset(
+rawDS = visualizations.stripes.GPCC.in_situ.makeDataset.getDataset(
     startyear=1850,
     endyear=2023,
     cache=False,
@@ -94,9 +94,9 @@ rawDS = visualisations.stripes.GPCC.in_situ.makeDataset.getDataset(
 ).batch(1)
 rawMonths["GPCC_in-situ"] = get_month(rawDS, args.year, args.month)
 # GPCP
-import visualisations.stripes.GPCP.makeDataset
+import visualizations.stripes.GPCP.makeDataset
 
-rawDS = visualisations.stripes.GPCP.makeDataset.getDataset(
+rawDS = visualizations.stripes.GPCP.makeDataset.getDataset(
     startyear=1850,
     endyear=2023,
     cache=False,

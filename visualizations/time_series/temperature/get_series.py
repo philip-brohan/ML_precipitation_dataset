@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 
 if args.source == "ERA5_t2m":
-    from visualisations.stripes.ERA5.makeDataset import getDataset
+    from visualizations.stripes.ERA5.makeDataset import getDataset
 
     trainingData = getDataset(
         "2m_temperature",
@@ -34,7 +34,7 @@ if args.source == "ERA5_t2m":
         blur=None,
     ).batch(1)
 elif args.source == "ERA5_sst":
-    from visualisations.stripes.ERA5.makeDataset import getDataset
+    from visualizations.stripes.ERA5.makeDataset import getDataset
 
     trainingData = getDataset(
         "sea_surface_temperature",
@@ -44,7 +44,7 @@ elif args.source == "ERA5_sst":
         blur=None,
     ).batch(1)
 elif args.source == "TWCR_t2m":
-    from visualisations.stripes.TWCR.makeDataset import getDataset
+    from visualizations.stripes.TWCR.makeDataset import getDataset
 
     trainingData = getDataset(
         "TMP2m",
@@ -54,7 +54,7 @@ elif args.source == "TWCR_t2m":
         blur=None,
     ).batch(1)
 elif args.source == "TWCR_sst":
-    from visualisations.stripes.TWCR.makeDataset import getDataset
+    from visualizations.stripes.TWCR.makeDataset import getDataset
 
     trainingData = getDataset(
         "SST",
@@ -64,7 +64,7 @@ elif args.source == "TWCR_sst":
         blur=None,
     ).batch(1)
 elif args.source == "HadISST":
-    from visualisations.stripes.HadISST.makeDataset import getDataset
+    from visualizations.stripes.HadISST.makeDataset import getDataset
 
     trainingData = getDataset(
         startyear=1850,
@@ -73,7 +73,7 @@ elif args.source == "HadISST":
         blur=None,
     ).batch(1)
 elif args.source == "HadCRUT":
-    from visualisations.stripes.HadCRUT.makeDataset import getDataset
+    from visualizations.stripes.HadCRUT.makeDataset import getDataset
 
     trainingData = getDataset(
         startyear=1850,

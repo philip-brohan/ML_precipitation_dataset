@@ -52,7 +52,7 @@ def get_month(dataset, year, month):
 # Go through the raw sources and get the desired month from each
 rawMonths = {}
 # ERA5
-from visualisations.raw_time_series.precipitation import ERA5Dataset
+from visualizations.raw_time_series.precipitation import ERA5Dataset
 
 rawDS = ERA5Dataset.getDataset(
     "total_precipitation",
@@ -63,7 +63,7 @@ rawDS = ERA5Dataset.getDataset(
 ).batch(1)
 rawMonths["ERA5"] = get_month(rawDS, args.year, args.month)
 # TWCR
-from visualisations.raw_time_series.precipitation import TWCRDataset
+from visualizations.raw_time_series.precipitation import TWCRDataset
 
 rawDS = TWCRDataset.getDataset(
     "PRATE",
@@ -74,7 +74,7 @@ rawDS = TWCRDataset.getDataset(
 ).batch(1)
 rawMonths["TWCR"] = get_month(rawDS, args.year, args.month)
 # CRU
-from visualisations.raw_time_series.precipitation import CRUDataset
+from visualizations.raw_time_series.precipitation import CRUDataset
 
 rawDS = CRUDataset.getDataset(
     startyear=1850,
@@ -84,7 +84,7 @@ rawDS = CRUDataset.getDataset(
 ).batch(1)
 rawMonths["CRU"] = get_month(rawDS, args.year, args.month)
 # GPCC_in-situ
-from visualisations.raw_time_series.precipitation import GPCC_in_situDataset
+from visualizations.raw_time_series.precipitation import GPCC_in_situDataset
 
 rawDS = GPCC_in_situDataset.getDataset(
     startyear=1850,
@@ -94,7 +94,7 @@ rawDS = GPCC_in_situDataset.getDataset(
 ).batch(1)
 rawMonths["GPCC_in-situ"] = get_month(rawDS, args.year, args.month)
 # GPCP
-from visualisations.raw_time_series.precipitation import GPCPDataset
+from visualizations.raw_time_series.precipitation import GPCPDataset
 
 rawDS = GPCPDataset.getDataset(
     startyear=1850,
