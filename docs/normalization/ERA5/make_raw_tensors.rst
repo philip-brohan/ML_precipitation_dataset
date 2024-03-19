@@ -11,7 +11,7 @@ Calls another script to make a single tensor:
 
 .. literalinclude:: ../../../make_raw_tensors/ERA5/make_training_tensor.py
 
-Library functions to convert between `tf.tensor`` and `iris.cube.cube`:
+Library functions to convert between `tf.tensor` and `iris.cube.cube`:
 
 .. literalinclude:: ../../../make_raw_tensors/ERA5/tensor_utils.py
    

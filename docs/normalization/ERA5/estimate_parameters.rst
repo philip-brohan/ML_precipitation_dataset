@@ -2,7 +2,7 @@ Estimate normalization parameters for ERA5 data
 ===============================================
 
 .. figure:: ../../../normalize/SPI_monthly/ERA5_tf_MM/gamma.png
-   :width: 95%
+   :width: 65%
    :align: center
    :figwidth: 95%
 
@@ -16,7 +16,7 @@ The data are taken from the `tf.tensor` datasets of raw data created during the 
 
 .. literalinclude:: ../../../normalize/SPI_monthly/ERA5_tf_MM/makeDataset.py
 
-Script to plot the fited gamma parameters (produces figure at top of page):
+Script to plot the fitted gamma parameters (produces figure at top of page):
 
 .. literalinclude:: ../../../normalize/SPI_monthly/ERA5_tf_MM/plot_gamma_fit.py
    

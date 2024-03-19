@@ -31,7 +31,7 @@ Script to make all the normalization parameters for all datasets:
 
 .. literalinclude:: ../../normalize/SPI_monthly/normalize_all.sh
 
-Precursor script to assemble the raw data as sets of `tf.tensors`::
+Precursor script to assemble the raw data as sets of `tf.tensors`:
 
 .. literalinclude:: ../../make_raw_tensors/make_all_raw_tensors.sh
 
