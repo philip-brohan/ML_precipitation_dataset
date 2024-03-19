@@ -19,26 +19,16 @@ Normalization
     Validating normalization for a selected month <validate_for_month>
     Validating normalization for a time-series <validate_time_series>
 
-
-Visualizations of time-series of near-surface temperature, pressure, and precipitation.
-
-.. toctree::
-   :titlesonly:
-   :maxdepth: 1
-
-    Raw precipitation time-series <raw_precipitation_time_series>
-    Normalized temperature time-series <normalized_temperature_time_series>
-    Normalized pressure time-series <normalized_pressure_time_series>
-    Normalized precipitation time-series <normalized_precipitation_time_series>
-
-
-
-Stripes plots: Latitude-time plots following the design of the `generalised climate stripes <https://brohan.org/Stripes>`_
+Each dataset used in normalized independently:
 
 .. toctree::
    :titlesonly:
    :maxdepth: 1
 
-    Temperature stripes <temperature_stripes>
-    Pressure stripes <pressure_stripes>
-    Precipitation stripes <precipitation_stripes>   
+    ERA5 <normalize_ERA5>
+    20CR <normalize_TWCR>
+    CRU <normalize_CRU>
+    GPCC <normalize_GPCC>
+    GPCP <normalize_GPCP>
+
+ 
