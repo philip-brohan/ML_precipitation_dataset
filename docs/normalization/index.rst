@@ -11,7 +11,7 @@ Normalization
 
 The normalization scheme used is modelled on the `Standardized Precipitation Index (SPI) <https://climatedataguide.ucar.edu/climate-data/standardized-precipitation-index-spi>`_. SPI is calculated by fitting a gamma distribution to the precipitation data and then, for each point to be normalized, finding the quantile of the data point in that gamma distribution, and replacing the data point with the value which has the same quantile in a standard normal. Effectively this transforms the data, from its original distribution to a standard normal distribution. A different gamma distribution is fitted for each calendar month, and for each grid point.
 
-SPI is designed for fitting precipitation data, but the scheme woorks for many variables, and we've used it to normalize temperature and pressure data as well.
+SPI is designed for fitting precipitation data, but the scheme works for many variables, and we've used it to normalize temperature and pressure data as well.
 
 The gamma distribution fitted is defined by three parameters: the shape, scale and location. The shape and scale are the parameters of the gamma distribution, and the location is the minimum value of the data. The shape and scale are the parameters which are used to calculate the quantile of the data point in the gamma distribution. The location is used to shift the data to the left, so that the gamma distribution can be used to model the data. 
 

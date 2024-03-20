@@ -26,7 +26,7 @@ That gives us five different datasets, each with its own strengths and weaknesse
    :maxdepth: 1
 
    Download and access ERA5 data <ERA5>
-   Download and access 20CR data <20CR>
+   Download and access 20CRv3 data <TWCR>
    Download and access GPCC data <GPCC>
    Download and access CRU data <CRU>
    Download and access GPCP data <GPCP>
