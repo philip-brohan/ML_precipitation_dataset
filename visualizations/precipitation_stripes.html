@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Visualizations - normalized precipitation stripes &#8212; Machine Learning for Precipitation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualizations - CRU stripes" href="stripes_CRU.html" />
+    <link rel="prev" title="Visualizations - normalized pressure stripes" href="pressure_stripes.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="stripes_CRU.html" title="Visualizations - CRU stripes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pressure_stripes.html" title="Visualizations - normalized pressure stripes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Visualizations</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Visualizations - normalized precipitation stripes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="visualizations-normalized-precipitation-stripes">
+<h1>Visualizations - normalized precipitation stripes<a class="headerlink" href="#visualizations-normalized-precipitation-stripes" title="Permalink to this heading">¶</a></h1>
+<figure class="align-center" id="id1" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/total_precipitation_sample_11x13.png"><img alt="../_images/total_precipitation_sample_11x13.png" src="../_images/total_precipitation_sample_11x13.png" style="width: 95%;" /></a>
+<figcaption>
+<p><span class="caption-text">Normalized precipitation stripes from <a class="reference internal" href="stripes_ERA5.html"><span class="doc">ERA5</span></a>. Smoothed with an 11x13 filter.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id2" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/PRATE_sample_11x13.png"><img alt="../_images/PRATE_sample_11x13.png" src="../_images/PRATE_sample_11x13.png" style="width: 95%;" /></a>
+<figcaption>
+<p><span class="caption-text">Same, but from <a class="reference internal" href="stripes_TWCR.html"><span class="doc">20CRv3</span></a>.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/Precip_sample_11x13.png"><img alt="../_images/Precip_sample_11x13.png" src="../_images/Precip_sample_11x13.png" style="width: 95%;" /></a>
+<figcaption>
+<p><span class="caption-text">Same, but from <a class="reference internal" href="stripes_CRU.html"><span class="doc">CRU</span></a>.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id4" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/in_situ_sample_11x13.png"><img alt="../_images/in_situ_sample_11x13.png" src="../_images/in_situ_sample_11x13.png" style="width: 95%;" /></a>
+<figcaption>
+<p><span class="caption-text">Same, but from <a class="reference internal" href="stripes_GPCC.html"><span class="doc">GPCC</span></a>.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id5" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/Precip_sample_11x131.png"><img alt="../_images/Precip_sample_11x131.png" src="../_images/Precip_sample_11x131.png" style="width: 95%;" /></a>
+<figcaption>
+<p><span class="caption-text">Same, but from <a class="reference internal" href="stripes_GPCP.html"><span class="doc">GPCP</span></a>.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Script (<cite>make_all_stripes.sh</cite>) to regenerate all the stripes plots.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/bash</span>
+
+<span class="c1"># Make all the stripes plots</span>
+<span class="c1"># Requires pre-made normalized tensors.</span>
+
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>./CRU<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./make_all.sh<span class="o">)</span>
+
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>ERA5<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./make_all.sh<span class="o">)</span>
+
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>TWCR<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./make_all.sh<span class="o">)</span>
+
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>./GPCC/in_situ<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./make_all.sh<span class="o">)</span>
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>./GPCC/blended<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./make_all.sh<span class="o">)</span>
+
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>HadCRUT<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./make_all.sh<span class="o">)</span>
+
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>HadISST<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./make_all.sh<span class="o">)</span>
+
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>GPCP<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./make_all.sh<span class="o">)</span>
+</pre></div>
+</div>
+<p>The stripes creation scripts are organized by source:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="stripes_ERA5.html"> ERA5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stripes_TWCR.html"> 20CRv3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stripes_CRU.html"> CRU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stripes_GPCC.html"> GPCC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stripes_GPCP.html"> GPCP</a></li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/MLP.webp" alt="Logo"/>
+            </a></p>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_data.html">Monthly datasets of historical precipitation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Visualizations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/index.html">Utility functions for plotting and re-gridding</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to.html">How to reproduce or extend this work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../credits.html">Authors and acknowledgements</a></li>
+</ul>
+<h3><a href="https://github.com/philip-brohan/ML_precipitation_dataset">Get a copy</a></h3>
+
+<ul>
+    <li><a href="https://github.com/philip-brohan/ML_precipitation_dataset" rel="nofollow">Github repository</a></li>
+</ul>
+
+<h3>Found a bug, or have a suggestion?</h3>
+
+Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues/new">raise an issue</a>.
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="stripes_CRU.html" title="Visualizations - CRU stripes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pressure_stripes.html" title="Visualizations - normalized pressure stripes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Visualizations</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Visualizations - normalized precipitation stripes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    </div>
+  </body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Normalization &#8212; Machine Learning for Precipitation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Normalizing ERA5" href="ERA5/index.html" />
+    <link rel="prev" title="Land mask download" href="../get_data/land_mask.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ERA5/index.html" title="Normalizing ERA5"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../get_data/land_mask.html" title="Land mask download"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Normalization</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="normalization">
+<h1>Normalization<a class="headerlink" href="#normalization" title="Permalink to this heading">¶</a></h1>
+<figure class="align-center" id="id1" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/monthly1.png"><img alt="../_images/monthly1.png" src="../_images/monthly1.png" style="width: 95%;" /></a>
+<figcaption>
+<p><span class="caption-text">Raw ERA5 precipitation (top) and normalized equivalent (bottom) for one month.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The normalization scheme used is modelled on the <a class="reference external" href="https://climatedataguide.ucar.edu/climate-data/standardized-precipitation-index-spi">Standardized Precipitation Index (SPI)</a>. SPI is calculated by fitting a gamma distribution to the precipitation data and then, for each point to be normalized, finding the quantile of the data point in that gamma distribution, and replacing the data point with the value which has the same quantile in a standard normal. Effectively this transforms the data, from its original distribution to a standard normal distribution. A different gamma distribution is fitted for each calendar month, and for each grid point.</p>
+<p>SPI is designed for fitting precipitation data, but the scheme works for many variables, and we’ve used it to normalize temperature and pressure data as well.</p>
+<p>The gamma distribution fitted is defined by three parameters: the shape, scale and location. The shape and scale are the parameters of the gamma distribution, and the location is the minimum value of the data. The shape and scale are the parameters which are used to calculate the quantile of the data point in the gamma distribution. The location is used to shift the data to the left, so that the gamma distribution can be used to model the data.</p>
+<p>Each dataset used in normalized independently:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ERA5/index.html"> ERA5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TWCR/index.html"> 20CR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRU/index.html"> CRU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPCC/index.html"> GPCC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPCP/index.html"> GPCP</a></li>
+</ul>
+</div>
+<p>Script to make all the normalization parameters for all datasets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/bash</span>
+
+<span class="c1"># Make normalization constants for all the datasets</span>
+<span class="c1"># Requires pre-made raw tensors</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">CRU_tf_MM</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC_tf_MM</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC_tf_MM</span><span class="o">/</span><span class="n">blended</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">HadCRUT_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">HadISST_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">GPCP_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Precursor script to assemble the raw data as sets of <cite>tf.tensors</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/bash</span>
+
+<span class="c1"># Make all the raw tensors</span>
+<span class="c1"># Requires downloaded data</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">CRU</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="mi">2</span><span class="n">m_temperature</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">sea_surface_temperature</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">mean_sea_level_pressure</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">total_precipitation</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">TMP2m</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">SST</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">PRMSL</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">PRATE</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC</span><span class="o">/</span><span class="n">blended</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">HadCRUT</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">HadISST</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">cd</span> <span class="n">GPCP</span><span class="o">/</span><span class="n">blended</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/MLP.webp" alt="Logo"/>
+            </a></p>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_data.html">Monthly datasets of historical precipitation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Normalizing the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualizations/index.html">Visualizations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/index.html">Utility functions for plotting and re-gridding</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to.html">How to reproduce or extend this work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../credits.html">Authors and acknowledgements</a></li>
+</ul>
+<h3><a href="https://github.com/philip-brohan/ML_precipitation_dataset">Get a copy</a></h3>
+
+<ul>
+    <li><a href="https://github.com/philip-brohan/ML_precipitation_dataset" rel="nofollow">Github repository</a></li>
+</ul>
+
+<h3>Found a bug, or have a suggestion?</h3>
+
+Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues/new">raise an issue</a>.
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ERA5/index.html" title="Normalizing ERA5"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../get_data/land_mask.html" title="Land mask download"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Normalization</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    </div>
+  </body>
+</html>
