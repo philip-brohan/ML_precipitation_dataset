@@ -5,6 +5,8 @@ from get_data import Copernicus
 from get_data import CRU
 from get_data import ERA5
 from get_data import GPCC
+from get_data import TWCR
+from get_data import OCADA
 
 
 def load(year=None, month=None, organisation=None, source=None, constraint=None):
@@ -60,6 +62,13 @@ def load(year=None, month=None, organisation=None, source=None, constraint=None)
             year=year,
             month=month,
             variable="PRATE",
+            constraint=constraint,
+        )
+    elif organisation == "OCADA":
+        varC = OCADA.OCADA_monthly_load.load_monthly(
+            year=year,
+            month=month,
+            variable="precipi",
             constraint=constraint,
         )
     elif organisation == "GPCC":
