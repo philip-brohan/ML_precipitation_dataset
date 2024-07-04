@@ -90,6 +90,7 @@ matplotlib.rc("font", **font)
 datasets = {
     "ERA5": (0, 0, 1, 1),
     "TWCR": (0, 0, 0.5, 1),
+    "OCADA": (0.5, 0, 0.5, 1),
 }
 
 # Background
@@ -165,4 +166,4 @@ for ds in datasets.keys():
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
 
-fig.savefig("%s/pressure_%03d.png" % (sDir, args.nmonths))
+fig.savefig("%s/pressure_%03d.webp" % (sDir, args.nmonths))

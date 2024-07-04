@@ -91,6 +91,7 @@ matplotlib.rc("font", **font)
 datasets = {
     "ERA5": (0, 0, 1, 1),
     "TWCR": (0, 0, 0.5, 1),
+    "OCADA": (0.5, 0, 0.5, 1),
     "CRU": (0, 0.5, 0.5, 1),
     "GPCC_in-situ": (0, 0, 0, 1),
     "GPCP": (0, 0.5, 1, 1),
@@ -169,4 +170,4 @@ for ds in datasets.keys():
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
 
-fig.savefig("%s/precipitation_%03d.png" % (sDir, args.nmonths))
+fig.savefig("%s/precipitation_%03d.webp" % (sDir, args.nmonths))

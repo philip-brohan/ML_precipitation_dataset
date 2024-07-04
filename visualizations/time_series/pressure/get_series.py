@@ -4,6 +4,10 @@
 
 import os
 import numpy as np
+
+# Suppress warnings from TensorFlow - don't need cuda for this
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 import tensorflow as tf
 import pickle
 
@@ -37,6 +41,16 @@ elif args.source == "TWCR":
 
     trainingData = getDataset(
         "PRMSL",
+        startyear=1850,
+        endyear=2023,
+        cache=False,
+        blur=None,
+    ).batch(1)
+elif args.source == "OCADA":
+    from visualizations.stripes.OCADA.makeDataset import getDataset
+
+    trainingData = getDataset(
+        "slp",
         startyear=1850,
         endyear=2023,
         cache=False,

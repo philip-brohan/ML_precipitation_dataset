@@ -91,6 +91,7 @@ matplotlib.rc("font", **font)
 datasets = {
     "ERA5_t2m": (1, 0, 0, 1),
     "ERA5_sst": (0, 0, 1, 1),
+    "OCADA_t2m": (0.5, 0, 0.5, 1),
     "TWCR_t2m": (0.5, 0, 0, 1),
     "TWCR_sst": (0, 0, 0.5, 1),
     "HadISST": (0, 0.5, 0.5, 1),
@@ -170,4 +171,4 @@ for ds in datasets.keys():
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
 
-fig.savefig("%s/temperatures_%03d.png" % (sDir, args.nmonths))
+fig.savefig("%s/temperatures_%03d.webp" % (sDir, args.nmonths))

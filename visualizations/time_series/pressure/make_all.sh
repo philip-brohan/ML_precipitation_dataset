@@ -7,7 +7,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Re-create the processed time-series if needed
-for source in TWCR ERA5
+for source in TWCR ERA5 OCADA
 do
     if ! [ -f "$SCRIPT_DIR/$source.pkl" ]; then
         $SCRIPT_DIR/get_series.py --source=$source
