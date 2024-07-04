@@ -12,7 +12,7 @@ rng = np.random.default_rng()
 # Load the data for 1 month (on the standard cube)
 def load_raw(year, month, member=None):
     if member is None:
-        member = HadCRUT.members[rng.integers(low=0, high=len(members), size=1)]
+        member = HadCRUT.members[rng.integers(low=0, high=len(HadCRUT.members), size=1)]
     raw = HadCRUT.load(
         year=year,
         month=month,

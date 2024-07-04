@@ -15,6 +15,10 @@
 (cd TWCR && ./make_all_tensors.py --variable=PRMSL)
 (cd TWCR && ./make_all_tensors.py --variable=PRATE)
 
+(cd OCADA && ./make_all_tensors.py --variable=ta)
+(cd OCADA && ./make_all_tensors.py --variable=slp)
+(cd OCADA && ./make_all_tensors.py --variable=precipi)
+
 (cd ./GPCC/in_situ && ./make_all_tensors.py)
 (cd ./GPCC/blended && ./make_all_tensors.py)
 
