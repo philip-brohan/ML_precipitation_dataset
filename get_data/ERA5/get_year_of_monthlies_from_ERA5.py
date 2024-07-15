@@ -4,6 +4,7 @@
 #  Every month in one year
 
 import os
+import sys
 import cdsapi
 import argparse
 
@@ -30,9 +31,15 @@ ctrlB = {
     "time": "00:00",
 }
 
+# Won't usually call this for a file that's already there
+#  But do for current year (may need updating) - remove old version in that case
+opfile = "%s/%s.nc" % (args.opdir, args.variable)
+if os.path.isfile(opfile):
+    sys.remove(opfile)
+
 c = cdsapi.Client()
 c.retrieve(
     "reanalysis-era5-single-levels-monthly-means",
     ctrlB,
-    "%s/%s.nc" % (args.opdir, args.variable),
+    opfile,
 )

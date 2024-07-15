@@ -8,6 +8,18 @@ from utilities import grids
 
 rng = np.random.default_rng()
 
+# Convert date into an array index
+FirstYear = 1901
+LastYear = 2019
+
+
+def date_to_index(year, month):
+    return (year - FirstYear) * 12 + month - 1
+
+
+def index_to_date(idx):
+    return (idx // 12) + FirstYear, (idx % 12) + 1
+
 
 # Load the data for 1 month (on the standard cube)
 def load_raw(year, month):

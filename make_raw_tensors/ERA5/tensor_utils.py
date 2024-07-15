@@ -1,10 +1,23 @@
 # Utility functions for creating and manipulating raw tensors
 
+from datetime import datetime
 import numpy as np
 import tensorflow as tf
 
 from get_data.ERA5 import ERA5_monthly
 from utilities import grids
+
+# Convert date into an array index
+FirstYear = 1940
+LastYear = datetime.now().year
+
+
+def date_to_index(year, month):
+    return (year - FirstYear) * 12 + month - 1
+
+
+def index_to_date(idx):
+    return (idx // 12) + FirstYear, (idx % 12) + 1
 
 
 # Load the data for 1 month (on the standard cube).
