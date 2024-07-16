@@ -9,6 +9,8 @@ dependencies:
   - pandas=2.0
   - cmocean=3.0
   - parallel
+    # Efficient disc storage
+  - zarr=2.18
   # For convolution with missing data
   - astropy=5.3
   # Get data from ERA5
