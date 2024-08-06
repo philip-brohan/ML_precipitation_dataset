@@ -37,7 +37,7 @@ try:
             "kvstore": "file://" + fn,
         },
         dtype=ts.float32,
-        chunk_layout=ts.ChunkLayout(chunk_shape=[721, 1440, 80, 1]),
+        chunk_layout=ts.ChunkLayout(chunk_shape=[721, 1440, 1, 1]),
         create=True,
         fill_value=np.nan,
         shape=[
@@ -57,7 +57,7 @@ zarr_ds.attrs["FirstYear"] = FirstYear
 zarr_ds.attrs["LastYear"] = LastYear
 
 for member in range(1, 81):
-    for year in range(FirstYear, FirstYear + 10):
+    for year in range(FirstYear, LastYear + 1):
         for month in range(1, 13):
             idx = date_to_index(year, month)
             slice = zarr_ds[:, :, member - 1, idx]

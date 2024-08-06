@@ -2,10 +2,16 @@
 
 # Check tensor produced as expected
 
+import os
 import sys
 import numpy as np
 
 from utilities import plots
+
+# Supress TensorFlow moaning about cuda - we don't need a GPU for this
+# Also the warning message confuses people.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 from tensor_utils import load_raw, raw_to_tensor, tensor_to_cube
 
 import matplotlib
@@ -80,4 +86,4 @@ plots.plotFieldAxes(
 )
 
 
-fig.savefig("tensor_test.png")
+fig.savefig("tensor_test.webp")
