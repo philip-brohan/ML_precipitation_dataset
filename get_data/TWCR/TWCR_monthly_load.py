@@ -13,13 +13,30 @@ import warnings
 
 warnings.filterwarnings("ignore", message=".*frac.*")
 
+# Only using a subset of the members
+members = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    76,
+    77,
+    78,
+    79,
+    80,
+]
+
+
 # Need to add coordinate system metadata so they work with iris
 coord_s = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
+
 
 # And a function to add the coord system to a cube (in-place)
 def add_coord_system(cbe):
     cbe.coord("latitude").coord_system = coord_s
     cbe.coord("longitude").coord_system = coord_s
+
 
 # Add a land-mask for TWCR SST grid
 lm_TWCR = iris.load_cube("%s/20CR/version_3/fixed/land.nc" % os.getenv("SCRATCH"))
@@ -29,6 +46,7 @@ lm_TWCR.coord("longitude").coord_system = coord_s
 lm_TWCR.data = np.ma.masked_where(lm_TWCR.data > 0.0, lm_TWCR.data, copy=False)
 lm_TWCR.data.data[np.where(lm_TWCR.data.mask == True)] = 0
 lm_TWCR.data.data[np.where(lm_TWCR.data.mask == False)] = 1
+
 
 def load_monthly_member(
     variable="PRATE", year=None, month=None, member=1, constraint=None, grid=None
@@ -44,8 +62,8 @@ def load_monthly_member(
         )
         lmg = lm_TWCR.copy()
         if grid is not None:
-            lmg = lmg.regrid(grid,iris.analysis.Nearest())
-        ts.data = np.ma.MaskedArray(ts.data,lmg.data.mask)
+            lmg = lmg.regrid(grid, iris.analysis.Nearest())
+        ts.data = np.ma.MaskedArray(ts.data, lmg.data.mask)
         return ts
     else:
         fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem%03d.nc" % (
@@ -64,14 +82,16 @@ def load_monthly_member(
         hslice.coord("latitude").coord_system = coord_s
         hslice.coord("longitude").coord_system = coord_s
         if grid is not None:
-            hslice = hslice.regrid(grid,iris.analysis.Linear())
+            hslice = hslice.regrid(grid, iris.analysis.Linear())
         if constraint is not None:
             hslice = hslice.extract(constraint)
 
         return hslice
 
 
-def load_monthly_ensemble(variable='PRATE', year=None, month=None,constraint=None,grid=None):
+def load_monthly_ensemble(
+    variable="PRATE", year=None, month=None, constraint=None, grid=None
+):
     fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem*.nc" % (
         os.getenv("SCRATCH"),
         year,
@@ -84,7 +104,7 @@ def load_monthly_ensemble(variable='PRATE', year=None, month=None,constraint=Non
         cb.coord("latitude").coord_system = coord_s
         cb.coord("longitude").coord_system = coord_s
         if grid is not None:
-            cb = cb.regrid(grid,iris.analysis.Linear())
+            cb = cb.regrid(grid, iris.analysis.Linear())
         if constraint is not None:
             cb = cb.extract(constraint)
         cb.add_aux_coord(
@@ -98,6 +118,4 @@ def load_monthly_ensemble(variable='PRATE', year=None, month=None,constraint=Non
         hslice[i] = cb
     hslice = hslice.concatenate_cube()
 
-
     return hslice
-

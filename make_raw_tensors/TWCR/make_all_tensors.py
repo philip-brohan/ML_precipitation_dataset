@@ -8,6 +8,7 @@ import argparse
 import zarr
 import tensorstore as ts
 import numpy as np
+from get_data.TWCR import TWCR_monthly_load
 
 from tensor_utils import date_to_index, FirstYear, LastYear
 
@@ -43,7 +44,7 @@ try:
         shape=[
             721,
             1440,
-            80,
+            len(TWCR_monthly_load.members),
             date_to_index(LastYear, 12) + 1,
         ],
     ).result()
@@ -56,20 +57,20 @@ zarr_ds = zarr.open(fn, mode="r+")
 zarr_ds.attrs["FirstYear"] = FirstYear
 zarr_ds.attrs["LastYear"] = LastYear
 
-for member in range(1, 81):
+for member_idx in range(len(TWCR_monthly_load.members)):
     for year in range(FirstYear, LastYear + 1):
         for month in range(1, 13):
             idx = date_to_index(year, month)
-            slice = zarr_ds[:, :, member - 1, idx]
+            slice = zarr_ds[:, :, member_idx, idx]
             if np.all(np.isnan(slice)):  # Data missing, so make it
                 cmd = (
-                    "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s --member=%d"
+                    "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s --member_idx=%d"
                     % (
                         sDir,
                         year,
                         month,
                         args.variable,
-                        member,
+                        member_idx,
                     )
                 )
                 print(cmd)

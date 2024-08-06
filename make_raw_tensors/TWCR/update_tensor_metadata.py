@@ -6,6 +6,7 @@ import os
 import argparse
 import zarr
 import numpy as np
+from get_data.TWCR import TWCR_monthly_load
 
 from tensor_utils import date_to_index, FirstYear, LastYear
 
@@ -37,10 +38,10 @@ for year in range(FirstYear, LastYear + 1):
     for month in range(1, 13):
         dte = "%d-%02d" % (year, month)
         idx = date_to_index(year, month)
-        for member in range(1, 81):
-            slice = zarr_ds[:, :, member - 1, idx]
+        for member_idx in range(len(TWCR_monthly_load.members)):
+            slice = zarr_ds[:, :, member_idx, idx]
             if not np.all(np.isnan(slice)):
-                AvailableMonths["%d-%02d_%02d" % (year, month, member)] = idx
+                AvailableMonths["%d-%02d_%02d" % (year, month, member_idx)] = idx
                 if dte < start:
                     start = dte
                 if dte > end:
@@ -53,8 +54,8 @@ for year in range(FirstYear, LastYear + 1):
     for month in range(1, 13):
         if dte < start or dte > end:
             continue
-        for member in range(1, 81):
-            dte = "%d-%02d_%02d" % (year, month, member)
+        for member_idx in range(len(TWCR_monthly_load.members)):
+            dte = "%d-%02d_%02d" % (year, month, member_idx)
             if dte not in AvailableMonths:
                 missing += 1
 
@@ -63,5 +64,5 @@ print(args.variable)
 print("Start date:", start)
 print("End date:", end)
 print("Missing member-months:", missing)
-print("Total months:", len(AvailableMonths))
+print("Total member-months:", len(AvailableMonths))
 print("\n")

@@ -4,6 +4,7 @@
 
 import sys
 import numpy as np
+from get_data.TWCR import TWCR_monthly_load
 
 from utilities import plots
 from tensor_utils import load_raw, raw_to_tensor, tensor_to_cube
@@ -24,14 +25,19 @@ parser.add_argument(
     "--year", help="Year to plot", type=int, required=False, default=1969
 )
 parser.add_argument(
-    "--member", help="Member to plot", type=int, required=False, default=1
+    "--member_idx", help="Member index to plot", type=int, required=False, default=0
 )
 parser.add_argument(
     "--variable", help="Variable to plot", type=str, required=False, default="PRATE"
 )
 args = parser.parse_args()
 
-raw = load_raw(args.year, args.month, member=args.member, variable=args.variable)
+raw = load_raw(
+    args.year,
+    args.month,
+    member=TWCR_monthly_load.members[args.member_idx],
+    variable=args.variable,
+)
 ict = raw_to_tensor(raw)
 ast = tensor_to_cube(ict)
 
@@ -86,4 +92,4 @@ plots.plotFieldAxes(
 )
 
 
-fig.savefig("tensor_test.png")
+fig.savefig("tensor_test.webp")

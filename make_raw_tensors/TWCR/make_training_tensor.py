@@ -8,6 +8,7 @@ import os
 import sys
 import numpy as np
 import warnings
+from get_data.TWCR import TWCR_monthly_load
 
 # Supress TensorFlow moaning about cuda - we don't need a GPU for this
 # Also the warning message confuses people.
@@ -29,7 +30,9 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--year", help="Year", type=int, required=True)
 parser.add_argument("--month", help="Integer month", type=int, required=True)
-parser.add_argument("--member", help="Ensemble member", type=int, required=True)
+parser.add_argument(
+    "--member_idx", help="Ensemble member index (0-9)", type=int, required=True
+)
 parser.add_argument("--variable", help="Variable name", type=str, required=True)
 args = parser.parse_args()
 
@@ -47,7 +50,12 @@ dataset = ts.open(
 
 # Load and standardise data
 try:
-    qd = load_raw(args.year, args.month, member=args.member, variable=args.variable)
+    qd = load_raw(
+        args.year,
+        args.month,
+        member=TWCR_monthly_load.members[args.member_idx],
+        variable=args.variable,
+    )
     ict = raw_to_tensor(qd)
 except Exception:
     warnings.warn(
@@ -57,6 +65,6 @@ except Exception:
 
 # Write to file
 didx = date_to_index(args.year, args.month)
-midx = args.member - 1
+midx = args.member_idx
 op = dataset[:, :, midx, didx].write(ict)
 op.result()  # Ensure write completes before exiting
