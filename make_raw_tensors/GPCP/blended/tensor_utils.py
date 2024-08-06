@@ -2,9 +2,22 @@
 
 import numpy as np
 import tensorflow as tf
+from datetime import datetime
 
 from get_data.GPCP.blended import GPCP_b_monthly
 from utilities import grids
+
+# Convert date into an array index
+FirstYear = 1979
+LastYear = datetime.now().year
+
+
+def date_to_index(year, month):
+    return (year - FirstYear) * 12 + month - 1
+
+
+def index_to_date(idx):
+    return (idx // 12) + FirstYear, (idx % 12) + 1
 
 
 # Load the data for 1 month (on the standard cube)

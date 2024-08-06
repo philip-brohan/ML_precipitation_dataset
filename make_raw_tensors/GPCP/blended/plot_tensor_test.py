@@ -80,4 +80,4 @@ plots.plotFieldAxes(
 )
 
 
-fig.savefig("tensor_test.png")
+fig.savefig("tensor_test.webp")
