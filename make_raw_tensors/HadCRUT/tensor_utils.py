@@ -2,11 +2,24 @@
 
 import numpy as np
 import tensorflow as tf
+from datetime import datetime
 
 from get_data.HadCRUT import HadCRUT
 from utilities import grids
 
 rng = np.random.default_rng()
+
+# Convert date into an array index
+FirstYear = 1850
+LastYear = datetime.now().year
+
+
+def date_to_index(year, month):
+    return (year - FirstYear) * 12 + month - 1
+
+
+def index_to_date(idx):
+    return (idx // 12) + FirstYear, (idx % 12) + 1
 
 
 # Load the data for 1 month (on the standard cube)
