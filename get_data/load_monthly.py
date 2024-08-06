@@ -6,7 +6,6 @@ from get_data import CRU
 from get_data import ERA5
 from get_data import GPCC
 from get_data import TWCR
-from get_data import OCADA
 
 
 def load(year=None, month=None, organisation=None, source=None, constraint=None):
@@ -64,23 +63,12 @@ def load(year=None, month=None, organisation=None, source=None, constraint=None)
             variable="PRATE",
             constraint=constraint,
         )
-    elif organisation == "OCADA":
-        varC = OCADA.OCADA_monthly_load.load_monthly(
-            year=year,
-            month=month,
-            variable="precipi",
-            constraint=constraint,
-        )
     elif organisation == "GPCC":
         if source is None:
             raise Exception("for GPCC, source must be specified")
         if source == "in-situ":
             varC = GPCC.in_situ.GPCC_i_monthly.load(
                 year=year, month=month, constraint=constraint
-            )
-        elif source == "satellite+gauge":
-            varC = GPCC.with_satellite.GPCC_s_monthly.load(
-                year=year, month=month, variable="precip", constraint=constraint
             )
         else:
             raise Exception("Unsuppported source %s in %s" % (source, organisation))
