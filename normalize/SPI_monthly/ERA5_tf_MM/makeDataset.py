@@ -25,6 +25,10 @@ def getDataset(
     zarr_array = zarr.open(fn, mode="r")
     AvailableMonths = zarr_array.attrs["AvailableMonths"]
     dates = sorted(AvailableMonths.keys())
+    if startyear is not None:
+        dates = [date for date in dates if int(date[:4]) >= startyear]
+    if endyear is not None:
+        dates = [date for date in dates if int(date[:4]) <= endyear]
     indices = [AvailableMonths[date] for date in dates]
 
     # Create TensorFlow Dataset object from the source file dates

@@ -9,6 +9,12 @@ import iris.cube
 import numpy as np
 import argparse
 import numpy as np
+
+# Supress TensorFlow moaning about cuda - we don't need a GPU for this
+# Also the warning message confuses people.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+import tensorflow as tf
+
 import tensorflow as tf
 
 from makeDataset import getDataset
@@ -31,7 +37,7 @@ parser.add_argument(
     "--month", help="Month to extract", type=int, required=False, default=3
 )
 parser.add_argument(
-    "--variable", help="Arariable to use", type=str, required=False, default="PRATE"
+    "--variable", help="Variable to use", type=str, required=False, default="PRATE"
 )
 parser.add_argument(
     "--startyear", help="Start Year", type=int, required=False, default=1950
@@ -40,7 +46,11 @@ parser.add_argument(
     "--endyear", help="End Year", type=int, required=False, default=2014
 )
 parser.add_argument(
-    "--member", help="Ensemble member", type=int, required=False, default=None
+    "--member_idx",
+    help="Ensemble member index (0-9)",
+    type=int,
+    required=False,
+    default=None,
 )
 parser.add_argument(
     "--epoch", help="Epoch to plot", type=int, required=False, default=1
@@ -59,6 +69,7 @@ trainingData = getDataset(
     args.variable,
     startyear=args.startyear,
     endyear=args.endyear,
+    member_idx=args.member_idx,
     cache=False,
 ).batch(1)
 for batch in trainingData:
@@ -140,4 +151,4 @@ for i in range(25):
     ax.add_line(Line2D(m_values[i], m_fit[i], color="red", linewidth=2))
 
 
-fig.savefig("samples_%s_m%02d.png" % (args.variable, args.month))
+fig.savefig("samples_%s_m%02d.webp" % (args.variable, args.month))

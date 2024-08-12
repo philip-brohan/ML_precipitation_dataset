@@ -28,9 +28,12 @@ for variable in (
     for month in range(1, 13):
         if is_done(month, variable):
             continue
-        cmd = "%s/fit_for_month.py --month=%02d --variable=%s" % (
-            sDir,
-            month,
-            variable,
+        cmd = (
+            "%s/fit_for_month.py --month=%02d --variable=%s --startyear=1950 --endyear=2014"
+            % (
+                sDir,
+                month,
+                variable,
+            )
         )
         print(cmd)

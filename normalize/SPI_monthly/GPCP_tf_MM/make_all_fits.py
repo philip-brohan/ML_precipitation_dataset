@@ -20,7 +20,7 @@ def is_done(month):
 for month in range(1, 13):
     if is_done(month):
         continue
-    cmd = "%s/fit_for_month.py --month=%02d" % (
+    cmd = "%s/fit_for_month.py --month=%02d --startyear=1950 --endyear=2014" % (
         sDir,
         month,
     )

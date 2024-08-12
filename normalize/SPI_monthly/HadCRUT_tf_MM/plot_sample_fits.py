@@ -9,6 +9,11 @@ import iris.cube
 import numpy as np
 import argparse
 import numpy as np
+
+# Supress TensorFlow moaning about cuda - we don't need a GPU for this
+# Also the warning message confuses people.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 import tensorflow as tf
 
 from makeDataset import getDataset
@@ -138,4 +143,4 @@ for i in range(25):
     ax.add_line(Line2D(m_values[i], m_fit[i], color="red", linewidth=2))
 
 
-fig.savefig("samples_m%02d.png" % args.month)
+fig.savefig("samples_m%02dwebp" % args.month)
