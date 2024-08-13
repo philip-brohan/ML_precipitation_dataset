@@ -15,12 +15,7 @@
 (cd TWCR_tf_MM && ./make_all_tensors.py --variable=PRMSL)
 (cd TWCR_tf_MM && ./make_all_tensors.py --variable=PRATE)
 
-(cd OCADA_tf_MM && ./make_all_tensors.py --variable=ta)
-(cd OCADA_tf_MM && ./make_all_tensors.py --variable=slp)
-(cd OCADA_tf_MM && ./make_all_tensors.py --variable=precipi)
-
 (cd ./GPCC_tf_MM/in_situ && ./make_all_tensors.py)
-(cd ./GPCC_tf_MM/blended && ./make_all_tensors.py)
 
 (cd HadCRUT_tf_MM && ./make_all_tensors.py)
 
