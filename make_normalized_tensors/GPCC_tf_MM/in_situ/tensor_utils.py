@@ -3,30 +3,17 @@
 import tensorflow as tf
 import numpy as np
 
-from get_data.GPCC.in_situ import GPCC_i_monthly
 from utilities import grids
-
 from normalize.SPI_monthly.GPCC_tf_MM.in_situ.normalize import (
-    load_fitted,
     normalize_cube,
     unnormalize_cube,
+    load_fitted,
 )
 
 
-# Load the data for 1 month (on the standard cube).
-def load_raw(year, month):
-    raw = GPCC_i_monthly.load(
-        year=year,
-        month=month,
-        grid=grids.E5sCube,
-    )
-    raw.data.data[raw.data.mask == True] = 0.0
-    return raw
-
-
-# Convert raw cube to tensor
-def raw_to_tensor(raw, month):
-    (shape, location, scale) = load_fitted(month)
+# Convert raw cube to normalized tensor
+def raw_to_tensor(raw, variable, month):
+    (shape, location, scale) = load_fitted(month, variable=variable)
     norm = normalize_cube(raw, shape, location, scale)
     norm.data.data[raw.data.mask == True] = 0.0
     ict = tf.convert_to_tensor(norm.data, tf.float32)

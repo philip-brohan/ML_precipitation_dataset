@@ -12,18 +12,6 @@ from normalize.SPI_monthly.ERA5_tf_MM.normalize import (
 )
 
 
-# Load the data for 1 month
-def load_raw(year, month, variable="total_precipitation"):
-    raw = ERA5_monthly.load(
-        variable=variable,
-        year=year,
-        month=month,
-        grid=grids.E5sCube,
-    )
-    raw.data.data[raw.data.mask == True] = 0.0
-    return raw
-
-
 # Convert raw cube to normalized tensor
 def raw_to_tensor(raw, variable, month):
     (shape, location, scale) = load_fitted(month, variable=variable)

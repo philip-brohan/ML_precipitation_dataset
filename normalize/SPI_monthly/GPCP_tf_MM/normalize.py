@@ -33,6 +33,8 @@ def match_normal(raw, gamma_p, norm_mean=0.5025, norm_sd=0.2):
     cdf[cdf > 0.99999] = 0.99999  # cdf=0 or 1 causes numerical failure
     cdf[cdf < 0.00001] = 0.00001  # Should fix the gamma fit so this never happens
     spi = norm.ppf(cdf, loc=norm_mean, scale=norm_sd)
+    spi[raw == 0] = 0.0  # Missing data
+    spi[np.isnan(spi)] = 0.0  # Should not be necessary
     return spi
 
 

@@ -1,9 +1,27 @@
 #!/usr/bin/env python
 
-# Make normalized data tensors for analysis
+# Make normalized tensors
 
 import os
+import sys
 import argparse
+import iris
+import numpy as np
+from shutil import rmtree
+import zarr
+
+# Supress iris moaning
+# iris.FUTURE.save_split_attrs = True
+iris.FUTURE.datum_support = True
+
+# Supress TensorFlow moaning about cuda - we don't need a GPU for this
+# Also the warning message confuses people.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+import tensorflow as tf
+import tensorstore as ts
+from normalize.SPI_monthly.TWCR_tf_MM.makeDataset import getDataset
+from normalize.SPI_monthly.TWCR_tf_MM.normalize import match_normal, load_fitted
 
 sDir = os.path.dirname(os.path.realpath(__file__))
 
@@ -16,28 +34,71 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+# Get the date range from the input zarr array
+fn = "%s/MLP/raw_datasets/TWCR/%s_zarr" % (
+    os.getenv("SCRATCH"),
+    args.variable,
+)
+input_zarr = zarr.open(fn, mode="r")
+AvailableMonths = input_zarr.attrs["AvailableMonths"]
 
-def is_done(year, month, variable, member):
-    fn = "%s/MLP/normalized_datasets/TWCR_tf_MM/%s/%02d/%04d-%02d.tfd" % (
-        os.getenv("SCRATCH"),
-        variable,
-        member,
-        year,
-        month,
+
+# Create the output zarr array
+fn = "%s/MLP/normalized_datasets/TWCR_tf_MM/%s_zarr" % (
+    os.getenv("SCRATCH"),
+    args.variable,
+)
+# Delete any previous version
+if os.path.exists(fn):
+    rmtree(fn)
+
+normalized_zarr = ts.open(
+    {
+        "driver": "zarr",
+        "kvstore": "file://" + fn,
+    },
+    dtype=ts.float32,
+    chunk_layout=ts.ChunkLayout(chunk_shape=[721, 1440, 1, 1]),
+    create=True,
+    fill_value=np.nan,
+    shape=input_zarr.shape,
+).result()
+# Add date range to array as metadata
+# TensorStore doesn't support metadata, so use the underlying zarr array
+zarr_ds = zarr.open(fn, mode="r+")
+zarr_ds.attrs["AvailableMonths"] = AvailableMonths
+
+# Load the pre-calculated normalisation parameters
+fitted = []
+for month in range(1, 13):
+    cubes = load_fitted(month, variable=args.variable)
+    fitted.append([cubes[0].data, cubes[1].data, cubes[2].data])
+
+
+# Go through raw dataset  and make normalized tensors
+trainingData = getDataset(
+    args.variable,
+    cache=False,
+    blur=1.0e-9,
+).batch(1)
+
+op = []
+for batch in trainingData:
+    year = int(batch[1].numpy()[0][0:4])
+    month = int(batch[1].numpy()[0][5:7])
+    member_idx = int(batch[1].numpy()[0][8:10])
+
+    # normalize
+    raw = batch[0].numpy().squeeze()
+    normalized = match_normal(raw, fitted[month - 1])
+    ict = tf.convert_to_tensor(normalized, tf.float32)
+    tf.debugging.check_numerics(
+        ict, "Bad data %04d-%02d %02d" % (year, month, member_idx)
     )
-    if os.path.exists(fn):
-        return True
-    return False
 
+    didx = AvailableMonths["%04d-%02d_%02d" % (year, month, member_idx)]
+    op.append(normalized_zarr[:, :, member_idx, didx].write(ict))
 
-count = 0
-for year in range(1850, 2014):
-    for month in range(1, 13):
-        for member in range(1, 81):
-            if is_done(year, month, args.variable, member):
-                continue
-            cmd = (
-                "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s --member=%02d"
-                % (sDir, year, month, args.variable, member)
-            )
-            print(cmd)
+# Ensure writes complete before exiting
+for o in op:
+    o.result()
