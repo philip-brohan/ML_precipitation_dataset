@@ -9,11 +9,17 @@ import logging
 
 logging.getLogger("matplotlib.font_manager").disabled = True
 
+import os
+
+# Supress TensorFlow moaning about cuda - we don't need a GPU for this
+# Also the warning message confuses people.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--epoch", help="Epoch", type=int, required=False, default=250)
+parser.add_argument("--epoch", help="Epoch", type=int, required=False, default=500)
 parser.add_argument(
     "--startyear", help="First year to plot", type=int, required=False, default=None
 )
@@ -59,9 +65,9 @@ args = parser.parse_args()
 
 from utilities import grids
 
-from ML_models.SPI_monthly.all_convolutional.makeDataset import getDataset
-from ML_models.SPI_monthly.all_convolutional.autoencoderModel import DCVAE, getModel
-from ML_models.SPI_monthly.all_convolutional.gmUtils import (
+from ML_models.default.makeDataset import getDataset
+from ML_models.default.autoencoderModel import DCVAE, getModel
+from ML_models.default.gmUtils import (
     computeScalarStats,
     plotScalarStats,
 )
@@ -82,10 +88,11 @@ all_stats["dtp"] = []
 all_stats["target"] = {}
 all_stats["generated"] = {}
 for case in dataset:
+    generated = autoencoder.call(case, training=False)
     stats = computeScalarStats(
         specification,
-        autoencoder,
         case,
+        generated,
         min_lat=args.min_lat,
         max_lat=args.max_lat,
         min_lon=args.min_lon,

@@ -7,25 +7,28 @@
 #  2) Autoencoder output
 #  3) scatter plot
 
+import os
+
+# Supress TensorFlow moaning about cuda - we don't need a GPU for this
+# Also the warning message confuses people.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import tensorflow as tf
 
-
-from ML_models.SPI_monthly.generic_model.makeDataset import getDataset
-from ML_models.SPI_monthly.generic_model.autoencoderModel import DCVAE, getModel
-
-from ML_models.SPI_monthly.generic_model.gmUtils import plotValidationField
+from ML_models.default.makeDataset import getDataset
+from ML_models.default.autoencoderModel import getModel
+from ML_models.default.gmUtils import plotValidationField
 
 from specify import specification
 
-# I don't need all the messages about a missing font (on Isambard)
-import logging
+specification["strategy"] = (
+    tf.distribute.get_strategy()
+)  # No distribution for simple validation
 
-logging.getLogger("matplotlib.font_manager").disabled = True
 
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--epoch", help="Epoch", type=int, required=False, default=250)
+parser.add_argument("--epoch", help="Epoch", type=int, required=False, default=500)
 parser.add_argument("--year", help="Test year", type=int, required=False, default=None)
 parser.add_argument(
     "--month", help="Test month", type=int, required=False, default=None
@@ -42,12 +45,16 @@ purpose = "Test"
 if args.training:
     purpose = "Train"
 # Go through data and get the desired month
-dataset = getDataset(specification, purpose=purpose).batch(1)
+dataset = (
+    getDataset(specification, purpose=purpose)
+    .shuffle(specification["shuffleBufferSize"])
+    .batch(1)
+)
 input = None
 year = None
 month = None
 for batch in dataset:
-    dateStr = tf.strings.split(batch[0][0][0], sep="/")[-1].numpy()
+    dateStr = batch[0][0].numpy().decode("utf-8")
     year = int(dateStr[:4])
     month = int(dateStr[5:7])
     if (args.month is None or month == args.month) and (

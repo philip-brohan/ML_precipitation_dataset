@@ -51,14 +51,16 @@ step = tf.keras.layers.Conv2D(
     padding="same",
 )(step)
 tf.print(tf.shape(step))
-step = tf.keras.layers.Flatten()(step)
+step = tf.keras.layers.Conv2D(
+    filters=40,
+    kernel_size=3,
+    strides=(2, 2),
+    padding="same",
+)(step)
 tf.print(tf.shape(step))
-step = tf.keras.layers.Dense(200)(step)
-tf.print(tf.shape(step))
-print(" ")
-step = tf.keras.layers.Dense(23 * 45 * 40)(step)
-tf.print(tf.shape(step))
-step = tf.keras.layers.Reshape(target_shape=(23, 45, 40))(step)
+step = tf.keras.layers.Conv2DTranspose(
+    filters=40, kernel_size=3, strides=2, padding="same", output_padding=(0, 0)
+)(step)
 tf.print(tf.shape(step))
 step = tf.keras.layers.Conv2DTranspose(
     filters=20, kernel_size=3, strides=2, padding="same", output_padding=(1, 1)

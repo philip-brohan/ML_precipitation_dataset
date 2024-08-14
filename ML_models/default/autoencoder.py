@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Convolutional Variational Autoencoder for the Precip work.
+# Convolutional Variational Autoencoder.
 
 # This is a generic model that can be used for any set of input and output fields
 # To make a specific model, copy this file, specify.py, validate.py, and validate_multi.py
@@ -11,6 +11,10 @@
 import os
 import sys
 import time
+
+# Cut down on the TensorFlow warning messages
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 import tensorflow as tf
 
 import argparse
@@ -23,19 +27,24 @@ args = parser.parse_args()
 
 # Load the data path, data source, and model specification
 from specify import specification
-from ML_models.SPI_monthly.generic_model.makeDataset import getDataset
-from ML_models.SPI_monthly.generic_model.autoencoderModel import DCVAE, getModel
+from ML_models.default.makeDataset import getDataset
+from ML_models.default.autoencoderModel import DCVAE, getModel
 
 
 # Get Datasets
 def getDatasets():
     # Set up the training data
-    trainingData = getDataset(specification, purpose="Train").repeat(5)
+    trainingData = getDataset(specification, purpose="Train").repeat(1)
     trainingData = trainingData.shuffle(specification["shuffleBufferSize"]).batch(
         specification["batchSize"]
     )
     trainingData = specification["strategy"].experimental_distribute_dataset(
         trainingData
+    )
+    validationData = getDataset(specification, purpose="Train")
+    validationData = validationData.batch(specification["batchSize"])
+    validationData = specification["strategy"].experimental_distribute_dataset(
+        validationData
     )
 
     # Set up the test data
@@ -45,13 +54,12 @@ def getDatasets():
     )
     testData = specification["strategy"].experimental_distribute_dataset(testData)
 
-    return (trainingData, testData)
+    return (trainingData, validationData, testData)
 
 
 # Instantiate and run the model under the control of the distribution strategy
 with specification["strategy"].scope():
-    trainingData, testData = getDatasets()
-    trainingData = trainingData
+    trainingData, validationData, testData = getDatasets()
 
     autoencoder = getModel(specification, epoch=args.epoch)
 
@@ -76,6 +84,9 @@ with specification["strategy"].scope():
 
         # Train on all batches in the training data
         for batch in trainingData:
+            if specification["trainingMask"] is not None:
+                mbatch = tf.where(specification["trainingMask"] != 0, batch[-1], 0.0)
+                batch = (batch[:-1], mbatch)
             per_replica_op = specification["strategy"].run(
                 autoencoder.train_on_batch, args=(batch, specification["optimizer"])
             )
@@ -87,7 +98,7 @@ with specification["strategy"].scope():
             continue
 
         # Accumulate average losses over all batches in the validation data
-        autoencoder.update_metrics(trainingData, testData)
+        autoencoder.update_metrics(validationData, testData)
 
         # Save model state
         save_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
