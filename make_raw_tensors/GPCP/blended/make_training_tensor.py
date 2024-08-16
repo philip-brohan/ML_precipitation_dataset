@@ -6,6 +6,7 @@
 
 import os
 import sys
+import warnings
 
 # Supress TensorFlow moaning about cuda - we don't need a GPU for this
 # Also the warning message confuses people.
