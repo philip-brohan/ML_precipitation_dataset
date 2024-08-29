@@ -25,6 +25,12 @@ dependencies:
   - sphinx=7.0
   # Optional - needed only for monitoring jobs on Isambard
   - tmux
+
+  # Azure
+  - azure-ai-ml = 1.19
+  - azure-identity = 1.17
+  - azure-storage-file-datalake = 12.16
+
   # Some packages are only available via pip
   - pip
   - pip:
@@ -42,3 +48,8 @@ dependencies:
 
 variables:
   PYTHONPATH: /home/mo-hadpb/Projects/ML_precipitation_dataset:/net/home/h03/hadpb/Projects/ML_precipitation_dataset
+
+# Also the Azure ML subscription, workspace and resource group
+  AZML_SUBSCRIPTION_ID: ef7c87c5-ea27-4e06-9fad-ac06dc6b3fd1
+  AZML_WORKSPACE_NAME: ai4climate-scratch
+  AZML_RESOURCE_GROUP: rg-AI4-Climate 
