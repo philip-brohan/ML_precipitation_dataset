@@ -6,6 +6,7 @@
 
 import os
 import sys
+import numpy as np
 import warnings
 from get_data.HadCRUT import HadCRUT
 
