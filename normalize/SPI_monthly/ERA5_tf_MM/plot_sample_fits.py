@@ -101,7 +101,7 @@ fig = Figure(
 canvas = FigureCanvas(fig)
 font = {
     "family": "sans-serif",
-    "sans-serif": "Arial",
+    "sans-serif": "DejaVu Sans",
     "weight": "normal",
     "size": 12,
 }
@@ -141,4 +141,4 @@ for i in range(25):
     ax.add_line(Line2D(m_values[i], m_fit[i], color="red", linewidth=2))
 
 
-fig.savefig("samples_%s_m%02d.png" % (args.variable, args.month))
+fig.savefig("outputs/samples_%s_m%02d.png" % (args.variable, args.month))

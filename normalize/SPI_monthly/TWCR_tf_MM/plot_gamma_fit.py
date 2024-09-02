@@ -58,7 +58,7 @@ fig = Figure(
 canvas = FigureCanvas(fig)
 font = {
     "family": "sans-serif",
-    "sans-serif": "Arial",
+    "sans-serif": "DejaVu Sans",
     "weight": "normal",
     "size": 20,
 }
@@ -117,4 +117,4 @@ cb = fig.colorbar(
     shape_img, ax=ax_shape_cb, location="right", orientation="vertical", fraction=1.0
 )
 
-fig.savefig("gamma.webp")
+fig.savefig("outputs/gamma.webp")

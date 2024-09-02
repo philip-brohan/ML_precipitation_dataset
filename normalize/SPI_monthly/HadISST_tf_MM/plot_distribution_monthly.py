@@ -58,7 +58,7 @@ fig = Figure(
 canvas = FigureCanvas(fig)
 font = {
     "family": "sans-serif",
-    "sans-serif": "Arial",
+    "sans-serif": "DejaVu Sans",
     "weight": "normal",
     "size": 20,
 }
@@ -106,4 +106,4 @@ ax_hist_normalized = fig.add_axes([0.683, 0.05, 0.303, 0.435])
 plots.plotHistAxes(ax_hist_normalized, normalized, vMin=-0.25, vMax=1.25, bins=25)
 
 
-fig.savefig("monthly.webp")
+fig.savefig("outputs/monthly.webp")
