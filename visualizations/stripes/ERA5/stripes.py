@@ -290,4 +290,8 @@ cb = fig.colorbar(
 )
 
 
-fig.savefig("%s/%s_%s_%s.png" % (sDir, args.variable, args.reduce, args.convolve))
+opdir = "%s/MLP/visualizations/stripes/ERA5" % os.getenv("SCRATCH")
+if not os.path.isdir(opdir):
+    os.makedirs(opdir)
+
+fig.savefig("%s/%s_%s_%s.webp" % (opdir, args.variable, args.reduce, args.convolve))

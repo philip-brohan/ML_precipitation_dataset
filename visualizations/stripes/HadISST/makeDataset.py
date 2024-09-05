@@ -1,45 +1,60 @@
-# Create normalized data dataset for analysis
+# Create raw data dataset for normalization
 
 import os
+import sys
 import tensorflow as tf
+import numpy as np
+import zarr
+import tensorstore as ts
 
 
-# Load a pre-prepared tensor from a file
-def load_tensor(file_name):
-    sict = tf.io.read_file(file_name)
-    imt = tf.io.parse_tensor(sict, tf.float32)
-    imt = tf.reshape(imt, [721, 1440, 1])
-    return imt
+# Get a dataset
+def getDataset(
+    startyear=None,
+    endyear=None,
+    blur=None,
+    cache=False,
+):
 
+    # Get the index of the last month in the raw tensors
+    fn = "%s/MLP/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (os.getenv("SCRATCH"),)
+    zarr_array = zarr.open(fn, mode="r")
+    AvailableMonths = zarr_array.attrs["AvailableMonths"]
+    dates = sorted(AvailableMonths.keys())
+    if startyear is not None:
+        dates = [date for date in dates if int(date[:4]) >= startyear]
+    if endyear is not None:
+        dates = [date for date in dates if int(date[:4]) <= endyear]
+    indices = [AvailableMonths[date] for date in dates]
 
-# Get a list of filenames containing tensors
-def getFileNames(startyear=1850, endyear=2050):
-    inFiles = sorted(
-        os.listdir(
-            "%s/MLP/normalized_datasets/HadISST_tf_MM/v1" % (os.getenv("SCRATCH"))
+    # Create TensorFlow Dataset object from the source file dates
+    tn_data = tf.data.Dataset.from_tensor_slices(tf.constant(dates, tf.string))
+    ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(indices, tf.int32))
+
+    # Convert from list ofavailable months to Dataset of source file contents
+    tsa = ts.open(
+        {
+            "driver": "zarr",
+            "kvstore": "file://" + fn,
+        }
+    ).result()
+
+    # Need the indirect function as zarr can't take tensor indices and .map prohibits .numpy()
+    def load_tensor_from_index_py(idx):
+        return tf.convert_to_tensor(tsa[:, :, idx.numpy()].read().result(), tf.float32)
+
+    def load_tensor_from_index(idx):
+        result = tf.py_function(
+            load_tensor_from_index_py,
+            [idx],
+            tf.float32,
         )
+        result = tf.reshape(result, [721, 1440, 1])
+        return result
+
+    ts_data = ts_data.map(
+        load_tensor_from_index, num_parallel_calls=tf.data.experimental.AUTOTUNE
     )
-    inFiles = [
-        fn for fn in inFiles if (int(fn[:4]) >= startyear and int(fn[:4]) <= endyear)
-    ]
-    return inFiles
-
-
-# Get a dataset - all the tensors for a given and variable
-def getDataset(startyear=1950, endyear=2014, blur=None, cache=False):
-    # Get a list of years to include
-    inFiles = getFileNames(startyear=startyear, endyear=endyear)
-
-    # Create TensorFlow Dataset object from the source file names
-    tn_data = tf.data.Dataset.from_tensor_slices(tf.constant(inFiles))
-
-    # Convert from list of file names to Dataset of source file contents
-    fnFiles = [
-        "%s/MLP/normalized_datasets/HadISST_tf_MM/v1/%s" % (os.getenv("SCRATCH"), x)
-        for x in inFiles
-    ]
-    ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(fnFiles))
-    ts_data = ts_data.map(load_tensor, num_parallel_calls=tf.data.experimental.AUTOTUNE)
     # Add noise to data - needed for some cases where the data is all zero
     if blur is not None:
         ts_data = ts_data.map(

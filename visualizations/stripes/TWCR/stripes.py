@@ -289,5 +289,8 @@ cb = fig.colorbar(
     label="Quantile",
 )
 
+opdir = "%s/MLP/visualizations/stripes/TWCR" % os.getenv("SCRATCH")
+if not os.path.isdir(opdir):
+    os.makedirs(opdir)
 
-fig.savefig("%s/%s_%s_%s.png" % (sDir, args.variable, args.reduce, args.convolve))
+fig.savefig("%s/%s_%s_%s.webp" % (opdir, args.variable, args.reduce, args.convolve))

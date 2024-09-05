@@ -9,10 +9,7 @@
 
 (cd TWCR && ./make_all.sh)
 
-(cd OCADA && ./make_all.sh)
-
 (cd ./GPCC/in_situ && ./make_all.sh)
-(cd ./GPCC/blended && ./make_all.sh)
 
 (cd HadCRUT && ./make_all.sh)
 

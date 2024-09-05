@@ -282,4 +282,8 @@ cb = fig.colorbar(
 )
 
 
-fig.savefig("%s/in_situ_%s_%s.png" % (sDir, args.reduce, args.convolve))
+opdir = "%s/MLP/visualizations/stripes/GPCC/" % os.getenv("SCRATCH")
+if not os.path.isdir(opdir):
+    os.makedirs(opdir)
+
+fig.savefig("%s/in_situ_%s_%s.webp" % (opdir, args.reduce, args.convolve))
