@@ -58,10 +58,10 @@ specification["printInterval"] = (
 specification["strategy"] = tf.distribute.MirroredStrategy()
 specification["optimizer"] = tf.keras.optimizers.legacy.Adam(5e-4)
 specification["trainCache"] = (
-    False  # True might be faster, but needs a *lot* of RAM (try 100Gb) - Also freezes the ensemble members used.
+    True  # True might be faster, but needs a *lot* of RAM (try 100Gb) - Also freezes the ensemble members used.
 )
 specification["testCache"] = (
-    False  # True might be faster, but needs a *lot* of RAM (try 100Gb) - Also freezes the ensemble members used.
+    True  # True might be faster, but needs a *lot* of RAM (try 100Gb) - Also freezes the ensemble members used.
 )
 
 
