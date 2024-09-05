@@ -103,7 +103,7 @@ command_job = command(
         )
     },
     environment_variables={"SCRATCH": "${{outputs.SCRATCH}}"},
-    command="export PYTHONPATH=$(pwd):$PYTHONPATH ; " + "python %s" % cmd,
+    command="export PYTHONPATH=$(pwd):$PYTHONPATH ; " + "%s" % cmd,
 )
 
 if args.dryrun:
