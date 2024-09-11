@@ -57,3 +57,6 @@ except Exception:
 # Write to file
 didx = date_to_index(args.year, args.month)
 op = dataset[:, :, args.member_idx, didx].write(ict)
+
+# Explicity wait for the write to complete
+op.result()

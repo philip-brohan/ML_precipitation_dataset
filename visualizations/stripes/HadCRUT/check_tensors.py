@@ -1,34 +1,21 @@
 #!/usr/bin/env python
 
-# Update the raw tensor zarr array with metadata giving dates and indices for each field present
+# Check the  normalized tensor zarr array giving dates and indices for each field present
 
 import os
-import argparse
 import zarr
 import numpy as np
-from get_data.TWCR import TWCR_monthly_load
+from get_data.HadCRUT import HadCRUT
 
-from tensor_utils import date_to_index, FirstYear, LastYear
+from make_raw_tensors.HadCRUT.tensor_utils import date_to_index, FirstYear, LastYear
 
 sDir = os.path.dirname(os.path.realpath(__file__))
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--variable",
-    help="Variable name",
-    type=str,
-    required=True,
-)
-args = parser.parse_args()
-
 # Find the raw_tensor zarr array
-fn = "%s/MLP/raw_datasets/TWCR/%s_zarr" % (
+fn = "%s/MLP/normalized_datasets/HadCRUT_tf_MM/temperature_zarr" % (
     os.getenv("SCRATCH"),
-    args.variable,
 )
 
-# Add date range to array as metadata
-print
 zarr_ds = zarr.open(fn, mode="r+")
 
 AvailableMonths = {}
@@ -38,7 +25,7 @@ for year in range(FirstYear, LastYear + 1):
     for month in range(1, 13):
         dte = "%d-%02d" % (year, month)
         idx = date_to_index(year, month)
-        for member_idx in range(len(TWCR_monthly_load.members)):
+        for member_idx in range(len(HadCRUT.members)):
             slice = zarr_ds[:, :, member_idx, idx]
             if not np.all(np.isnan(slice)):
                 AvailableMonths["%d-%02d_%02d" % (year, month, member_idx)] = idx
@@ -47,21 +34,18 @@ for year in range(FirstYear, LastYear + 1):
                 if dte > end:
                     end = dte
 
-zarr_ds.attrs["AvailableMonths"] = AvailableMonths
 
 missing = 0
 for year in range(FirstYear, LastYear + 1):
     for month in range(1, 13):
-        dte = "%d-%02d" % (year, month)
         if dte < start or dte > end:
             continue
-        for member_idx in range(len(TWCR_monthly_load.members)):
+        for member_idx in range(len(HadCRUT.members)):
             dte = "%d-%02d_%02d" % (year, month, member_idx)
             if dte not in AvailableMonths:
                 missing += 1
 
 
-print(args.variable)
 print("Start date:", start)
 print("End date:", end)
 print("Missing member-months:", missing)

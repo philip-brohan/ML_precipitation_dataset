@@ -18,7 +18,7 @@
 
 (cd ./GPCC_tf_MM/in_situ && ../../../azure_tools/azure_run.py --experiment=MLP --name=make_normalized_GPCC --compute=cpu-cluster -- make_all_tensors.py)
 
-(cd HadCRUT_tf_MM && ../../azure_tools/azure_run.py --experiment=MLP --name=make_normalized_HadCRUT --compute=cpu-cluster -- make_all_tensors.py)
+(cd HadCRUT_tf_MM && ../../azure_tools/azure_run.py --experiment=MLP --name=make_normalized_HadCRUT --compute=multicore-32 -- make_all_tensors.py)
 
 (cd HadISST_tf_MM && ../../azure_tools/azure_run.py --experiment=MLP --name=make_normalized_HadISST --compute=cpu-cluster -- make_all_tensors.py)
 

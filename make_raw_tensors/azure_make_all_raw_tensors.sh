@@ -17,7 +17,7 @@
 
 (cd GPCC/in_situ && ../../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_GPCC --parallel=4 --compute=cpu-cluster -- make_all_tensors.py )
 
-(cd HadCRUT && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_HadCRUT --parallel=31 --compute=multicore-32 -- make_all_tensors.py)
+(cd HadCRUT && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_HadCRUT --parallel=16 --compute=multicore-32 -- make_all_tensors.py)
 
 (cd HadISST && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_HadISST --parallel=4 --compute=cpu-cluster -- make_all_tensors.py )
 

@@ -127,7 +127,7 @@ for batch in trainingData:
     month = int(batch[1].numpy()[0][5:7])
     dkey = "%04d%02d" % (year, month)
     if dkey not in ndi_d:
-        ndi_d[dkey] = rng.choice(HadCRUT.members, size=721)
+        ndi_d[dkey] = rng.integers(low=0, high=len(HadCRUT.members), size=721)
         ndata_d[dkey] = np.zeros([721])
     member = int(batch[1].numpy()[0][8:11])
     ndmo = longitude_reduce(args.reduce, batch[0])

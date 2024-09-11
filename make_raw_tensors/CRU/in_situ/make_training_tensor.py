@@ -51,3 +51,4 @@ except Exception:
 # Write to file
 didx = date_to_index(args.year, args.month)
 op = dataset[:, :, didx].write(ict)
+op.result()

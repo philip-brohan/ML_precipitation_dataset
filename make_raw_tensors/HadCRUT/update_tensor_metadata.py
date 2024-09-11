@@ -39,11 +39,12 @@ zarr_ds.attrs["AvailableMonths"] = AvailableMonths
 missing = 0
 for year in range(FirstYear, LastYear + 1):
     for month in range(1, 13):
+        dte = "%d-%02d" % (year, month)
         if dte < start or dte > end:
             continue
         for member_idx in range(len(HadCRUT.members)):
-            dte = "%d-%02d_%02d" % (year, month, member_idx)
-            if dte not in AvailableMonths:
+            mte = "%d-%02d_%02d" % (year, month, member_idx)
+            if mte not in AvailableMonths:
                 missing += 1
 
 

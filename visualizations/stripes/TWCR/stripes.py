@@ -14,6 +14,8 @@ from astropy.convolution import convolve
 
 sDir = os.path.dirname(os.path.realpath(__file__))
 
+from get_data.TWCR import TWCR_monthly_load
+
 rng = np.random.default_rng()
 
 import matplotlib
@@ -70,20 +72,20 @@ end = datetime.datetime(args.endyear, 12, 31, 23)
 
 # Longitude reduction
 def longitude_reduce(choice, ndata):
-    result = np.zeros([721, 1])
+    result = np.zeros([721])
     if choice == "sample":
         nd2d = tf.squeeze(ndata).numpy()
         for i in range(nd2d.shape[0]):  # Iterate over latitudes
             alat = nd2d[i, :][nd2d[i, :] != 0]
             if len(alat) > 0:
-                result[i, 0] = rng.choice(alat, size=1)
+                result[i] = rng.choice(alat, size=1)
         return result
     if choice == "mean":
         nd2d = tf.squeeze(ndata).numpy()
         for i in range(nd2d.shape[0]):  # Iterate over latitudes
             alat = nd2d[i, :][nd2d[i, :] != 0]
             if len(alat) > 0:
-                result[i, 0] = np.mean(alat)
+                result[i] = np.mean(alat)
         return result
     raise Exception("Unsupported reduction choice %s" % choice)
 
@@ -118,8 +120,8 @@ if cmap is None:
     cmap = cmocean.cm.balance
 
 # Go through data and extract zonal mean for each month
-dts = []
-ndata = None
+ndata_d = {}
+ndi_d = {}
 trainingData = getDataset(
     args.variable,
     startyear=start.year,
@@ -131,15 +133,28 @@ trainingData = getDataset(
 for batch in trainingData:
     year = int(batch[1].numpy()[0][:4])
     month = int(batch[1].numpy()[0][5:7])
-    dts.append(datetime.datetime(year, month, 15, 0))
+    dkey = "%04d%02d" % (year, month)
+    if dkey not in ndi_d:
+        ndi_d[dkey] = rng.integers(low=0, high=len(TWCR_monthly_load.members), size=721)
+        ndata_d[dkey] = np.zeros([721])
+    member = int(batch[1].numpy()[0][8:11])
     ndmo = longitude_reduce(args.reduce, batch[0])
-    if ndata is None:
-        ndata = ndmo
-    else:
-        ndata = np.concatenate((ndata, ndmo), axis=1)
+    ndata_d[dkey][ndi_d[dkey] == member] = ndmo[ndi_d[dkey] == member]
 
+# Pack the data into a single np array
+ndata = None
+dts = []
+for key in ndi_d.keys():
+    year = int(key[:4])
+    month = int(key[4:6])
+    dts.append(datetime.datetime(year, month, 15, 0))
+    if ndata is None:
+        ndata = np.reshape(ndata_d[key], [721, 1])
+    else:
+        ndata = np.concatenate((ndata, np.reshape(ndata_d[key], [721, 1])), axis=1)
 ndata = np.ma.MaskedArray(ndata, ndata == 0.0)
 omask = ndata.mask.copy()
+
 # Filter
 ndata = csmooth(args.convolve, ndata)
 ndata = np.ma.MaskedArray(ndata, np.isnan(ndata))
