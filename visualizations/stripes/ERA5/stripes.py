@@ -9,8 +9,12 @@ import numpy
 import datetime
 import re
 import numpy as np
-import tensorflow as tf
 from astropy.convolution import convolve
+
+# Supress TensorFlow moaning about cuda - we don't need a GPU for this
+# Also the warning message confuses people.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+import tensorflow as tf
 
 sDir = os.path.dirname(os.path.realpath(__file__))
 
@@ -23,6 +27,7 @@ from matplotlib.lines import Line2D
 import cmocean
 
 from makeDataset import getDataset
+from utilities.grids import E5sCube_latitude_areas
 
 import argparse
 
@@ -37,6 +42,8 @@ parser.add_argument(
 parser.add_argument(
     "--convolve", help="Convolution filter", type=str, required=False, default="none"
 )
+parser.add_argument("--global_mean", help="show global mean", action="store_true")
+parser.add_argument("--annual_mean", help="show annual_mean", action="store_true")
 parser.add_argument("--variable", help="Variable", type=str, required=True)
 parser.add_argument(
     "--vmin",
@@ -117,7 +124,6 @@ cmap = {
 if cmap is None:
     cmap = cmocean.cm.balance
 
-# Go through data and extract zonal mean for each month
 dts = []
 ndata = None
 trainingData = getDataset(
@@ -144,6 +150,18 @@ omask = ndata.mask.copy()
 ndata = csmooth(args.convolve, ndata)
 ndata = np.ma.MaskedArray(ndata, np.isnan(ndata))
 ndata = np.ma.MaskedArray(ndata, omask)
+
+if args.global_mean:
+    ndata_mean = np.average(ndata, axis=0, weights=E5sCube_latitude_areas)
+    ndata = np.repeat(ndata_mean[np.newaxis, :], ndata.shape[0], axis=0)
+
+if args.annual_mean:
+    years = [d.year for d in dts]
+    for year in years:
+        mask = [d.year == year for d in dts]
+        ndata[:, mask] = np.repeat(
+            np.mean(ndata[:, mask], axis=1)[:, np.newaxis], 12, axis=1
+        )
 
 # Plot the resulting array as a 2d colourmap
 fig = Figure(
@@ -293,5 +311,10 @@ cb = fig.colorbar(
 opdir = "%s/MLP/visualizations/stripes/ERA5" % os.getenv("SCRATCH")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
+fname = "%s/%s_%s_%s" % (opdir, args.variable, args.reduce, args.convolve)
+if args.global_mean:
+    fname += "_globalmean"
+if args.annual_mean:
+    fname += "_annualmean"
 
-fig.savefig("%s/%s_%s_%s.webp" % (opdir, args.variable, args.reduce, args.convolve))
+fig.savefig("%s.webp" % fname)
