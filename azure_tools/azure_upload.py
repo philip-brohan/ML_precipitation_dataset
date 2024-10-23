@@ -34,6 +34,7 @@ parser.add_argument(
     "--file_system", type=str, help="File system name", required=False, default="copper"
 )
 parser.add_argument("--overwrite", action="store_true", help="Overwrite existing files")
+parser.add_argument("--show_uploaded", action="store_true", help="Show uploaded files")
 args = parser.parse_args()
 
 # Connect using Default Credential - dependent on already being logged in via Azure CLI in the current environment
@@ -81,17 +82,26 @@ def upload_file(file_name, file_system_client):
         if not directory_client.exists():
             directory_client = file_system_client.create_directory(remote_name)
         # Loop over the files in the directory
-        for f in os.listdir(file_name):
+        for f in sorted(os.listdir(file_name)):
             upload_file(os.path.join(file_name, f), file_system_client)
     else:
         # Upload the file
         file_client = file_system_client.get_file_client(remote_name)
         # If it already exists, we're done unless we want to overwrite it
+        # Also re-upload zero size files - upload failures leave zero size files
         if file_client.exists() and not args.overwrite:
-            pass
+            properties = file_client.get_file_properties()
+            if properties["size"] != 0:
+                if args.show_uploaded:
+                    print("File %s already uploaded" % file_name)
+                return
         # Upload the file
         with open(file_name, "rb") as data:
-            file_client.upload_data(data, overwrite=True)
+            try:
+                file_client.upload_data(data, overwrite=True)
+                print("Uploaded %s" % file_name)
+            except Exception as e:
+                print("Error uploading %s" % file_name)
 
 
 # Get the file system
