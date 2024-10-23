@@ -46,16 +46,6 @@ elif args.source == "TWCR":
         cache=False,
         blur=None,
     ).batch(1)
-elif args.source == "OCADA":
-    from visualizations.stripes.OCADA.makeDataset import getDataset
-
-    trainingData = getDataset(
-        "precipi",
-        startyear=1850,
-        endyear=2023,
-        cache=False,
-        blur=None,
-    ).batch(1)
 elif args.source == "CRU":
     from visualizations.stripes.CRU.makeDataset import getDataset
 
@@ -67,15 +57,6 @@ elif args.source == "CRU":
     ).batch(1)
 elif args.source == "GPCC_in-situ":
     from visualizations.stripes.GPCC.in_situ.makeDataset import getDataset
-
-    trainingData = getDataset(
-        startyear=1850,
-        endyear=2023,
-        cache=False,
-        blur=None,
-    ).batch(1)
-elif args.source == "GPCC_blended":
-    from visualizations.stripes.GPCC.blended.makeDataset import getDataset
 
     trainingData = getDataset(
         startyear=1850,

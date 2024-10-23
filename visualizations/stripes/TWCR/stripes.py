@@ -9,12 +9,17 @@ import numpy
 import datetime
 import re
 import numpy as np
-import tensorflow as tf
 from astropy.convolution import convolve
+
+# Supress TensorFlow moaning about cuda - we don't need a GPU for this
+# Also the warning message confuses people.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+import tensorflow as tf
 
 sDir = os.path.dirname(os.path.realpath(__file__))
 
 from get_data.TWCR import TWCR_monthly_load
+from utilities.grids import E5sCube_latitude_areas
 
 rng = np.random.default_rng()
 
@@ -39,6 +44,8 @@ parser.add_argument(
 parser.add_argument(
     "--convolve", help="Convolution filter", type=str, required=False, default="none"
 )
+parser.add_argument("--global_mean", help="show global mean", action="store_true")
+parser.add_argument("--annual_mean", help="show annual_mean", action="store_true")
 parser.add_argument("--variable", help="Variable", type=str, required=True)
 parser.add_argument(
     "--vmin",
@@ -159,6 +166,25 @@ omask = ndata.mask.copy()
 ndata = csmooth(args.convolve, ndata)
 ndata = np.ma.MaskedArray(ndata, np.isnan(ndata))
 ndata = np.ma.MaskedArray(ndata, omask)
+
+if (
+    args.global_mean
+):  # Can't use np.average as it doesn't do missing data the way I need
+    gweight = np.repeat(E5sCube_latitude_areas[:, np.newaxis], ndata.shape[1], axis=1)
+    gweight = np.ma.MaskedArray(gweight, ndata.mask)
+    ndata_sum = np.sum(ndata * gweight, axis=0)
+    gweight_sum = np.sum(gweight, axis=0)
+    ndata_mean = ndata_sum / gweight_sum
+    ndata = np.repeat(ndata_mean[np.newaxis, :], ndata.shape[0], axis=0)
+
+
+if args.annual_mean:
+    years = [d.year for d in dts]
+    for year in years:
+        mask = [d.year == year for d in dts]
+        ndata[:, mask] = np.repeat(
+            np.mean(ndata[:, mask], axis=1)[:, np.newaxis], 12, axis=1
+        )
 
 # Plot the resulting array as a 2d colourmap
 fig = Figure(
@@ -308,4 +334,10 @@ opdir = "%s/MLP/visualizations/stripes/TWCR" % os.getenv("SCRATCH")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 
-fig.savefig("%s/%s_%s_%s.webp" % (opdir, args.variable, args.reduce, args.convolve))
+fname = "%s/%s_%s_%s" % (opdir, args.variable, args.reduce, args.convolve)
+if args.global_mean:
+    fname += "_globalmean"
+if args.annual_mean:
+    fname += "_annualmean"
+
+fig.savefig("%s.webp" % fname)

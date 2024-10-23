@@ -151,8 +151,14 @@ ndata = csmooth(args.convolve, ndata)
 ndata = np.ma.MaskedArray(ndata, np.isnan(ndata))
 ndata = np.ma.MaskedArray(ndata, omask)
 
-if args.global_mean:
-    ndata_mean = np.average(ndata, axis=0, weights=E5sCube_latitude_areas)
+if (
+    args.global_mean
+):  # Can't use np.average as it doesn't do missing data the way I need
+    gweight = np.repeat(E5sCube_latitude_areas[:, np.newaxis], ndata.shape[1], axis=1)
+    gweight = np.ma.MaskedArray(gweight, ndata.mask)
+    ndata_sum = np.sum(ndata * gweight, axis=0)
+    gweight_sum = np.sum(gweight, axis=0)
+    ndata_mean = ndata_sum / gweight_sum
     ndata = np.repeat(ndata_mean[np.newaxis, :], ndata.shape[0], axis=0)
 
 if args.annual_mean:
