@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 from astropy.convolution import convolve
 
-sDir = os.path.dirname(os.path.realpath(__file__))
+sDir = "%s/MLP/visualizations/time_series/precipitation" % os.getenv("SCRATCH")
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -60,6 +60,13 @@ parser.add_argument(
     required=False,
     default=1.0,
 )
+parser.add_argument(
+    "--rchoice",
+    help="Area reduction choice (None or 'area')",
+    type=str,
+    required=False,
+    default="None",
+)
 args = parser.parse_args()
 
 
@@ -71,10 +78,10 @@ end = datetime.date(args.end_year, 12, 15)
 fig = Figure(
     figsize=(20, 10),
     dpi=100,
-    facecolor=(0.5, 0.5, 0.5, 1),
+    facecolor=(1, 1, 1, 1),
     edgecolor=None,
     linewidth=0.0,
-    frameon=False,
+    frameon=True,
     subplotpars=None,
     tight_layout=None,
 )
@@ -90,25 +97,12 @@ matplotlib.rc("font", **font)
 # List of datasets to plot (and colour to use)
 datasets = {
     "ERA5": (0, 0, 1, 1),
-    "TWCR": (0, 0, 0.5, 1),
-    "OCADA": (0.5, 0, 0.5, 1),
+    "TWCR": (0, 0, 0.5, 0.3),
     "CRU": (0, 0.5, 0.5, 1),
     "GPCC_in-situ": (0, 0, 0, 1),
     "GPCP": (0, 0.5, 1, 1),
 }
 
-# Background
-axb = fig.add_axes([-0.01, -0.01, 1.02, 1.02])
-axb.add_patch(
-    Rectangle(
-        (0, 0),
-        1,
-        1,
-        facecolor=(1, 1, 1, 1),
-        fill=True,
-        zorder=1,
-    )
-)
 
 # Data axes
 ax_ts = fig.add_axes(
@@ -161,7 +155,7 @@ def csmooth(nmonths, ndata):
 
 for ds in datasets.keys():
     try:
-        with open("%s.pkl" % ds, "rb") as dfile:
+        with open("%s/%s_%s.pkl" % (sDir, args.rchoice, ds), "rb") as dfile:
             ndata = pickle.load(dfile)
     except Exception:
         continue
@@ -170,4 +164,4 @@ for ds in datasets.keys():
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
 
-fig.savefig("%s/precipitation_%03d.webp" % (sDir, args.nmonths))
+fig.savefig("%s/%s_precipitation_%03d.webp" % (sDir, args.rchoice, args.nmonths))

@@ -10,6 +10,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import tensorflow as tf
 import pickle
+from utilities.grids import E5sCube_grid_areas
 
 sDir = os.path.dirname(os.path.realpath(__file__))
 
@@ -24,7 +25,25 @@ parser.add_argument(
     type=str,
     required=True,
 )
+parser.add_argument(
+    "--rchoice",
+    help="Area reduction choice (None or 'area')",
+    type=str,
+    required=False,
+    default=None,
+)
+parser.add_argument(
+    "--mask_file",
+    help="File containing averaging data mask",
+    type=str,
+    required=False,
+    default=None,
+)
 args = parser.parse_args()
+
+# Load the mask file if provided
+if args.mask_file is not None:
+    mask = np.load(args.mask_file)
 
 if args.source == "ERA5":
     from visualizations.stripes.ERA5.makeDataset import getDataset
@@ -76,6 +95,23 @@ elif args.source == "GPCP":
 else:
     raise Exception("Unsupported source " + args.source)
 
+
+def latlon_reduce(choice, ndata):
+    if choice is None:
+        ndata = ndata.flatten()
+        ndata = ndata[ndata != 0]
+        return np.mean(ndata)
+    elif choice == "area":
+        gweight = E5sCube_grid_areas
+        gweight = np.ma.MaskedArray(gweight, ndata == 0)
+        ndata_sum = np.sum(ndata * gweight)
+        gweight_sum = np.sum(gweight)
+        ndata_mean = ndata_sum / gweight_sum
+        return ndata_mean
+    else:
+        raise Exception("Unsupported latlon_reduce choice %s" % choice)
+
+
 ndata = {}
 members = np.zeros([1000])
 for batch in trainingData:
@@ -87,9 +123,9 @@ for batch in trainingData:
         member = 0
     key = "%04d%02d%03d" % (year, month, member)
     members[member] += 1
-    ndmo = batch[0].numpy().flatten()
-    ndmo = ndmo[ndmo != 0]
-    ndata[key] = np.mean(ndmo)
+    ndmo = batch[0].numpy().squeeze()
+    ndata[key] = latlon_reduce(args.rchoice, ndmo)
+
 
 # Fill in any gaps with np.nan
 members = np.where(members != 0)
@@ -100,5 +136,12 @@ for year in range(1850, 2050):
             if key not in ndata:
                 ndata[key] = np.nan
 
-with open("%s/%s.pkl" % (sDir, args.source), "wb") as dfile:
+if args.rchoice is None:
+    args.rchoice = "None"
+
+opdir = "%s/MLP/visualizations/time_series/precipitation" % os.getenv("SCRATCH")
+if not os.path.isdir(opdir):
+    os.makedirs(opdir)
+
+with open("%s/%s_%s.pkl" % (opdir, args.rchoice, args.source), "wb") as dfile:
     pickle.dump(ndata, dfile)

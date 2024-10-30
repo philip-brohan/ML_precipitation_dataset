@@ -5,17 +5,24 @@
 # Delete the .pkl files to force their recreation from the current tensors
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+OP_DIR="$SCRATCH/MLP/visualizations/time_series/precipitation"
 
 # Re-create the processed time-series if needed
-for source in TWCR ERA5 OCADA GPCC_in-situ GPCP CRU
+for source in TWCR ERA5 GPCC_in-situ GPCP CRU
 do
-    if ! [ -f "$SCRIPT_DIR/$source.pkl" ]; then
+    if ! [ -f "$OP_DIR/None_$source.pkl" ]; then
         $SCRIPT_DIR/get_series.py --source=$source
+    fi
+    if ! [ -f "$OP_DIR/area_$source.pkl" ]; then
+        $SCRIPT_DIR/get_series.py --source=$source --rchoice=area
     fi
 done
 
 # Make a plot at each level of smoothing
 $SCRIPT_DIR/plot_series.py --nmonths=1
-$SCRIPT_DIR/plot_series.py --nmonths=13 --ymin=0.47 --ymax=0.535
-$SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.475 --ymax=0.535
+$SCRIPT_DIR/plot_series.py --nmonths=13 --ymin=0.47 --ymax=0.53
+$SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.475 --ymax=0.53
+$SCRIPT_DIR/plot_series.py --nmonths=1  --ymin=0.44 --ymax=0.55 --rchoice=area
+$SCRIPT_DIR/plot_series.py --nmonths=13 --ymin=0.475 --ymax=0.52 --rchoice=area
+$SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.48 --ymax=0.52 --rchoice=area
 

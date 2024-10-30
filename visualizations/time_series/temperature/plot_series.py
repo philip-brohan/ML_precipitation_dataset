@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 from astropy.convolution import convolve
 
-sDir = os.path.dirname(os.path.realpath(__file__))
+sDir = "%s/MLP/visualizations/time_series/temperature" % os.getenv("SCRATCH")
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -60,6 +60,13 @@ parser.add_argument(
     required=False,
     default=1.0,
 )
+parser.add_argument(
+    "--rchoice",
+    help="Area reduction choice (None or 'area')",
+    type=str,
+    required=False,
+    default="None",
+)
 args = parser.parse_args()
 
 
@@ -91,7 +98,6 @@ matplotlib.rc("font", **font)
 datasets = {
     "ERA5_t2m": (1, 0, 0, 1),
     "ERA5_sst": (0, 0, 1, 1),
-    "OCADA_t2m": (0.5, 0, 0.5, 1),
     "TWCR_t2m": (0.5, 0, 0, 1),
     "TWCR_sst": (0, 0, 0.5, 1),
     "HadISST": (0, 0.5, 0.5, 1),
@@ -162,7 +168,7 @@ def csmooth(nmonths, ndata):
 
 for ds in datasets.keys():
     try:
-        with open("%s.pkl" % ds, "rb") as dfile:
+        with open("%s/%s_%s.pkl" % (sDir, args.rchoice, ds), "rb") as dfile:
             ndata = pickle.load(dfile)
     except Exception:
         continue
@@ -171,4 +177,4 @@ for ds in datasets.keys():
 handles, labels = ax_ts.get_legend_handles_labels()
 ax_ts.legend(handles, labels, loc="upper left")
 
-fig.savefig("%s/temperatures_%03d.webp" % (sDir, args.nmonths))
+fig.savefig("%s/%s_temperatures_%03d.webp" % (sDir, args.rchoice, args.nmonths))
