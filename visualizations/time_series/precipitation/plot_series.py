@@ -67,6 +67,18 @@ parser.add_argument(
     required=False,
     default="None",
 )
+parser.add_argument(
+    "--mask_file",
+    help="File containing averaging data mask",
+    type=str,
+    required=False,
+    default="None",
+)
+parser.add_argument(
+    "--nosat",
+    help="Dont plot satellite based datasets",
+    action="store_true",
+)
 args = parser.parse_args()
 
 
@@ -96,13 +108,13 @@ matplotlib.rc("font", **font)
 
 # List of datasets to plot (and colour to use)
 datasets = {
-    "ERA5": (0, 0, 1, 1),
     "TWCR": (0, 0, 0.5, 0.3),
     "CRU": (0, 0.5, 0.5, 1),
     "GPCC_in-situ": (0, 0, 0, 1),
-    "GPCP": (0, 0.5, 1, 1),
 }
-
+if not args.nosat:
+    datasets["ERA5"] = (0, 0, 1, 1)
+    datasets["GPCP"] = (0, 0.5, 1, 1)
 
 # Data axes
 ax_ts = fig.add_axes(
@@ -155,13 +167,21 @@ def csmooth(nmonths, ndata):
 
 for ds in datasets.keys():
     try:
-        with open("%s/%s_%s.pkl" % (sDir, args.rchoice, ds), "rb") as dfile:
+        with open(
+            "%s/%s_%s_%s.pkl" % (sDir, args.mask_file, args.rchoice, ds), "rb"
+        ) as dfile:
             ndata = pickle.load(dfile)
     except Exception:
         continue
     plot_var(ndata, args.linewidth, col=datasets[ds], label=ds)
 
 handles, labels = ax_ts.get_legend_handles_labels()
-ax_ts.legend(handles, labels, loc="upper left")
+ax_ts.legend(handles, labels, loc="upper left", ncol=5)
 
-fig.savefig("%s/%s_precipitation_%03d.webp" % (sDir, args.rchoice, args.nmonths))
+ns = ""
+if args.nosat:
+    ns = "ns_"
+fig.savefig(
+    "%s/%s%s_%s_precipitation_%03d.webp"
+    % (sDir, ns, args.mask_file, args.rchoice, args.nmonths)
+)

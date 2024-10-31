@@ -3,6 +3,7 @@
 # Get global mean series of normalized values and store as pickle
 
 import os
+import iris
 import numpy as np
 
 # Suppress warnings from TensorFlow - don't need a GPU for this
@@ -43,7 +44,10 @@ args = parser.parse_args()
 
 # Load the mask file if provided
 if args.mask_file is not None:
-    mask = np.load(args.mask_file)
+    mask = iris.load_cube(
+        "%s/MLP/visualizations/time_series/masks/%s.nc"
+        % (os.getenv("SCRATCH"), args.mask_file)
+    )
 
 if args.source == "ERA5":
     from visualizations.stripes.ERA5.makeDataset import getDataset
@@ -97,6 +101,8 @@ else:
 
 
 def latlon_reduce(choice, ndata):
+    if args.mask_file is not None:
+        ndata[mask.data == 0] = 0
     if choice is None:
         ndata = ndata.flatten()
         ndata = ndata[ndata != 0]
@@ -138,10 +144,16 @@ for year in range(1850, 2050):
 
 if args.rchoice is None:
     args.rchoice = "None"
+if args.mask_file is None:
+    args.mask_file = "None"
+else:
+    args.mask_file = os.path.splitext(os.path.basename(args.mask_file))[0]
 
 opdir = "%s/MLP/visualizations/time_series/precipitation" % os.getenv("SCRATCH")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 
-with open("%s/%s_%s.pkl" % (opdir, args.rchoice, args.source), "wb") as dfile:
+with open(
+    "%s/%s_%s_%s.pkl" % (opdir, args.mask_file, args.rchoice, args.source), "wb"
+) as dfile:
     pickle.dump(ndata, dfile)
