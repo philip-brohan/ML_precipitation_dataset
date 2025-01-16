@@ -92,7 +92,7 @@ command_job = command(
     experiment_name=args.experiment,
     compute=args.compute,
     environment="MLP-Azure@latest",
-    code="/net/home/h03/hadpb/Projects/ML_precipitation_dataset",
+    code="/home/users/philip.brohan/Projects/ML_precipitation_dataset",
     outputs={
         "SCRATCH": Output(
             type=AssetTypes.URI_FOLDER,

@@ -18,7 +18,8 @@ dependencies:
   - cdsapi=0.6
   # ML model building and diagnostics
   # If you don't have a GPU, tensorflow-eigen might be faster
-  - tensorflow=2.9.1=gpu_py39hd4ae112_0
+  - cuda
+  - cudnn
   # Optional, code formatter
   - black
   # Optional - documentation generator
@@ -36,6 +37,7 @@ dependencies:
   # Some packages are only available via pip
   - pip
   - pip:
+      - tensorflow
       # For bilinear interpolation
       - tensorflow-addons==0.18
       # For input space search
@@ -49,7 +51,7 @@ dependencies:
 # Replace with the path to your project directory root.
 
 variables:
-  PYTHONPATH: /home/mo-hadpb/Projects/ML_precipitation_dataset:/net/home/h03/hadpb/Projects/ML_precipitation_dataset
+  PYTHONPATH: /home/users/philip.brohan/Projects/ML_precipitation_dataset
 
 # Also the Azure ML subscription, workspace and resource group
   AZML_SUBSCRIPTION_ID: ef7c87c5-ea27-4e06-9fad-ac06dc6b3fd1
