@@ -2,7 +2,7 @@
 
 # Retrieve stored 20CRv3 data from nersc
 
-for year in {1910..1919}
+for year in {1900..1909}
 do
 for var in PRMSL PRATE TMP2m TMPS UGRD10m VGRD10m
 do 

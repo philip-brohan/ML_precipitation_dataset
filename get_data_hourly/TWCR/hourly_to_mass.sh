@@ -2,7 +2,7 @@
 
 # Store downloaded 20CRv3 data on MASS
 
-for year in {1910..1920}
+for year in {1900..1910}
 do
 for var in PRMSL PRATE TMP2m TMPS UGRD10m VGRD10m
 do 
