@@ -24,5 +24,5 @@ $SCRIPT_DIR/plot_series.py --nmonths=13 --ymin=0.2 --ymax=0.75
 $SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.2 --ymax=0.7
 $SCRIPT_DIR/plot_series.py --nmonths=1 --rchoice=area
 $SCRIPT_DIR/plot_series.py --nmonths=13 --ymin=0.2 --ymax=0.75 --rchoice=area
-$SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.2 --ymax=0.7 --rchoice=area
+$SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.3 --ymax=0.7 --rchoice=area --hscale=0.6
 

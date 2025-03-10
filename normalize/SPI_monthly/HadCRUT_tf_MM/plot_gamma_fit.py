@@ -24,6 +24,10 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+opdir = "%s/MLP/normalization/SPI_monthly/plots/HadCRUT_tf_MM" % os.getenv("SCRATCH")
+if not os.path.isdir(opdir):
+    os.makedirs(opdir, exist_ok=True)
+
 # Load the fitted values
 shape = iris.load_cube(
     "%s/MLP/normalization/SPI_monthly/HadCRUT_tf_MM/shape_m%02d.nc"
@@ -111,4 +115,4 @@ cb = fig.colorbar(
     shape_img, ax=ax_shape_cb, location="right", orientation="vertical", fraction=1.0
 )
 
-fig.savefig("outputs/gamma.webp")
+fig.savefig("%s/gamma.webp" % opdir)

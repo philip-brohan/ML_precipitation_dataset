@@ -38,6 +38,10 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+opdir = "%s/MLP/normalization/SPI_monthly/plots/HadCRUT_tf_MM" % os.getenv("SCRATCH")
+if not os.path.isdir(opdir):
+    os.makedirs(opdir, exist_ok=True)
+
 # Load the fitted values
 (shape, location, scale) = load_fitted(args.month)
 
@@ -114,4 +118,4 @@ ax_hist_normalized = fig.add_axes([0.683, 0.05, 0.303, 0.435])
 plots.plotHistAxes(ax_hist_normalized, normalized, vMin=-0.25, vMax=1.25, bins=25)
 
 
-fig.savefig("outputs/monthly.webp")
+fig.savefig("%s/monthly.webp" % opdir)

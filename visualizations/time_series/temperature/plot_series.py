@@ -67,6 +67,13 @@ parser.add_argument(
     required=False,
     default="None",
 )
+parser.add_argument(
+    "--hscale",
+    help="Rescale factor for HadCRUT",
+    type=float,
+    required=False,
+    default=1.0,
+)
 args = parser.parse_args()
 
 
@@ -101,7 +108,7 @@ datasets = {
     "TWCR_t2m": (0.5, 0, 0, 1),
     "TWCR_sst": (0, 0, 0.5, 1),
     "HadISST": (0, 0.5, 0.5, 1),
-    "HadCRUT": (0, 0, 0, 0.1),
+    "HadCRUT": (0, 0, 0, 0.25),
 }
 
 # Background
@@ -142,6 +149,10 @@ def plot_var(ndata, width, col, label):
         t[member].append(ndata[dk])
     for member in ts.keys():
         tp = csmooth(args.nmonths, t[member])
+        if label is not None:
+            ds
+        if ds == "HadCRUT":  # Rescale HadCRUT to match others
+            tp = [(x - 0.5) * args.hscale + 0.5 for x in tp]
         ax_ts.add_line(
             Line2D(
                 ts[member],

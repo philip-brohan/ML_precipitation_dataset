@@ -7,7 +7,6 @@ import os
 import sys
 import numpy as np
 
-
 # Supress TensorFlow moaning about cuda - we don't need a GPU for this
 # Also the warning message confuses people.
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -42,10 +41,12 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+opdir = "%s/MLP/normalized_datasets/plots/HadCRUT_tf_MM" % (os.getenv("SCRATCH"),)
+os.makedirs(opdir, exist_ok=True)
+
 fn = "%s/MLP/normalized_datasets/HadCRUT_tf_MM/temperature_zarr" % (
     os.getenv("SCRATCH"),
 )
-
 
 # Get the raw data
 raw_zarr = zarr.open(
@@ -78,10 +79,10 @@ normalized.data.mask[normalized.data.data == 0] = True
 fig = Figure(
     figsize=(10 * 3 / 2, 10),
     dpi=100,
-    facecolor=(0.5, 0.5, 0.5, 1),
+    facecolor=(1.0, 1.0, 1.0, 1),
     edgecolor=None,
     linewidth=0.0,
-    frameon=False,
+    frameon=True,
     subplotpars=None,
     tight_layout=None,
 )
@@ -93,18 +94,6 @@ font = {
     "size": 20,
 }
 matplotlib.rc("font", **font)
-axb = fig.add_axes([0, 0, 1, 1])
-axb.set_axis_off()
-axb.add_patch(
-    Rectangle(
-        (0, 0),
-        1,
-        1,
-        facecolor=(1.0, 1.0, 1.0, 1),
-        fill=True,
-        zorder=1,
-    )
-)
 
 # choose actual and normalized data colour maps based on variable
 cmaps = (cmocean.cm.balance, cmocean.cm.balance)
@@ -136,4 +125,4 @@ ax_hist_normalized = fig.add_axes([0.683, 0.05, 0.303, 0.435])
 plots.plotHistAxes(ax_hist_normalized, normalized, vMin=-0.25, vMax=1.25, bins=25)
 
 
-fig.savefig("monthly.webp")
+fig.savefig("%s/monthly.webp" % (opdir,))
