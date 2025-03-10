@@ -4,7 +4,7 @@
 
 import sys
 import numpy as np
-from get_data.TWCR import TWCR_monthly_load
+from get_data_hourly.TWCR import TWCR_hourly_load
 
 from utilities import plots
 from tensor_utils import load_raw, raw_to_tensor, tensor_to_cube
@@ -18,6 +18,8 @@ import cmocean
 import argparse
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--hour", help="Hour to plot", type=int, required=False, default=6)
+parser.add_argument("--day", help="Day to plot", type=int, required=False, default=12)
 parser.add_argument(
     "--month", help="Month to plot", type=int, required=False, default=3
 )
@@ -35,7 +37,9 @@ args = parser.parse_args()
 raw = load_raw(
     args.year,
     args.month,
-    member=TWCR_monthly_load.members[args.member_idx],
+    args.day,
+    args.hour,
+    member=TWCR_hourly_load.members[args.member_idx],
     variable=args.variable,
 )
 ict = raw_to_tensor(raw)
