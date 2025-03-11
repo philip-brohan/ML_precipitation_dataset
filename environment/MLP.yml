@@ -52,6 +52,10 @@ dependencies:
 
 variables:
   PYTHONPATH: /home/users/philip.brohan/Projects/ML_precipitation_dataset
+# Fix really weird error in scipy optimize (loaded by iris)
+# This should be $CONDA_ENVS_PATH/DCVAE-Climate/lib
+#   but you can't do variable expansion here - so set it for each system.
+  LD_LIBRARY_PATH: /data/users/philip.brohan/conda/environments/MLP/lib
 
 # Also the Azure ML subscription, workspace and resource group
   AZML_SUBSCRIPTION_ID: ef7c87c5-ea27-4e06-9fad-ac06dc6b3fd1
