@@ -13,7 +13,7 @@ from azure.identity import (
     DeviceCodeCredential,
 )
 from azure.ai.ml import MLClient
-from azure.ai.ml import command, Output
+from azure.ai.ml import command, Output, Input
 from azure.ai.ml.constants import AssetTypes, InputOutputModes
 
 # Command to be run is everything in the input after the '--'
@@ -45,7 +45,7 @@ else:
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--compute", help="Compute to use", type=str, required=False, default="cpu-cluster"
+    "--compute", help="Compute to use", type=str, required=False, default="Philip-E4DS"
 )
 parser.add_argument("--name", help="Job name", type=str, required=False, default=None)
 parser.add_argument(
@@ -96,13 +96,39 @@ command_job = command(
     outputs={
         "SCRATCH": Output(
             type=AssetTypes.URI_FOLDER,
-            path="azureml://subscriptions/ef7c87c5-ea27-4e06-9fad-ac06dc6b3fd1/"
-            + "resourcegroups/rg-AI4-Climate/workspaces/ai4climate-scratch/"
-            + "datastores/dcvaelake_copper/paths/SCRATCH/",
+            path=(
+                "azureml://subscriptions/%s/"
+                + "resourcegroups/%s/workspaces/%s/"
+                + "datastores/dcvaelake_copper/paths/SCRATCH/"
+            )
+            % (
+                os.getenv("AZML_SUBSCRIPTION_ID"),
+                os.getenv("AZML_RESOURCE_GROUP"),
+                os.getenv("AZML_WORKSPACE_NAME"),
+            ),
             mode=InputOutputModes.RW_MOUNT,
-        )
+        ),
     },
-    environment_variables={"SCRATCH": "${{outputs.SCRATCH}}"},
+    inputs={
+        "TWCR_HOURLY": Input(
+            type=AssetTypes.URI_FOLDER,
+            path=(
+                "azureml://subscriptions/%s/"
+                + "resourcegroups/%s/workspaces/%s/"
+                + "datastores/20crv3_raw/paths/hourly/"
+            )
+            % (
+                os.getenv("AZML_SUBSCRIPTION_ID"),
+                os.getenv("AZML_RESOURCE_GROUP"),
+                os.getenv("AZML_WORKSPACE_NAME"),
+            ),
+            mode=InputOutputModes.RO_MOUNT,
+        ),
+    },
+    environment_variables={
+        "SCRATCH": "${{outputs.SCRATCH}}",
+        "TWCR_HOURLY": "${{inputs.TWCR_HOURLY}}",
+    },
     command="export PYTHONPATH=$(pwd):$PYTHONPATH ; " + "%s" % cmd,
 )
 

@@ -21,6 +21,13 @@ parser.add_argument(
     type=str,
     required=True,
 )
+parser.add_argument(
+    "--member",
+    help="member number",
+    type=int,
+    required=False,
+    default=None,
+)
 args = parser.parse_args()
 
 
@@ -59,6 +66,8 @@ zarr_ds.attrs["FirstYear"] = FirstYear.isoformat()
 zarr_ds.attrs["LastYear"] = LastYear.isoformat()
 
 for member_idx in range(len(TWCR_hourly_load.members)):
+    if args.member is not None and member_idx != args.member:
+        continue
     # for year in range(FirstYear.year, LastYear.year + 1):
     for year in range(1961, 1990 + 1):
         for month in range(1, 13):

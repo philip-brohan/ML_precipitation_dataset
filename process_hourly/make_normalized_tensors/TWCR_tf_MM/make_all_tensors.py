@@ -143,7 +143,10 @@ for batch in trainingData:
 
     # normalize
     raw = batch[0].numpy().squeeze()
-    normalized = match_normal(raw, fitted["%02d-%02d_%02d" % (month, day, hour)])
+    lday = day
+    if month == 2 and day == 29:
+        lday = 28
+    normalized = match_normal(raw, fitted["%02d-%02d_%02d" % (month, lday, hour)])
     ict = tf.convert_to_tensor(normalized, tf.float32)
     tf.debugging.check_numerics(
         ict, "Bad data %04d-%02d-%02d:%02d %02d" % (year, month, day, hour, member_idx)
@@ -156,4 +159,8 @@ for batch in trainingData:
 
 # Ensure writes complete before exiting
 for o in op:
-    o.result()
+    try:
+        o.result()
+    except Exception as e:
+        print(e)
+        pass

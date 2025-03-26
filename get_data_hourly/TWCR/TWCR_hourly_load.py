@@ -42,7 +42,7 @@ def add_coord_system(cbe):
 
 # Add a land-mask for TWCR SST grid
 lm_TWCR = iris.load_cube(
-    "%s/20CR/version_3/fixed/land.nc" % os.getenv("SCRATCH")
+    "%s/fixed/land.nc" % os.getenv("TWCR_HOURLY")
 )  # on 1-degree grid - that's the official version
 lm_TWCR = iris.util.squeeze(lm_TWCR)
 lm_TWCR.coord("latitude").coord_system = coord_s
@@ -75,8 +75,8 @@ def load_hourly_member(
         ts.data = np.ma.MaskedArray(ts.data, lm_TWCR.data.mask)
         return ts
     else:
-        fname = "%s/20CR/version_3/%04d/%s.%04d_mem%03d.nc" % (
-            os.getenv("SCRATCH"),
+        fname = "%s/%04d/%s.%04d_mem%03d.nc" % (
+            os.getenv("TWCR_HOURLY"),
             year,
             variable,
             year,
