@@ -96,7 +96,7 @@ def get_cmap(name):
 
 
 # Plot a single-field validation figure for the autoencoder.
-def plotValidationField(specification, input, output, year, month, fileName):
+def plotValidationField(specification, input, output, year, month, day, hour, fileName):
     nFields = specification["nOutputChannels"]
 
     # Make the plot
@@ -133,11 +133,11 @@ def plotValidationField(specification, input, output, year, month, fileName):
             nrows=1, ncols=len(wRatios), width_ratios=wRatios
         )
         # Left - map of target
-        varx = grids.E5sCube.copy()
+        varx = grids.TWCRCube.copy()
         varx.data = np.squeeze(input[-1][:, :, :, varI].numpy())
         varx.data = np.ma.masked_where(varx.data == 0.0, varx.data, copy=False)
         if varI == 0:
-            ax_var[0].set_title("%04d-%02d" % (year, month))
+            ax_var[0].set_title("%04d-%02d-%02d:%02d" % (year, month, day, hour))
         ax_var[0].set_axis_off()
         x_img = plots.plotFieldAxes(
             ax_var[0],
@@ -147,7 +147,7 @@ def plotValidationField(specification, input, output, year, month, fileName):
             cMap=get_cmap(specification["outputNames"][varI]),
         )
         # Centre - map of model output
-        vary = grids.E5sCube.copy()
+        vary = grids.TWCRCube.copy()
         vary.data = np.squeeze(output[:, :, :, varI].numpy())
         vary.data = np.ma.masked_where(varx.data == 0.0, vary.data, copy=False)
         ax_var[1].set_axis_off()
@@ -376,7 +376,7 @@ def computeScalarStats(
     dtp = datetime.date(year, month, 15)
 
     def tensor_to_cube(t):
-        result = grids.E5sCube.copy()
+        result = grids.TWCRCube.copy()
         result.data = np.squeeze(t.numpy())
         result.data = np.ma.masked_where(result.data == 0.0, result.data, copy=False)
         return result

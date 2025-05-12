@@ -4,27 +4,21 @@
 # Follow the instructions in autoencoder.py to use it for a specific model.
 
 import os
+import sys
 import tensorflow as tf
 
 
 class DCVAE(tf.keras.Model):
     # Initialiser - set up instance and define the models
-    def __init__(self, specification):
-        super(DCVAE, self).__init__()
+    def __init__(self, specification, **kwargs):
+        super(DCVAE, self).__init__(**kwargs)
         self.specification = specification
 
         # Model to encode input to latent space distribution
         self.encoder = tf.keras.Sequential(
             [
                 tf.keras.layers.InputLayer(
-                    input_shape=(721, 1440, self.specification["nInputChannels"])
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=5,
-                    kernel_size=3,
-                    strides=(1, 1),
-                    padding="same",
-                    activation="elu",
+                    shape=(256, 512, self.specification["nInputChannels"])
                 ),
                 tf.keras.layers.Conv2D(
                     filters=5,
@@ -36,21 +30,7 @@ class DCVAE(tf.keras.Model):
                 tf.keras.layers.Conv2D(
                     filters=10,
                     kernel_size=3,
-                    strides=(1, 1),
-                    padding="same",
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=10,
-                    kernel_size=3,
                     strides=(2, 2),
-                    padding="same",
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=10,
-                    kernel_size=3,
-                    strides=(1, 1),
                     padding="same",
                     activation="elu",
                 ),
@@ -64,13 +44,6 @@ class DCVAE(tf.keras.Model):
                 tf.keras.layers.Conv2D(
                     filters=20,
                     kernel_size=3,
-                    strides=(1, 1),
-                    padding="same",
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=20,
-                    kernel_size=3,
                     strides=(2, 2),
                     padding="same",
                     activation="elu",
@@ -78,21 +51,7 @@ class DCVAE(tf.keras.Model):
                 tf.keras.layers.Conv2D(
                     filters=40,
                     kernel_size=3,
-                    strides=(1, 1),
-                    padding="same",
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=40,
-                    kernel_size=3,
                     strides=(2, 2),
-                    padding="same",
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=40,
-                    kernel_size=3,
-                    strides=(1, 1),
                     padding="same",
                     activation="elu",
                 ),
@@ -105,21 +64,20 @@ class DCVAE(tf.keras.Model):
                 ),
             ]
         )
-
         # Model to generate output from latent space
         self.generator = tf.keras.Sequential(
             [
                 tf.keras.layers.InputLayer(
-                    input_shape=(
-                        12,
-                        23,
+                    shape=(
+                        4,
+                        8,
                         20,
                     )
                 ),
-                tf.keras.layers.Conv2D(
+                tf.keras.layers.Conv2DTranspose(
                     filters=20,
                     kernel_size=3,
-                    strides=(1, 1),
+                    strides=2,
                     padding="same",
                     activation="elu",
                 ),
@@ -128,29 +86,6 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(0, 0),
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=20,
-                    kernel_size=3,
-                    strides=(1, 1),
-                    padding="same",
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2DTranspose(
-                    filters=20,
-                    kernel_size=3,
-                    strides=2,
-                    padding="same",
-                    output_padding=(1, 1),
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=10,
-                    kernel_size=3,
-                    strides=(1, 1),
-                    padding="same",
                     activation="elu",
                 ),
                 tf.keras.layers.Conv2DTranspose(
@@ -158,28 +93,12 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(0, 1),
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=10,
-                    kernel_size=3,
-                    strides=(1, 1),
-                    padding="same",
                     activation="elu",
                 ),
                 tf.keras.layers.Conv2DTranspose(
                     filters=10,
                     kernel_size=3,
                     strides=2,
-                    padding="same",
-                    output_padding=(0, 1),
-                    activation="elu",
-                ),
-                tf.keras.layers.Conv2D(
-                    filters=5,
-                    kernel_size=3,
-                    strides=(1, 1),
                     padding="same",
                     activation="elu",
                 ),
@@ -188,7 +107,6 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(0, 1),
                     activation="elu",
                 ),
                 tf.keras.layers.Conv2DTranspose(
@@ -196,7 +114,6 @@ class DCVAE(tf.keras.Model):
                     kernel_size=3,
                     strides=2,
                     padding="same",
-                    output_padding=(0, 1),
                 ),
             ]
         )
@@ -334,7 +251,7 @@ class DCVAE(tf.keras.Model):
     # Run the autoencoder for one batch, calculate the errors, calculate the
     #  gradients and update the layer weights.
     @tf.function
-    def train_on_batch(self, x, optimizer):
+    def train_on_batch(self, x, ignore):
         with tf.GradientTape() as tape:
             loss_values = self.compute_loss(x, training=True)
             overall_loss = (
@@ -351,7 +268,9 @@ class DCVAE(tf.keras.Model):
             gradients = [
                 tf.clip_by_norm(g, self.specification["maxGradient"]) for g in gradients
             ]
-        optimizer.apply_gradients(zip(gradients, self.trainable_variables))
+        self.specification["optimizer"].apply_gradients(
+            zip(gradients, self.trainable_variables)
+        )
 
     # Update the metrics
     def update_metrics(self, trainDS, testDS):
@@ -567,9 +486,40 @@ class DCVAE(tf.keras.Model):
 
 
 # Load model and initial weights
-def getModel(specification, epoch=1):
+def getModel(specification, optimizer, epoch=1):
     # Instantiate the model
-    autoencoder = DCVAE(specification)
+    # autoencoder = DCVAE(specification)
+
+    class DCVAELoader(tf.keras.Model):
+        @classmethod
+        def from_config(cls, config, custom_objects=None):
+            return DCVAE(specification=specification, **config)
+
+    # If Epoch is None - set it to latest saved value
+    if epoch is None:
+        try:
+            weights_dir = ("%s/MLP/%s/weights") % (
+                os.getenv("SCRATCH"),
+                specification["modelName"],
+            )
+            # Find all the subdirectories in the weights directory
+            subdirs = [
+                os.path.join(weights_dir, d)
+                for d in os.listdir(weights_dir)
+                if os.path.isdir(os.path.join(weights_dir, d))
+            ]
+            # Sort the subdirectories by name (which includes the epoch number)
+            subdirs.sort()
+            # Get the latest subdirectory
+            latest_subdir = subdirs[
+                -2
+            ]  # not -1 because it might not have saved successfully
+            # Get the epoch number from the subdirectory name
+            epoch = int(os.path.basename(latest_subdir).split("_")[1])
+            print("Continuing from epoch: %d" % epoch)
+        except Exception as e:
+            print("No saved weights found - starting from scratch")
+            epoch = 1
 
     # If we are doing a restart, load the weights
     if epoch > 1:
@@ -578,7 +528,15 @@ def getModel(specification, epoch=1):
             specification["modelName"],
             epoch,
         )
-        load_status = autoencoder.load_weights("%s/ckpt" % weights_dir).expect_partial()
-        load_status.assert_existing_objects_matched()
+        autoencoder = tf.keras.models.load_model(
+            "%s/ckpt.keras" % weights_dir,
+            compile=False,
+            custom_objects={"DCVAE": DCVAELoader},
+        )
+        # Seperate compile to eliminate strange error message about 2 optimizers
+        autoencoder.compile()
+    else:
+        autoencoder = DCVAE(specification)
+        autoencoder.compile(optimizer=optimizer)
 
-    return autoencoder
+    return (autoencoder, epoch)

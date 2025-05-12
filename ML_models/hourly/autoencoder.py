@@ -21,14 +21,14 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--epoch", help="Restart from epoch", type=int, required=False, default=1
+    "--epoch", help="Restart from epoch", type=int, required=False, default=None
 )
 args = parser.parse_args()
 
 # Load the data path, data source, and model specification
 from specify import specification
-from ML_models.default.makeDataset import getDataset
-from ML_models.default.autoencoderModel import DCVAE, getModel
+from ML_models.hourly.makeDataset import getDataset
+from ML_models.hourly.autoencoderModel import getModel
 
 
 # Get Datasets
@@ -61,7 +61,9 @@ def getDatasets():
 with specification["strategy"].scope():
     trainingData, validationData, testData = getDatasets()
 
-    autoencoder = getModel(specification, epoch=args.epoch)
+    autoencoder, start_epoch = getModel(
+        specification, specification["optimizer"], epoch=args.epoch
+    )
 
     # logfile to output the metrics
     log_FN = ("%s/MLP/%s/logs/Training") % (
@@ -79,7 +81,7 @@ with specification["strategy"].scope():
         )
 
     # For each Epoch: train, save state, and report progress
-    for epoch in range(args.epoch, specification["nEpochs"] + 1):
+    for epoch in range(start_epoch, specification["nEpochs"] + 1):
         start_time = time.time()
 
         # Train on all batches in the training data
@@ -88,7 +90,7 @@ with specification["strategy"].scope():
                 mbatch = tf.where(specification["trainingMask"] != 0, batch[-1], 0.0)
                 batch = (batch[:-1], mbatch)
             per_replica_op = specification["strategy"].run(
-                autoencoder.train_on_batch, args=(batch, specification["optimizer"])
+                autoencoder.train_on_batch, args=(batch, None)
             )
 
         end_training_time = time.time()
@@ -108,7 +110,7 @@ with specification["strategy"].scope():
         )
         if not os.path.isdir(save_dir):
             os.makedirs(save_dir)
-        autoencoder.save_weights("%s/ckpt" % save_dir)
+        autoencoder.save("%s/ckpt.keras" % save_dir, include_optimizer=True)
 
         # Update the log file with current metrics
         autoencoder.updateLogfile(logfile_writer, epoch)

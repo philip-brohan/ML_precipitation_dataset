@@ -33,6 +33,13 @@ parser.add_argument(
     required=True,
 )
 parser.add_argument(
+    "--year",
+    help="Restrict to selected year",
+    type=int,
+    required=False,
+    default=None,
+)
+parser.add_argument(
     "--month",
     help="Restrict to selected month",
     type=int,
@@ -114,7 +121,10 @@ for month in range(1, 13):
             if args.hour is not None and hour != args.hour:
                 continue
             try:
-                cubes = load_fitted(month, day, hour, variable=args.variable)
+                lday = day
+                if month == 2 and day == 29:
+                    lday = 28
+                cubes = load_fitted(month, lday, hour, variable=args.variable)
                 fitted["%02d-%02d_%02d" % (month, day, hour)] = [
                     cubes[0].data,
                     cubes[1].data,
@@ -126,6 +136,7 @@ for month in range(1, 13):
 # Go through raw dataset  and make normalized tensors
 trainingData = getDataset(
     args.variable,
+    year=args.year,
     month=args.month,
     day=args.day,
     hour=args.hour,
@@ -143,10 +154,7 @@ for batch in trainingData:
 
     # normalize
     raw = batch[0].numpy().squeeze()
-    lday = day
-    if month == 2 and day == 29:
-        lday = 28
-    normalized = match_normal(raw, fitted["%02d-%02d_%02d" % (month, lday, hour)])
+    normalized = match_normal(raw, fitted["%02d-%02d_%02d" % (month, day, hour)])
     ict = tf.convert_to_tensor(normalized, tf.float32)
     tf.debugging.check_numerics(
         ict, "Bad data %04d-%02d-%02d:%02d %02d" % (year, month, day, hour, member_idx)

@@ -21,6 +21,13 @@ parser.add_argument(
     required=True,
 )
 parser.add_argument(
+    "--year",
+    help="Restrict to selected year",
+    type=int,
+    required=False,
+    default=None,
+)
+parser.add_argument(
     "--month",
     help="Restrict to selected month",
     type=int,
@@ -56,6 +63,8 @@ count = 0
 bad = 0
 missing = 0
 for year in range(1961, 1990 + 1):
+    if args.year is not None and year != args.year:
+        continue
     for month in range(1, 13):
         if args.month is not None and month != args.month:
             continue
@@ -83,7 +92,12 @@ for year in range(1961, 1990 + 1):
                                 "Missing data for %04d-%02d-%02d:%02d_%02d %d"
                                 % (year, month, day, hour, member_idx, idx)
                             )
-                            missing += 1
+                            z_file = "%s/0.0.%d.%d" % (fn, member_idx, idx)
+                            if os.path.exists(z_file + ".__lock"):
+                                os.rename(z_file + ".__lock", z_file)
+                                print("Recovered from lock file")
+                            else:
+                                missing += 1
                 except ValueError as e:
                     pass
 

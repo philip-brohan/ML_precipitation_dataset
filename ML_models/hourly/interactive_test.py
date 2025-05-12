@@ -11,7 +11,7 @@
 import tensorflow as tf
 
 # Tensor of desired size to start with
-imt = tf.zeros(shape=([1, 721, 1440, 1]))
+imt = tf.zeros(shape=([1, 256, 512, 1]))
 
 print(" ")
 tf.print(tf.shape(imt))
@@ -59,26 +59,44 @@ step = tf.keras.layers.Conv2D(
 )(step)
 tf.print(tf.shape(step))
 step = tf.keras.layers.Conv2DTranspose(
-    filters=40, kernel_size=3, strides=2, padding="same", output_padding=(0, 0)
+    filters=40,
+    kernel_size=3,
+    strides=2,
+    padding="same",
 )(step)
 tf.print(tf.shape(step))
 step = tf.keras.layers.Conv2DTranspose(
-    filters=20, kernel_size=3, strides=2, padding="same", output_padding=(1, 1)
+    filters=20,
+    kernel_size=3,
+    strides=2,
+    padding="same",
 )(step)
 tf.print(tf.shape(step))
 step = tf.keras.layers.Conv2DTranspose(
-    filters=10, kernel_size=3, strides=2, padding="same", output_padding=(0, 1)
+    filters=10,
+    kernel_size=3,
+    strides=2,
+    padding="same",
 )(step)
 tf.print(tf.shape(step))
 step = tf.keras.layers.Conv2DTranspose(
-    filters=10, kernel_size=3, strides=2, padding="same", output_padding=(0, 1)
+    filters=10,
+    kernel_size=3,
+    strides=2,
+    padding="same",
 )(step)
 tf.print(tf.shape(step))
 step = tf.keras.layers.Conv2DTranspose(
-    filters=5, kernel_size=3, strides=2, padding="same", output_padding=(0, 1)
+    filters=5,
+    kernel_size=3,
+    strides=2,
+    padding="same",
 )(step)
 tf.print(tf.shape(step))
 step = tf.keras.layers.Conv2DTranspose(
-    filters=1, kernel_size=3, strides=2, padding="same", output_padding=(0, 1)
+    filters=1,
+    kernel_size=3,
+    strides=2,
+    padding="same",
 )(step)
 tf.print(tf.shape(step))

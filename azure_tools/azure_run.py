@@ -86,7 +86,7 @@ ml_client = MLClient(
 # define the job
 if args.name is None:
     args.name = name
-args.name = "%s_%s" % (args.name, datetime.now().strftime("%Y%m%d%H%M%S"))
+# args.name = "%s_%s" % (args.name, datetime.now().strftime("%Y%m%d%H%M%S"))
 command_job = command(
     name=args.name,
     experiment_name=args.experiment,
