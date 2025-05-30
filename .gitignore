@@ -148,8 +148,8 @@ SCRATCH
 .vscode/
 
 # Temporary models
-ERA5_P_to_ERA5_P
-TWCR_P_to_CRU
-TWCR_multi
-TWCR_P_to_ERA5_P
-TWCR_P_to_TWCR_P
+hourly_double_features
+hourly_no_stride
+hourly_no_stride_no_sample
+hourly+date
+hourly+lat
