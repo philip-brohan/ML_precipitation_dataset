@@ -14,10 +14,10 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from ML_models.default.makeDataset import getDataset
-from ML_models.default.autoencoderModel import getModel
+from makeDataset import getDataset
+from autoencoderModel import getModel
 
-from ML_models.default.gmUtils import plotValidationField
+from gmUtils import plotValidationField
 
 from specify import specification
 

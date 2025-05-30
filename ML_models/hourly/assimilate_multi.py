@@ -18,9 +18,9 @@ from statistics import mean
 from specify import specification
 
 
-from ML_models.default.makeDataset import getDataset
-from ML_models.default.autoencoderModel import getModel
-from ML_models.default.gmUtils import (
+from makeDataset import getDataset
+from autoencoderModel import getModel
+from gmUtils import (
     computeScalarStats,
     plotScalarStats,
 )

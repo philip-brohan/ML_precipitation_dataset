@@ -3,7 +3,7 @@
 # Plot time-series of training progress
 
 from specify import specification
-from ML_models.default.gmUtils import loadHistory, plotTrainingMetrics
+from gmUtils import loadHistory, plotTrainingMetrics
 
 import argparse
 
@@ -60,7 +60,7 @@ if args.comparator is not None:
 plotTrainingMetrics(
     specification,
     hts,
-    fileName="training.webp",
+    fileName="outputs/training.webp",
     chts=chts,
     aymax=args.ymax,
     epoch=epoch,

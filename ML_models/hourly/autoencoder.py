@@ -27,8 +27,8 @@ args = parser.parse_args()
 
 # Load the data path, data source, and model specification
 from specify import specification
-from ML_models.hourly.makeDataset import getDataset
-from ML_models.hourly.autoencoderModel import getModel
+from makeDataset import getDataset
+from autoencoderModel import getModel
 
 
 # Get Datasets

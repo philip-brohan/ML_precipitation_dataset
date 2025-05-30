@@ -49,6 +49,7 @@ def loadHistory(LSC, offset=-1, max_epoch=None):
     history["epoch"] = []
     for srecord in serialized_records:
         event = event_pb2.Event.FromString(srecord.numpy())
+        print(event)
         for value in event.summary.value:
             t = tensor_util.MakeNdarray(value.tensor)
             if not value.tag in history.keys():
@@ -68,6 +69,7 @@ def loadHistory(LSC, offset=-1, max_epoch=None):
     ymax = 0
     ymin = 1000000
     hts = {}
+    print(history.keys())
     n_epochs = len(history["Train_loss"])
     if max_epoch is not None:
         n_epochs = min(max_epoch, n_epochs)

@@ -14,6 +14,6 @@ import tensorflow as tf
 
 # Load the data path, data source, and model specification
 from specify import specification
-from ML_models.default.makeDataset import getDataset
+from makeDataset import getDataset
 
 trainingData = getDataset(specification, purpose="Train")

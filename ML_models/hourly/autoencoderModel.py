@@ -393,12 +393,37 @@ class DCVAE(tf.keras.Model):
     # Save metrics to a log file
     def updateLogfile(self, logfile_writer, epoch):
         with logfile_writer.as_default():
-            tf.summary.write(
+            # For vector metrics like RMSE, log each component separately
+            for i in range(self.specification["nOutputChannels"]):
+                var_name = (
+                    self.specification["outputNames"][i]
+                    if hasattr(self.specification, "outputNames")
+                    else f"var_{i}"
+                )
+                tf.summary.scalar(
+                    f"Train_RMSE/{var_name}", self.train_rmse[i], step=epoch
+                )
+                tf.summary.scalar(
+                    f"Test_RMSE/{var_name}", self.test_rmse[i], step=epoch
+                )
+
+                if self.specification["trainingMask"] is not None:
+                    tf.summary.scalar(
+                        f"Train_RMSE_masked/{var_name}",
+                        self.train_rmse_m[i],
+                        step=epoch,
+                    )
+                    tf.summary.scalar(
+                        f"Test_RMSE_masked/{var_name}", self.test_rmse_m[i], step=epoch
+                    )
+
+            # Continue with scalar metrics
+            tf.summary.scalar(
                 "Train_RMSE",
                 self.train_rmse,
                 step=epoch,
             )
-            tf.summary.write(
+            tf.summary.scalar(
                 "Train_RMSE_masked",
                 self.train_rmse_m,
                 step=epoch,
@@ -408,16 +433,6 @@ class DCVAE(tf.keras.Model):
             tf.summary.scalar("Train_logpz", self.train_logpz, step=epoch)
             tf.summary.scalar("Train_logqz_x", self.train_logqz_x, step=epoch)
             tf.summary.scalar("Train_loss", self.train_loss, step=epoch)
-            tf.summary.write(
-                "Test_RMSE",
-                self.test_rmse,
-                step=epoch,
-            )
-            tf.summary.write(
-                "Test_RMSE_masked",
-                self.test_rmse_m,
-                step=epoch,
-            )
             tf.summary.scalar("Test_logpz_g", self.test_logpz_g, step=epoch)
             tf.summary.scalar("Test_logqz_g", self.test_logqz_g, step=epoch)
             tf.summary.scalar("Test_logpz", self.test_logpz, step=epoch)
@@ -426,6 +441,7 @@ class DCVAE(tf.keras.Model):
             tf.summary.scalar(
                 "Regularization_loss", self.regularization_loss, step=epoch
             )
+            logfile_writer.flush()
 
     # Print out the current metrics
     def printState(self):
@@ -484,6 +500,8 @@ class DCVAE(tf.keras.Model):
             )
         )
 
+    sys.stdout.flush()
+
 
 # Load model and initial weights
 def getModel(specification, optimizer, epoch=1):
@@ -510,10 +528,10 @@ def getModel(specification, optimizer, epoch=1):
             ]
             # Sort the subdirectories by name (which includes the epoch number)
             subdirs.sort()
-            # Get the latest subdirectory
+            # Get the latest subdirectory with
             latest_subdir = subdirs[
                 -2
-            ]  # not -1 because it might not have saved successfully
+            ]  # not -1 because it might have died in the middle of saving
             # Get the epoch number from the subdirectory name
             epoch = int(os.path.basename(latest_subdir).split("_")[1])
             print("Continuing from epoch: %d" % epoch)
@@ -530,11 +548,9 @@ def getModel(specification, optimizer, epoch=1):
         )
         autoencoder = tf.keras.models.load_model(
             "%s/ckpt.keras" % weights_dir,
-            compile=False,
+            compile=True,
             custom_objects={"DCVAE": DCVAELoader},
         )
-        # Seperate compile to eliminate strange error message about 2 optimizers
-        autoencoder.compile()
     else:
         autoencoder = DCVAE(specification)
         autoencoder.compile(optimizer=optimizer)

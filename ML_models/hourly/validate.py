@@ -14,9 +14,9 @@ import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import tensorflow as tf
 
-from ML_models.hourly.makeDataset import getDataset
-from ML_models.hourly.autoencoderModel import getModel
-from ML_models.hourly.gmUtils import plotValidationField
+from makeDataset import getDataset
+from autoencoderModel import getModel
+from gmUtils import plotValidationField
 
 from specify import specification
 
