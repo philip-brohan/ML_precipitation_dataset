@@ -128,8 +128,10 @@ command_job = command(
     environment_variables={
         "SCRATCH": "${{outputs.SCRATCH}}",
         "TWCR_HOURLY": "${{inputs.TWCR_HOURLY}}",
+        "AZUREML_FLUSH_INTERVAL": "10",  # Flush output every 10 seconds
+        "PYTHONUNBUFFERED": "1",  # Keep Python from buffering output
     },
-    command="export PYTHONPATH=$(pwd):$PYTHONPATH ; " + "%s" % cmd,
+    command="export PYTHONPATH=$(pwd):$PYTHONPATH ; %s" % cmd,
 )
 
 if args.dryrun:
@@ -137,6 +139,6 @@ if args.dryrun:
     sys.exit(0)
 
 # Submit the job
-returned_job = ml_client.jobs.create_or_update(command_job)
+returned_job = ml_client.jobs.create_or_update(command_job, stream=True)
 # get a URL for the status of the job
 print(returned_job.studio_url)
