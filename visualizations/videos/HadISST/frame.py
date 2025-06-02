@@ -40,7 +40,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-opdir = "%s/MLP/normalized_datasets/HadISST_tf_MM/videos/v1" % (os.getenv("SCRATCH"),)
+opdir = "%s/MLP/normalized_datasets/HadISST_tf_MM/videos/v1" % (os.getenv("PDIR"),)
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 

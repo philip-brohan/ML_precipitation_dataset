@@ -10,7 +10,7 @@ sDir = os.path.dirname(os.path.realpath(__file__))
 
 def is_done(month, day, hour, variable):
     fn = "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/shape_m%02d_d%02d_h%02d.nc" % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         variable,
         month,
         day,

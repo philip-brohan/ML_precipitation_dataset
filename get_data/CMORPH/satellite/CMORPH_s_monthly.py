@@ -26,7 +26,7 @@ def load(year=None, month=None):
         "%s/CMORPH/satellite+/monthly/precipitation/%04d/"
         + "CMORPH_total_precipitation_mon_0.5x0.5_quasi-global_%04d_v1.0.nc"
     ) % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         year,
         year,
     )

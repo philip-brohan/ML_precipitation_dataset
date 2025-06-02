@@ -26,15 +26,13 @@ from normalize.SPI_monthly.HadISST_tf_MM.normalize import match_normal, load_fit
 sDir = os.path.dirname(os.path.realpath(__file__))
 
 # Get the date range from the input zarr array
-fn = "%s/MLP/raw_datasets/HadISST/temperature_zarr" % (os.getenv("SCRATCH"),)
+fn = "%s/MLP/raw_datasets/HadISST/temperature_zarr" % (os.getenv("PDIR"),)
 input_zarr = zarr.open(fn, mode="r")
 AvailableMonths = input_zarr.attrs["AvailableMonths"]
 
 
 # Create the output zarr array
-fn = "%s/MLP/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (
-    os.getenv("SCRATCH"),
-)
+fn = "%s/MLP/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (os.getenv("PDIR"),)
 # Delete any previous version
 if os.path.exists(fn):
     rmtree(fn)

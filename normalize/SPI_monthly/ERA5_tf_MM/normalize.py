@@ -12,15 +12,15 @@ import iris
 def load_fitted(month, variable="total_precipitation"):
     shape = iris.load_cube(
         "%s/MLP/normalization/SPI_monthly/ERA5_tf_MM/%s/shape_m%02d.nc"
-        % (os.getenv("SCRATCH"), variable, month),
+        % (os.getenv("PDIR"), variable, month),
     )
     location = iris.load_cube(
         "%s/MLP/normalization/SPI_monthly/ERA5_tf_MM/%s/location_m%02d.nc"
-        % (os.getenv("SCRATCH"), variable, month),
+        % (os.getenv("PDIR"), variable, month),
     )
     scale = iris.load_cube(
         "%s/MLP/normalization/SPI_monthly/ERA5_tf_MM/%s/scale_m%02d.nc"
-        % (os.getenv("SCRATCH"), variable, month),
+        % (os.getenv("PDIR"), variable, month),
     )
     return (shape, location, scale)
 

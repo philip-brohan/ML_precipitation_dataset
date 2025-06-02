@@ -12,15 +12,15 @@ import iris
 def load_fitted(month, day, hour, variable="PRATE"):
     shape = iris.load_cube(
         "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/shape_m%02d_d%02d_h%02d.nc"
-        % (os.getenv("SCRATCH"), variable, month, day, hour),
+        % (os.getenv("PDIR"), variable, month, day, hour),
     )
     location = iris.load_cube(
         "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/location_m%02d_d%02d_h%02d.nc"
-        % (os.getenv("SCRATCH"), variable, month, day, hour),
+        % (os.getenv("PDIR"), variable, month, day, hour),
     )
     scale = iris.load_cube(
         "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/scale_m%02d_d%02d_h%02d.nc"
-        % (os.getenv("SCRATCH"), variable, month, day, hour),
+        % (os.getenv("PDIR"), variable, month, day, hour),
     )
     return (shape, location, scale)
 

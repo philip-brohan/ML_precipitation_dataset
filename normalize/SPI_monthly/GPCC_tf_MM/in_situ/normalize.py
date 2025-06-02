@@ -12,15 +12,15 @@ import iris
 def load_fitted(month):
     shape = iris.load_cube(
         "%s/MLP/normalization/SPI_monthly/GPCC_tf_MM/in_situ/shape_m%02d.nc"
-        % (os.getenv("SCRATCH"), month),
+        % (os.getenv("PDIR"), month),
     )
     location = iris.load_cube(
         "%s/MLP/normalization/SPI_monthly/GPCC_tf_MM/in_situ/location_m%02d.nc"
-        % (os.getenv("SCRATCH"), month),
+        % (os.getenv("PDIR"), month),
     )
     scale = iris.load_cube(
         "%s/MLP/normalization/SPI_monthly/GPCC_tf_MM/in_situ/scale_m%02d.nc"
-        % (os.getenv("SCRATCH"), month),
+        % (os.getenv("PDIR"), month),
     )
     return (shape, location, scale)
 

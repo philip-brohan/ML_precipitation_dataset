@@ -483,7 +483,7 @@ def getModel(specification, optimizer, epoch=1):
     if epoch is None:
         try:
             weights_dir = ("%s/MLP/%s/weights") % (
-                os.getenv("SCRATCH"),
+                os.getenv("PDIR"),
                 specification["modelName"],
             )
             # Find all the subdirectories in the weights directory
@@ -508,7 +508,7 @@ def getModel(specification, optimizer, epoch=1):
     # If we are doing a restart, load the weights
     if epoch > 1:
         weights_dir = ("%s/MLP/%s/weights/Epoch_%04d") % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             specification["modelName"],
             epoch,
         )

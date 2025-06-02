@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Get monthly 20CRv3 members  data for several years, and store on SCRATCH.
+# Get monthly 20CRv3 members  data for several years, and store on PDIR.
 
 import os
 import argparse
@@ -18,7 +18,7 @@ for year in range(args.startyear, args.endyear + 1):
         "PRATE",
     ]:
         opfile = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem080.nc" % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             year,
             var,
             year,

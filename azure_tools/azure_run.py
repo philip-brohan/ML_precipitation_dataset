@@ -94,12 +94,12 @@ command_job = command(
     environment="MLP-Azure@latest",
     code="/home/users/philip.brohan/Projects/ML_precipitation_dataset",
     outputs={
-        "SCRATCH": Output(
+        "PDIR": Output(
             type=AssetTypes.URI_FOLDER,
             path=(
                 "azureml://subscriptions/%s/"
                 + "resourcegroups/%s/workspaces/%s/"
-                + "datastores/dcvaelake_copper/paths/SCRATCH/"
+                + "datastores/saexploratory02/paths/default/MLP"
             )
             % (
                 os.getenv("AZML_SUBSCRIPTION_ID"),
@@ -126,7 +126,7 @@ command_job = command(
         ),
     },
     environment_variables={
-        "SCRATCH": "${{outputs.SCRATCH}}",
+        "PDIR": "${{outputs.PDIR}}",
         "TWCR_HOURLY": "${{inputs.TWCR_HOURLY}}",
         "AZUREML_FLUSH_INTERVAL": "10",  # Flush output every 10 seconds
         "PYTHONUNBUFFERED": "1",  # Keep Python from buffering output

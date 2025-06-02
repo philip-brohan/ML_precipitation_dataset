@@ -8,7 +8,7 @@ import iris.coord_systems
 CMS = iris.coord_systems.RotatedGeogCS(90, 180, 0)
 
 version = "v1"
-opdir = "%s/HadISST/%s" % (os.getenv("SCRATCH"), version)
+opdir = "%s/HadISST/%s" % (os.getenv("PDIR"), version)
 
 
 # Add a function to add the coord system to a cube (in-place)

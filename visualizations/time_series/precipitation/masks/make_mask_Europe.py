@@ -18,7 +18,7 @@ raw.data += 1
 raw.data[(lons < -15) | (lons > 30)] = 0
 raw.data[(lats < 35) | (lats > 65)] = 0
 
-lDir = "%s/MLP/visualizations/time_series/masks" % os.getenv("SCRATCH")
+lDir = "%s/MLP/visualizations/time_series/masks" % os.getenv("PDIR")
 if not os.path.exists(lDir):
     os.makedirs(lDir)
 

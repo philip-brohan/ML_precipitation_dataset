@@ -41,16 +41,14 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-opdir = "%s/MLP/normalized_datasets/plots/HadCRUT_tf_MM" % (os.getenv("SCRATCH"),)
+opdir = "%s/MLP/normalized_datasets/plots/HadCRUT_tf_MM" % (os.getenv("PDIR"),)
 os.makedirs(opdir, exist_ok=True)
 
-fn = "%s/MLP/normalized_datasets/HadCRUT_tf_MM/temperature_zarr" % (
-    os.getenv("SCRATCH"),
-)
+fn = "%s/MLP/normalized_datasets/HadCRUT_tf_MM/temperature_zarr" % (os.getenv("PDIR"),)
 
 # Get the raw data
 raw_zarr = zarr.open(
-    "%s/MLP/raw_datasets/HadCRUT/temperature_zarr" % (os.getenv("SCRATCH"),),
+    "%s/MLP/raw_datasets/HadCRUT/temperature_zarr" % (os.getenv("PDIR"),),
     mode="r",
 )
 AvailableMonths = raw_zarr.attrs["AvailableMonths"]
@@ -65,8 +63,7 @@ raw.data.mask[raw.data.data == 0] = True
 
 # Get the normalized data
 normalized_zarr = zarr.open(
-    "%s/MLP/normalized_datasets/HadCRUT_tf_MM/temperature_zarr"
-    % (os.getenv("SCRATCH"),),
+    "%s/MLP/normalized_datasets/HadCRUT_tf_MM/temperature_zarr" % (os.getenv("PDIR"),),
     mode="r",
 )
 

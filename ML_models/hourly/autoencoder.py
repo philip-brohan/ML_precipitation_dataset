@@ -67,7 +67,7 @@ with specification["strategy"].scope():
 
     # logfile to output the metrics
     log_FN = ("%s/MLP/%s/logs/Training") % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         specification["modelName"],
     )
     if not os.path.isdir(os.path.dirname(log_FN)):
@@ -104,7 +104,7 @@ with specification["strategy"].scope():
 
         # Save model state
         save_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             specification["modelName"],
             epoch,
         )

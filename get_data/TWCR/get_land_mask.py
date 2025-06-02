@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/20CR/version_3/fixed" % os.getenv("SCRATCH"),
+    default="%s/20CR/version_3/fixed" % os.getenv("PDIR"),
 )
 args = parser.parse_args()
 if not os.path.isdir(args.opdir):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Get monthly ERA5 data for several years, and store on SCRATCH.
+# Get monthly ERA5 data for several years, and store on PDIR.
 
 import os
 from datetime import datetime
@@ -19,7 +19,7 @@ for year in range(args.startyear, args.endyear + 1):
         "total_precipitation",
     ]:
         opfile = "%s/ERA5/monthly/reanalysis/%04d/%s.nc" % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             year,
             var,
         )

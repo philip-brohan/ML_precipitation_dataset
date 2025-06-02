@@ -6,7 +6,7 @@ import os
 from urllib.request import urlretrieve
 
 
-opdir = "%s/GPCP/" % (os.getenv("SCRATCH"))
+opdir = "%s/GPCP/" % (os.getenv("PDIR"))
 if not os.path.isdir(opdir):
     os.makedirs(opdir, exist_ok=True)
 

@@ -27,7 +27,7 @@ parser.add_argument(
     type=str,
     help="Local directory",
     required=False,
-    default="%s/20CR/version_3" % os.getenv("SCRATCH"),
+    default="%s/20CR/version_3" % os.getenv("PDIR"),
 )
 parser.add_argument(
     "--remote", type=str, help="Remote directory", required=False, default="hourly"

@@ -22,7 +22,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 opdir = "%s/MLP/normalized_datasets/ERA5_tf_MM/videos/%s" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 

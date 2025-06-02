@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 # Create the output zarr array if it doesn't exist
 fn = "%s/MLP/raw_datasets/ERA5/%s_zarr" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 

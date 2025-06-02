@@ -33,7 +33,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-opdir = "%s/MLP/visualizations/maps/composite" % (os.getenv("SCRATCH"),)
+opdir = "%s/MLP/visualizations/maps/composite" % (os.getenv("PDIR"),)
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 
@@ -41,21 +41,19 @@ if not os.path.isdir(opdir):
 cmap = cmocean.cm.balance
 
 # Get data for selected month - cru
-fn = "%s/MLP/normalized_datasets/CRU_tf_MM/precipitation_zarr" % (os.getenv("SCRATCH"),)
+fn = "%s/MLP/normalized_datasets/CRU_tf_MM/precipitation_zarr" % (os.getenv("PDIR"),)
 zarr_array = zarr.open(fn, mode="r")
 AvailableMonths = zarr_array.attrs["AvailableMonths"]
 data_cru = zarr_array[:, :, AvailableMonths["%04d-%02d" % (args.year, args.month)]]
 del zarr_array
 # - GPCC
-fn = "%s/MLP/normalized_datasets/GPCC_tf_MM/precipitation_zarr" % (
-    os.getenv("SCRATCH"),
-)
+fn = "%s/MLP/normalized_datasets/GPCC_tf_MM/precipitation_zarr" % (os.getenv("PDIR"),)
 zarr_array = zarr.open(fn, mode="r")
 AvailableMonths = zarr_array.attrs["AvailableMonths"]
 data_gpcc = zarr_array[:, :, AvailableMonths["%04d-%02d" % (args.year, args.month)]]
 del zarr_array
 # - TWCR
-fn = "%s/MLP/normalized_datasets/TWCR_tf_MM/PRATE_zarr" % (os.getenv("SCRATCH"),)
+fn = "%s/MLP/normalized_datasets/TWCR_tf_MM/PRATE_zarr" % (os.getenv("PDIR"),)
 zarr_array = zarr.open(fn, mode="r")
 AvailableMonths = zarr_array.attrs["AvailableMonths"]
 idx = AvailableMonths["%04d-%02d_01" % (args.year, args.month)]

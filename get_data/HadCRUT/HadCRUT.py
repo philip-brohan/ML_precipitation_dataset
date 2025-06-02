@@ -8,7 +8,7 @@ import iris.coord_systems
 CMS = iris.coord_systems.RotatedGeogCS(90, 180, 0)
 
 version = "5.0.2.0"
-opdir = "%s/HadCRUT/%s" % (os.getenv("SCRATCH"), version)
+opdir = "%s/HadCRUT/%s" % (os.getenv("PDIR"), version)
 
 # Only using a subset of the members
 members = [

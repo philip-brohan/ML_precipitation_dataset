@@ -18,7 +18,7 @@ def add_coord_system(cbe):
 def load(year=None, month=None, grid=None):
     if year is None or month is None:
         raise Exception("Year and month must be specified")
-    fname = ("%s/GPCP/precip.mon.mean.nc") % (os.getenv("SCRATCH"),)
+    fname = ("%s/GPCP/precip.mon.mean.nc") % (os.getenv("PDIR"),)
     if not os.path.isfile(fname):
         raise Exception("No data file %s" % fname)
     ftt = iris.Constraint(

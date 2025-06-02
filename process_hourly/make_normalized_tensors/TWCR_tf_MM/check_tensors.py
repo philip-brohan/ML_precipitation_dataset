@@ -52,7 +52,7 @@ args = parser.parse_args()
 
 # Find the raw_tensor zarr array
 fn = "%s/MLP/normalized_datasets_hourly/TWCR_tf_MM/%s_zarr" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 

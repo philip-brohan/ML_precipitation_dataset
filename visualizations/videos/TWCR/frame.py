@@ -42,7 +42,7 @@ parser.add_argument("--variable", help="Variable", type=str, required=True)
 args = parser.parse_args()
 
 opdir = "%s/MLP/normalized_datasets/TWCR_tf_MM/videos/%s" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 if not os.path.isdir(opdir):
@@ -105,7 +105,7 @@ dt_points = np.linspace(
 cbe = grids.E5sCube.copy()
 for dtts in dt_points:
     ndata = interpolator(dtts)
-    cbe.data = np.ma.MaskedArray(ndata,ndata==0)
+    cbe.data = np.ma.MaskedArray(ndata, ndata == 0)
 
     fig = Figure(
         figsize=(20, 10),

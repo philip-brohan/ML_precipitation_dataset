@@ -25,7 +25,7 @@ def load(year=None, month=None, grid=None):
         "%s/GPCC/in-situ/monthly/precipitation/%04d/"
         + "GPCC_total_precipitation_mon_0.25x0.25_global_%04d_v2020.0.nc"
     ) % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         year,
         year,
     )

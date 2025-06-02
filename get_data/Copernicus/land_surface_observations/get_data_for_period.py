@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Get monthly Copernicus in-situ precip observations for several years, and store on SCRATCH.
+# Get monthly Copernicus in-situ precip observations for several years, and store on PDIR.
 
 import os
 import argparse
@@ -16,7 +16,7 @@ for year in range(args.startyear, args.endyear + 1):
         glob.glob(
             "%s/Copernicus/land_surface_observations/monthly/precipitation/unrestricted/%04d/*.csv"
             % (
-                os.getenv("SCRATCH"),
+                os.getenv("PDIR"),
                 year,
             )
         )

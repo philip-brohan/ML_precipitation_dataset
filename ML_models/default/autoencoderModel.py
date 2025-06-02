@@ -574,7 +574,7 @@ def getModel(specification, epoch=1):
     # If we are doing a restart, load the weights
     if epoch > 1:
         weights_dir = ("%s/MLP/%s/weights/Epoch_%04d") % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             specification["modelName"],
             epoch,
         )

@@ -2,7 +2,7 @@
 
 # Read in monthly variable from GPCC - regrid to model resolution
 # Convert into a TensorFlow tensor.
-# Serialise and store on $SCRATCH.
+# Serialise and store on $PDIR.
 
 import os
 import sys
@@ -30,7 +30,7 @@ parser.add_argument("--year", help="Year", type=int, required=True)
 parser.add_argument("--month", help="Integer month", type=int, required=True)
 args = parser.parse_args()
 
-fn = "%s/MLP/raw_datasets/GPCC/in_situ/precipitation_zarr" % (os.getenv("SCRATCH"),)
+fn = "%s/MLP/raw_datasets/GPCC/in_situ/precipitation_zarr" % (os.getenv("PDIR"),)
 
 dataset = ts.open(
     {

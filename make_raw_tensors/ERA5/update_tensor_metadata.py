@@ -22,7 +22,7 @@ args = parser.parse_args()
 
 # Find the raw_tensor zarr array
 fn = "%s/MLP/raw_datasets/ERA5/%s_zarr" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 

@@ -2,7 +2,7 @@
 
 # Read in monthly variable from TWCR - regrid to model resolution
 # Convert into a TensorFlow tensor.
-# Serialise and store on $SCRATCH.
+# Serialise and store on $PDIR.
 
 import os
 import sys
@@ -37,7 +37,7 @@ parser.add_argument("--variable", help="Variable name", type=str, required=True)
 args = parser.parse_args()
 
 fn = "%s/MLP/raw_datasets/TWCR/%s_zarr" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 

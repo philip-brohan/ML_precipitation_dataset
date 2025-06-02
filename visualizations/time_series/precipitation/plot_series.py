@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 from astropy.convolution import convolve
 
-sDir = "%s/MLP/visualizations/time_series/precipitation" % os.getenv("SCRATCH")
+sDir = "%s/MLP/visualizations/time_series/precipitation" % os.getenv("PDIR")
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas

@@ -13,7 +13,8 @@ parser.add_argument("--year", help="Year", type=int, required=True)
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/Copernicus/satellite_microwave/monthly/precipitation" % os.getenv("SCRATCH"),
+    default="%s/Copernicus/satellite_microwave/monthly/precipitation"
+    % os.getenv("PDIR"),
 )
 args = parser.parse_args()
 args.opdir += "/%04d" % args.year
@@ -22,18 +23,26 @@ if not os.path.isdir(args.opdir):
 
 
 ctrlB = {
-        'variable': 'all',
-        'version': 'v1.0',
-        'format': 'zip',
-        'time_aggregation': 'monthly',
-        'month': [
-            '01', '02', '03',
-            '04', '05', '06',
-            '07', '08', '09',
-            '10', '11', '12',
-        ],
-        'year': "%04d" % args.year,
-    }
+    "variable": "all",
+    "version": "v1.0",
+    "format": "zip",
+    "time_aggregation": "monthly",
+    "month": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+    ],
+    "year": "%04d" % args.year,
+}
 
 c = cdsapi.Client()
 
@@ -42,6 +51,6 @@ c.retrieve(
     ctrlB,
     "%s/download.zip" % args.opdir,
 )
-with zipfile.ZipFile("%s/download.zip" % args.opdir, 'r') as zip_ref:
+with zipfile.ZipFile("%s/download.zip" % args.opdir, "r") as zip_ref:
     zip_ref.extractall(args.opdir)
 os.remove("%s/download.zip" % args.opdir)

@@ -14,7 +14,7 @@ parser.add_argument("--year", help="Year", type=int, required=True)
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/20CR/version_3/monthly/members" % os.getenv("SCRATCH"),
+    default="%s/20CR/version_3/monthly/members" % os.getenv("PDIR"),
 )
 args = parser.parse_args()
 if not os.path.isdir(args.opdir):
@@ -40,7 +40,7 @@ def unpack_local(variable, year):
     tar.extractall(path=local_dir)
     tar.close()
     # Update the extracted file times
-    #  To stop SCRATCH deleting them as too old
+    #  To stop PDIR deleting them as too old
     nfiles = os.listdir("%s/%04d" % (local_dir, year))
     for nfile in nfiles:
         os.utime("%s/%04d/%s" % (local_dir, year, nfile), None)

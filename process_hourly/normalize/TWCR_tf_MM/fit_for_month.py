@@ -35,7 +35,7 @@ parser.add_argument(
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/MLP/normalization/SPI_hourly/TWCR_tf_MM" % os.getenv("SCRATCH"),
+    default="%s/MLP/normalization/SPI_hourly/TWCR_tf_MM" % os.getenv("PDIR"),
 )
 args = parser.parse_args()
 opdir = "%s/%s" % (args.opdir, args.variable)

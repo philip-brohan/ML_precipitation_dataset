@@ -15,7 +15,7 @@ for month in range(1, 13):
         "total_precipitation",
     ]:
         opfile = "%s/ERA5/monthly/climatology/%s_%02d.nc" % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             var,
             month,
         )
@@ -28,7 +28,7 @@ for month in range(1, 13):
                 )
             )
         opfile = "%s/ERA5/monthly/sd_climatology/%s_%02d.nc" % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             var,
             month,
         )

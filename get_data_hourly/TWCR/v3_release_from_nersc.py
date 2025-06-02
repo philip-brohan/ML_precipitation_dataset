@@ -41,14 +41,14 @@ else:
     )
 
 # Disc data dir
-ddir = "%s/20CR/version_3/" % (os.environ["SCRATCH"])
+ddir = "%s/20CR/version_3/" % (os.environ["PDIR"])
 if not os.path.isdir(ddir):
     os.makedirs(ddir)
 
 
 def _get_data_dir(version="3"):
     """Return the root directory containing 20CR netCDF files"""
-    g = "%s/20CR/version_%s/" % (os.environ["SCRATCH"], version)
+    g = "%s/20CR/version_%s/" % (os.environ["PDIR"], version)
     return g
 
 
@@ -85,7 +85,7 @@ def unpack_downloaded(variable, year):
     tar.extractall(path=local_dir)
     tar.close()
     # Update the extracted file times
-    #  To stop SCRATCH deleting them as too old
+    #  To stop PDIR deleting them as too old
     nfiles = os.listdir("%s/%04d" % (local_dir, year))
     for nfile in nfiles:
         os.utime("%s/%04d/%s" % (local_dir, year, nfile))

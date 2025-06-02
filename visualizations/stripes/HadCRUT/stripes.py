@@ -321,7 +321,7 @@ cb = fig.colorbar(
 )
 
 
-opdir = "%s/MLP/visualizations/stripes/HadCRUT/" % os.getenv("SCRATCH")
+opdir = "%s/MLP/visualizations/stripes/HadCRUT/" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 

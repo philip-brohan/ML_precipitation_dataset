@@ -9,7 +9,7 @@ sDir = os.path.dirname(os.path.realpath(__file__))
 
 def is_done(month):
     fn = "%s/MLP/normalization/SPI_monthly/CRU_tf_MM/precip/shape_m%02d.nc" % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         month,
     )
     if os.path.exists(fn):

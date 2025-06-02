@@ -14,9 +14,7 @@ def load_tensor(file_name):
 
 # Get a list of filenames containing tensors
 def getFileNames(startyear=1850, endyear=2050):
-    inFiles = sorted(
-        os.listdir("%s/MLP/raw_datasets/HadISST/v1" % (os.getenv("SCRATCH")))
-    )
+    inFiles = sorted(os.listdir("%s/MLP/raw_datasets/HadISST/v1" % (os.getenv("PDIR"))))
     inFiles = [
         fn for fn in inFiles if (int(fn[:4]) >= startyear and int(fn[:4]) <= endyear)
     ]
@@ -33,7 +31,7 @@ def getDataset(startyear=1950, endyear=2014, blur=None, cache=False):
 
     # Convert from list of file names to Dataset of source file contents
     fnFiles = [
-        "%s/MLP/raw_datasets/HadISST/v1/%s" % (os.getenv("SCRATCH"), x) for x in inFiles
+        "%s/MLP/raw_datasets/HadISST/v1/%s" % (os.getenv("PDIR"), x) for x in inFiles
     ]
     ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(fnFiles))
     ts_data = ts_data.map(load_tensor, num_parallel_calls=tf.data.experimental.AUTOTUNE)

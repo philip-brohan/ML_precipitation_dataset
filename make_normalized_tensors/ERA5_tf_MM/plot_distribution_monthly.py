@@ -42,7 +42,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 fn = "%s/MLP/normalized_datasets/ERA5_tf_MM/%s_zarr" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 
@@ -51,7 +51,7 @@ fn = "%s/MLP/normalized_datasets/ERA5_tf_MM/%s_zarr" % (
 raw_zarr = zarr.open(
     "%s/MLP/raw_datasets/ERA5/%s_zarr"
     % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         args.variable,
     ),
     mode="r",
@@ -68,7 +68,7 @@ raw.data.mask[raw.data.data == 0] = True
 normalized_zarr = zarr.open(
     "%s/MLP/normalized_datasets/ERA5_tf_MM/%s_zarr"
     % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         args.variable,
     ),
     mode="r",

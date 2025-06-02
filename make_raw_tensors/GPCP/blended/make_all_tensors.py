@@ -14,7 +14,7 @@ from tensor_utils import date_to_index, FirstYear, LastYear
 sDir = os.path.dirname(os.path.realpath(__file__))
 
 # Create the output zarr array if it doesn't exist
-fn = "%s/MLP/raw_datasets/GPCP/blended/precipitation_zarr" % (os.getenv("SCRATCH"),)
+fn = "%s/MLP/raw_datasets/GPCP/blended/precipitation_zarr" % (os.getenv("PDIR"),)
 
 # Create TensorStore dataset if it doesn't exist
 try:

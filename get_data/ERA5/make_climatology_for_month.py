@@ -14,7 +14,7 @@ parser.add_argument("--month", help="Month", type=int, required=True)
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/ERA5/monthly/climatology" % os.getenv("SCRATCH"),
+    default="%s/ERA5/monthly/climatology" % os.getenv("PDIR"),
 )
 args = parser.parse_args()
 if not os.path.isdir(args.opdir):

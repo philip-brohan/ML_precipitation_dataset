@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Get monthly CRU in-situ precip for several years, and store on SCRATCH.
+# Get monthly CRU in-situ precip for several years, and store on PDIR.
 
 import os
 import argparse
@@ -14,7 +14,7 @@ for year in range(args.startyear, args.endyear + 1):
     opfile = (
         "%s/CRU/in-situ/monthly/precipitation/%04d/CRU_total_precipitation_mon_0.5x0.5_global_%04d_v4.03.nc"
         % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             year,
             year,
         )

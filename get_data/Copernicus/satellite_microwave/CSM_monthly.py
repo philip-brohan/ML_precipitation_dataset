@@ -20,14 +20,14 @@ def add_coord_system(cbe):
 
 
 # As well as 'precip', have precip_stdv, num_obs, num_covered_hours, and quality_flag
-def load(year=None, month=None, variable='precip'):
+def load(year=None, month=None, variable="precip"):
     if year is None or month is None:
         raise Exception("Year and month must be specified")
     fname = (
         "%s/Copernicus/satellite_microwave/monthly/precipitation/%04d/"
         + "COBRA_%04d-%02d_1DM_v1.0.nc"
     ) % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         year,
         year,
         month,

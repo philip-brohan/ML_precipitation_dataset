@@ -14,7 +14,7 @@ parser.add_argument(
     "--opdir",
     help="Directory for output files",
     default="%s/Copernicus/land_surface_observations/monthly/precipitation/unrestricted"
-    % os.getenv("SCRATCH"),
+    % os.getenv("PDIR"),
 )
 args = parser.parse_args()
 args.opdir += "/%04d" % args.year

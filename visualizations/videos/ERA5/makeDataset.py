@@ -16,8 +16,7 @@ def load_tensor(file_name):
 def getFileNames(variable, startyear=1850, endyear=2050):
     inFiles = sorted(
         os.listdir(
-            "%s/MLP/normalized_datasets/ERA5_tf_MM/%s"
-            % (os.getenv("SCRATCH"), variable)
+            "%s/MLP/normalized_datasets/ERA5_tf_MM/%s" % (os.getenv("PDIR"), variable)
         )
     )
     inFiles = [
@@ -36,8 +35,7 @@ def getDataset(variable, startyear=1850, endyear=2050, blur=None, cache=False):
 
     # Convert from list of file names to Dataset of source file contents
     fnFiles = [
-        "%s/MLP/normalized_datasets/ERA5_tf_MM/%s/%s"
-        % (os.getenv("SCRATCH"), variable, x)
+        "%s/MLP/normalized_datasets/ERA5_tf_MM/%s/%s" % (os.getenv("PDIR"), variable, x)
         for x in inFiles
     ]
     ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(fnFiles))

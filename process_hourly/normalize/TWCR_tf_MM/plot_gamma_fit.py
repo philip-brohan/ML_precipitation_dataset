@@ -35,15 +35,15 @@ args = parser.parse_args()
 # Load the fitted values
 shape = iris.load_cube(
     "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/shape_m%02d_d%02d_h%02d.nc"
-    % (os.getenv("SCRATCH"), args.variable, args.month, args.day, args.hour),
+    % (os.getenv("PDIR"), args.variable, args.month, args.day, args.hour),
 )
 location = iris.load_cube(
     "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/location_m%02d_d%02d_h%02d.nc"
-    % (os.getenv("SCRATCH"), args.variable, args.month, args.day, args.hour),
+    % (os.getenv("PDIR"), args.variable, args.month, args.day, args.hour),
 )
 scale = iris.load_cube(
     "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/scale_m%02d_d%02d_h%02d.nc"
-    % (os.getenv("SCRATCH"), args.variable, args.month, args.day, args.hour),
+    % (os.getenv("PDIR"), args.variable, args.month, args.day, args.hour),
 )
 
 # Make the plot

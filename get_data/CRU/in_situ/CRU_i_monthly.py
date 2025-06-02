@@ -25,7 +25,7 @@ def load(year=None, month=None, grid=None):
         "%s/CRU/in-situ/monthly/precipitation/%04d/"
         + "CRU_total_precipitation_mon_0.5x0.5_global_%04d_v4.03.nc"
     ) % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         year,
         year,
     )

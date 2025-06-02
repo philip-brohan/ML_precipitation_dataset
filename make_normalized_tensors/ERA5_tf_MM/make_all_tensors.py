@@ -37,7 +37,7 @@ args = parser.parse_args()
 
 # Get the date range from the input zarr array
 fn = "%s/MLP/raw_datasets/ERA5/%s_zarr" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 input_zarr = zarr.open(fn, mode="r")
@@ -46,7 +46,7 @@ AvailableMonths = input_zarr.attrs["AvailableMonths"]
 
 # Create the output zarr array
 fn = "%s/MLP/normalized_datasets/ERA5_tf_MM/%s_zarr" % (
-    os.getenv("SCRATCH"),
+    os.getenv("PDIR"),
     args.variable,
 )
 # Delete any previous version

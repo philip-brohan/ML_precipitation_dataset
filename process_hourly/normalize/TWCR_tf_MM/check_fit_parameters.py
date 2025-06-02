@@ -47,7 +47,7 @@ for month in range(1, 13):
                 shape = iris.load_cube(
                     "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/shape_m%02d_d%02d_h%02d.nc"
                     % (
-                        os.getenv("SCRATCH"),
+                        os.getenv("PDIR"),
                         args.variable,
                         month,
                         day,
@@ -69,7 +69,7 @@ for month in range(1, 13):
                 location = iris.load_cube(
                     "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/location_m%02d_d%02d_h%02d.nc"
                     % (
-                        os.getenv("SCRATCH"),
+                        os.getenv("PDIR"),
                         args.variable,
                         month,
                         day,
@@ -91,7 +91,7 @@ for month in range(1, 13):
                 scale = iris.load_cube(
                     "%s/MLP/normalization/SPI_hourly/TWCR_tf_MM/%s/scale_m%02d_d%02d_h%02d.nc"
                     % (
-                        os.getenv("SCRATCH"),
+                        os.getenv("PDIR"),
                         args.variable,
                         month,
                         day,

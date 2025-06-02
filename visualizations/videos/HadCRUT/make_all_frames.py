@@ -20,7 +20,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-opdir = "%s/MLP/normalized_datasets/HadCRUT_tf_MM/videos" % (os.getenv("SCRATCH"),)
+opdir = "%s/MLP/normalized_datasets/HadCRUT_tf_MM/videos" % (os.getenv("PDIR"),)
 
 
 # Function to check if the job is already done for this month

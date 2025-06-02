@@ -2,7 +2,7 @@
 
 # Read in monthly variable from HadCRUT - regrid to model resolution
 # Convert into a TensorFlow tensor.
-# Serialise and store on $SCRATCH.
+# Serialise and store on $PDIR.
 
 import os
 import sys
@@ -34,7 +34,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-fn = "%s/MLP/raw_datasets/HadCRUT/temperature_zarr" % (os.getenv("SCRATCH"),)
+fn = "%s/MLP/raw_datasets/HadCRUT/temperature_zarr" % (os.getenv("PDIR"),)
 
 dataset = ts.open(
     {

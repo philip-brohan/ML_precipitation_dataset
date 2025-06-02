@@ -39,7 +39,7 @@ def add_coord_system(cbe):
 
 
 # Add a land-mask for TWCR SST grid
-lm_TWCR = iris.load_cube("%s/20CR/version_3/fixed/land.nc" % os.getenv("SCRATCH"))
+lm_TWCR = iris.load_cube("%s/20CR/version_3/fixed/land.nc" % os.getenv("PDIR"))
 lm_TWCR = iris.util.squeeze(lm_TWCR)
 lm_TWCR.coord("latitude").coord_system = coord_s
 lm_TWCR.coord("longitude").coord_system = coord_s
@@ -67,7 +67,7 @@ def load_monthly_member(
         return ts
     else:
         fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem%03d.nc" % (
-            os.getenv("SCRATCH"),
+            os.getenv("PDIR"),
             year,
             variable,
             year,
@@ -93,7 +93,7 @@ def load_monthly_ensemble(
     variable="PRATE", year=None, month=None, constraint=None, grid=None
 ):
     fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem*.nc" % (
-        os.getenv("SCRATCH"),
+        os.getenv("PDIR"),
         year,
         variable,
         year,

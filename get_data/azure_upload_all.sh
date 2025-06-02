@@ -3,33 +3,33 @@
 # Upload all the data to Azure
 
 echo 'CMORPH'
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/CMORPH --remote=SCRATCH/CMORPH)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/CMORPH --remote=/default/MLP/CMORPH)
 
 echo 'CRU'
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/CRU --remote=SCRATCH/CRU)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/CRU --remote=/default/MLP/CRU)
 
 echo 'ERA5'
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/ERA5 --remote=SCRATCH/ERA5)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/ERA5 --remote=/default/MLP/ERA5)
 
 echo 'TWCR'
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/20CR --remote=SCRATCH/20CR)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/20CR --remote=/default/MLP/20CR)
 
 echo -n 'GPCC: '
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/GPCC/in-situ --remote=SCRATCH/GPCC/in-situ)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/GPCC/in-situ --remote=/default/MLP/GPCC/in-situ)
 
 echo -n 'Copernicus: '
 echo -n 'Microwave, '
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/Copernicus/satellite_microwave --remote=SCRATCH/Copernicus/satellite_microwave)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/Copernicus/satellite_microwave --remote=/default/MLP/Copernicus/satellite_microwave)
 echo 'Land observations'
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/Copernicus/land_surface_observations --remote=SCRATCH/Copernicus/land_surface_observations)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/Copernicus/land_surface_observations --remote=/default/MLP/Copernicus/land_surface_observations)
 
 echo -n 'HadCRUT'
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/HadCRUT --remote=SCRATCH/HadCRUT)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/HadCRUT --remote=/default/MLP/HadCRUT)
 
 
 echo -n 'HadISST'
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/HadISST/v1 --remote=SCRATCH/HadISST/v1)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/HadISST/v1 --remote=/default/MLP/HadISST/v1)
 
 echo -n 'GPCP'
-(../azure_tools/azure_upload.py --local=/scratch/hadpb/GPCP --remote=SCRATCH/GPCP)
+(../azure_tools/azure_upload.py --local=/data/scratch/philip.brohan/MLP/GPCP --remote=/default/MLP/GPCP)
 
