@@ -14,7 +14,7 @@ import tensorstore as ts
 
 # Find out what data are available from a source
 def getDataAvailability(source):
-    zfile = "%s/MLP/normalized_datasets_hourly/%s_zarr" % (
+    zfile = "%s/normalized_datasets_hourly/%s_zarr" % (
         os.getenv("PDIR"),
         source,
     )
@@ -119,7 +119,7 @@ def getDataset(specification, purpose):
     # Open all the source tensorstores
     tsa_in = {}
     for source in specification["inputTensors"]:
-        zfile = "%s/MLP/normalized_datasets_hourly/%s_zarr" % (
+        zfile = "%s/normalized_datasets_hourly/%s_zarr" % (
             os.getenv("PDIR"),
             source,
         )
@@ -178,7 +178,7 @@ def getDataset(specification, purpose):
     if specification["outputTensors"] is not None:
         tsa_out = {}
         for source in specification["outputTensors"]:
-            zfile = "%s/MLP/normalized_datasets_hourly/%s_zarr" % (
+            zfile = "%s/normalized_datasets_hourly/%s_zarr" % (
                 os.getenv("PDIR"),
                 source,
             )

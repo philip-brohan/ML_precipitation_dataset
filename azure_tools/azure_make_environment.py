@@ -5,8 +5,6 @@
 import os
 from azure.identity import (
     DefaultAzureCredential,
-    InteractiveBrowserCredential,
-    DeviceCodeCredential,
 )
 from azure.ai.ml import MLClient
 from azure.ai.ml.entities import Environment
@@ -37,7 +35,14 @@ env_docker_conda = Environment(
     description="MLP environment: Docker image plus Conda environment.",
 )
 
-# Update the environment
+# We need to do the image build on one of our compute instances, not serverless.
+# ws = ml_client.workspaces.get(
+#     name=os.environ.get("AZML_WORKSPACE_NAME"),
+# )
+# ws.image_build_compute = "Basic"  # Build the environment on the Basic compute instance
+# ml_client.workspaces.begin_update(ws)
+
+# Create or update the environment in the workspace
 ml_client.environments.create_or_update(env_docker_conda)
 
 # print("\nAvailable environments (examples):")

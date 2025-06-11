@@ -13,7 +13,7 @@ specification = {}
 specification["strategy"] = tf.distribute.get_strategy()
 with specification["strategy"].scope():
 
-    specification["modelName"] = "Hourly_UNet_PRMSL_h100"  # Name of the model
+    specification["modelName"] = "Hourly_UNet"  # Name of the model
 
     specification["inputTensors"] = ("TWCR_tf_MM/PRMSL",)
     specification["outputTensors"] = ("TWCR_tf_MM/PRMSL",)  # If None, same as input
@@ -39,11 +39,11 @@ with specification["strategy"].scope():
     specification["nHoursInEpoch"] = (
         None  # Length of an epoch - if None, use all the data once
     )
-    specification["nEpochs"] = 250  # How many epochs to train for
+    specification["nEpochs"] = 200  # How many epochs to train for
     specification["shuffleBufferSize"] = 1000  # Buffer size for shuffling
     specification["batchSize"] = 32  # Arbitrary
     specification["beta"] = 0.00  # Weighting factor for KL divergence of latent space
-    specification["gamma"] = 0.000  # Weighting factor for KL divergence of output
+    specification["gamma"] = 0.050  # Weighting factor for KL divergence of output
     specification["maxGradient"] = 5  # Numerical instability protection
 
     # Output control
@@ -55,12 +55,8 @@ with specification["strategy"].scope():
     specification["optimizer"] = tf.keras.optimizers.Adam(
         5e-4,
     )
-    specification["trainCache"] = (
-        True  # True might be faster, but needs a *lot* of RAM - Also freezes the ensemble members used.
-    )
-    specification["testCache"] = (
-        True  # True might be faster, but needs a *lot* of RAM - Also freezes the ensemble members used.
-    )
+    specification["trainCache"] = True
+    specification["testCache"] = True
 
     # Mask to specify a subset of data to train on
     specification["trainingMask"] = None  # Train on all data

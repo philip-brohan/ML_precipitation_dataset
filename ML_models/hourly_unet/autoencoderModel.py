@@ -482,7 +482,7 @@ def getModel(specification, optimizer, epoch=1):
     # If Epoch is None - set it to latest saved value
     if epoch is None:
         try:
-            weights_dir = ("%s/MLP/%s/weights") % (
+            weights_dir = ("%s/ML_models/%s/weights") % (
                 os.getenv("PDIR"),
                 specification["modelName"],
             )
@@ -507,7 +507,7 @@ def getModel(specification, optimizer, epoch=1):
 
     # If we are doing a restart, load the weights
     if epoch > 1:
-        weights_dir = ("%s/MLP/%s/weights/Epoch_%04d") % (
+        weights_dir = ("%s/ML_models/%s/weights/Epoch_%04d") % (
             os.getenv("PDIR"),
             specification["modelName"],
             epoch,

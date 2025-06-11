@@ -31,11 +31,22 @@ name = "".join(
 
 # Need to add the path to the script from the PYTHONPATH
 bindir = os.getcwd()
-idx = bindir.find("ML_precipitation_dataset")
+main_dir = "ML_precipitation_dataset"
+idx = bindir.find(main_dir)
 cmd = "%s/%s" % (
-    bindir[(idx + len("ML_precipitation_dataset") + 1) :],
+    bindir[(idx + len(main_dir) + 1) :],
     cmd,
 )
+
+# Script directory contains a lot of crap that doesn't need to be sent to Azure
+try:
+    ignore_file = "%s/%s" % (
+        bindir[(idx + len(main_dir) + 1) :],
+        ".amlignore",
+    )
+except FileNotFoundError:
+    ignore_file = None
+
 
 # only look at the bit before to '--' for arguments to this script
 if command_index > 1:
@@ -93,13 +104,14 @@ command_job = command(
     compute=args.compute,
     environment="MLP-Azure@latest",
     code="/home/users/philip.brohan/Projects/ML_precipitation_dataset",
+    ignore_file=ignore_file,
     outputs={
         "PDIR": Output(
             type=AssetTypes.URI_FOLDER,
             path=(
                 "azureml://subscriptions/%s/"
                 + "resourcegroups/%s/workspaces/%s/"
-                + "datastores/saexploratory02/paths/default/MLP"
+                + "datastores/large_datastore/paths/projects/MLP"
             )
             % (
                 os.getenv("AZML_SUBSCRIPTION_ID"),
@@ -115,7 +127,7 @@ command_job = command(
             path=(
                 "azureml://subscriptions/%s/"
                 + "resourcegroups/%s/workspaces/%s/"
-                + "datastores/20crv3_raw/paths/hourly/"
+                + "datastores/20crv3_original/paths/hourly/"
             )
             % (
                 os.getenv("AZML_SUBSCRIPTION_ID"),

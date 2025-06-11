@@ -2,4 +2,4 @@
 
 # Download the trained weights and training logs from azure
 
-../../azure_tools/azure_download.py --local=$SCRATCH/DCVAE-Climate/Default --remote=SCRATCH/DCVAE-Climate/Default
+../../azure_tools/azure_download.py --local=$PDIR/ML_models/Default --remote=/default/MLP/ML_models/Default

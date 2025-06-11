@@ -573,7 +573,7 @@ def getModel(specification, epoch=1):
 
     # If we are doing a restart, load the weights
     if epoch > 1:
-        weights_dir = ("%s/MLP/%s/weights/Epoch_%04d") % (
+        weights_dir = ("%s/ML_models/%s/weights/Epoch_%04d") % (
             os.getenv("PDIR"),
             specification["modelName"],
             epoch,

@@ -36,7 +36,7 @@ with specification["strategy"].scope():
     specification["testSplit"] = 11  # Keep back test case every n months
 
     # Can use less than all the data (for testing)
-    specification["maxTrainingHours"] = 10000
+    specification["maxTrainingHours"] = 1000
     specification["maxTestHours"] = 100
 
     # Fit parameters

@@ -418,16 +418,6 @@ class DCVAE(tf.keras.Model):
                     )
 
             # Continue with scalar metrics
-            tf.summary.scalar(
-                "Train_RMSE",
-                self.train_rmse,
-                step=epoch,
-            )
-            tf.summary.scalar(
-                "Train_RMSE_masked",
-                self.train_rmse_m,
-                step=epoch,
-            )
             tf.summary.scalar("Train_logpz_g", self.train_logpz_g, step=epoch)
             tf.summary.scalar("Train_logqz_g", self.train_logqz_g, step=epoch)
             tf.summary.scalar("Train_logpz", self.train_logpz, step=epoch)
@@ -516,7 +506,7 @@ def getModel(specification, optimizer, epoch=1):
     # If Epoch is None - set it to latest saved value
     if epoch is None:
         try:
-            weights_dir = ("%s/MLP/%s/weights") % (
+            weights_dir = ("%s/ML_models/%s/weights") % (
                 os.getenv("PDIR"),
                 specification["modelName"],
             )
@@ -541,7 +531,7 @@ def getModel(specification, optimizer, epoch=1):
 
     # If we are doing a restart, load the weights
     if epoch > 1:
-        weights_dir = ("%s/MLP/%s/weights/Epoch_%04d") % (
+        weights_dir = ("%s/ML_models/%s/weights/Epoch_%04d") % (
             os.getenv("PDIR"),
             specification["modelName"],
             epoch,

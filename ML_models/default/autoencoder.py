@@ -64,7 +64,7 @@ with specification["strategy"].scope():
     autoencoder = getModel(specification, epoch=args.epoch)
 
     # logfile to output the metrics
-    log_FN = ("%s/MLP/%s/logs/Training") % (
+    log_FN = ("%s/ML_models/%s/logs/Training") % (
         os.getenv("PDIR"),
         specification["modelName"],
     )
@@ -101,7 +101,7 @@ with specification["strategy"].scope():
         autoencoder.update_metrics(validationData, testData)
 
         # Save model state
-        save_dir = "%s/MLP/%s/weights/Epoch_%04d" % (
+        save_dir = "%s/ML_models/%s/weights/Epoch_%04d" % (
             os.getenv("PDIR"),
             specification["modelName"],
             epoch,
