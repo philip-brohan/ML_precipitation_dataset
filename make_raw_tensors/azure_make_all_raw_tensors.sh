@@ -10,6 +10,11 @@
 (cd ERA5 && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_ERA5_mslp --parallel=31 --compute=multicore-32 -- make_all_tensors.py --variable=mean_sea_level_pressure )
 (cd ERA5 && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_ERA5_precip --parallel=31 --compute=multicore-32 -- make_all_tensors.py --variable=total_precipitation )
 
+
+(cd GC5-Central && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_GC5_dl339_prate --parallel=31 --compute=multicore-32 -- ./make_all_tensors.py --run=dl339 --variable=prate)
+(cd GC5-Central && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_GC5_dl340_prate --parallel=31 --compute=multicore-32 -- ./make_all_tensors.py --run=dl340 --variable=prate)
+(cd GC5-Central && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_GC5_dl341_prate --parallel=31 --compute=multicore-32 -- ./make_all_tensors.py --run=dl341 --variable=prate)
+
 (cd TWCR && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_TWCR_t2m --parallel=31 --compute=multicore-32 -- make_all_tensors.py --variable=TMP2m )
 (cd TWCR && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_TWCR_sst --parallel=31 --compute=multicore-32 -- make_all_tensors.py --variable=SST )
 (cd TWCR && ../../azure_tools/azure_run.py --experiment=MLP --name=make_raw_tensors_TWCR_mslp --parallel=31 --compute=multicore-32 -- make_all_tensors.py --variable=PRMSL )

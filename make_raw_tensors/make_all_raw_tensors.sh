@@ -10,6 +10,10 @@
 (cd ERA5 && ./make_all_tensors.py --variable=mean_sea_level_pressure)
 (cd ERA5 && ./make_all_tensors.py --variable=total_precipitation)
 
+(cd GC5-Central && ./make_all_tensors.py --run=dl339 --variable=prate)
+(cd GC5-Central && ./make_all_tensors.py --run=dl340 --variable=prate)
+(cd GC5-Central && ./make_all_tensors.py --run=dl341 --variable=prate)
+
 (cd TWCR && ./make_all_tensors.py --variable=TMP2m)
 (cd TWCR && ./make_all_tensors.py --variable=SST)
 (cd TWCR && ./make_all_tensors.py --variable=PRMSL)
