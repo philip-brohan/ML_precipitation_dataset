@@ -28,7 +28,7 @@ ctrlB = {
     "time_aggregation": "monthly",
     "horizontal_aggregation": "0_5_x_0_5",
     "year": "%04d" % args.year,
-    "version": "v4.03",
+    "version": "v4_03",
     "format": "zip",
 }
 

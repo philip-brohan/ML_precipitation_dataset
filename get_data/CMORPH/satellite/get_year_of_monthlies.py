@@ -24,12 +24,12 @@ if not os.path.isdir(args.opdir):
 ctrlB = {
     "format": "zip",
     "origin": "cmorph",
-    "variable": "precipitation",
+    "variable": ["precipitation"],
     "region": "quasi_global",
     "time_aggregation": "monthly",
-    "horizontal_aggregation": "0_5_x_0_5",
-    "version": "v1.0",
-    "year": "%04d" % args.year,
+    "horizontal_aggregation": ["0_5_x_0_5"],
+    "version": ["v1_0"],
+    "year": ["%04d" % args.year],
 }
 
 c = cdsapi.Client()

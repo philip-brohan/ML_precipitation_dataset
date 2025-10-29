@@ -18,23 +18,23 @@ def load(
     if year is None or month is None:
         raise Exception("Year and month must be specified")
     if variable=="t2m":
-        fname = "%s/GC5-Central/historical/monthly/%s/%04d.pp" % (
+        fname = "%s/GC5-Central/Historical/monthly/%s/%04d.pp" % (
             os.getenv("PDIR"),
             run,
             year,
         )
     else:
-        fname = "%s/GC5-Central/historical/monthly/%s/%s_%04d.pp" % (
+        fname = "%s/GC5-Central/Historical/monthly/%s/%s_%04d.pp" % (
             os.getenv("PDIR"),
             run,
-            year,
             variable,
+            year,
         )
 
     if not os.path.isfile(fname):
         raise Exception("No data file %s" % fname)
     ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
-    varC = iris.load_cube(fname, ftt)
+    varC = iris.load(fname, ftt)[0]
     # Get rid of unnecessary height dimensions
     if len(varC.data.shape) == 3:
         varC = varC.extract(iris.Constraint(expver=1))

@@ -35,7 +35,7 @@ ctrlB = {
 #  But do for current year (may need updating) - remove old version in that case
 opfile = "%s/%s.nc" % (args.opdir, args.variable)
 if os.path.isfile(opfile):
-    sys.remove(opfile)
+    os.remove(opfile)
 
 c = cdsapi.Client()
 c.retrieve(
