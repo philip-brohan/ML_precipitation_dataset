@@ -34,7 +34,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-fn = "%s/MLP/raw_datasets/HadCRUT/temperature_zarr" % (os.getenv("PDIR"),)
+fn = "%s/raw_datasets/HadCRUT/temperature_zarr" % (os.getenv("PDIR"),)
 
 dataset = ts.open(
     {

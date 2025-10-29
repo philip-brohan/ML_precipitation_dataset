@@ -12,7 +12,7 @@ from tensor_utils import date_to_index, FirstYear, LastYear
 sDir = os.path.dirname(os.path.realpath(__file__))
 
 # Find the raw_tensor zarr array
-fn = "%s/MLP/raw_datasets/HadCRUT/temperature_zarr" % (os.getenv("PDIR"),)
+fn = "%s/raw_datasets/HadCRUT/temperature_zarr" % (os.getenv("PDIR"),)
 
 # Add date range to array as metadata
 print

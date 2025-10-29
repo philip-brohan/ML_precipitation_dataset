@@ -32,7 +32,7 @@ parser.add_argument("--month", help="Integer month", type=int, required=True)
 parser.add_argument("--variable", help="Variable name", type=str, required=True)
 args = parser.parse_args()
 
-fn = "%s/MLP/raw_datasets/ERA5/%s_zarr" % (
+fn = "%s/raw_datasets/ERA5/%s_zarr" % (
     os.getenv("PDIR"),
     args.variable,
 )

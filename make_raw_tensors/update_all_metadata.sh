@@ -15,6 +15,13 @@
 (cd TWCR && ./update_tensor_metadata.py --variable=PRMSL)
 (cd TWCR && ./update_tensor_metadata.py --variable=PRATE)
 
+(cd GC5-Central && ./update_tensor_metadata --run=dl339 --variable=prate)
+(cd GC5-Central && ./update_tensor_metadata --run=dl340 --variable=prate)
+(cd GC5-Central && ./update_tensor_metadata --run=dl341 --variable=prate)
+(cd GC5-Central && ./update_tensor_metadata --run=dl339 --variable=t2m)
+(cd GC5-Central && ./update_tensor_metadata --run=dl340 --variable=t2m)
+(cd GC5-Central && ./update_tensor_metadata --run=dl341 --variable=t2m)
+
 (cd ./GPCC/in_situ && ./update_tensor_metadata.py)
 
 (cd HadCRUT && ./update_tensor_metadata.py)

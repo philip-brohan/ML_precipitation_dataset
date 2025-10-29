@@ -29,7 +29,7 @@ def load_raw(year, month, run='dl339', variable="prate"):
         run=run,
         grid=grids.E5sCube,
     )
-    raw.data.data[raw.data.mask == True] = np.nan
+    raw.data = np.ma.MaskedArray(raw.data,mask=np.isnan(raw.data))
     return raw
 
 

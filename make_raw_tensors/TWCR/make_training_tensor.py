@@ -36,7 +36,7 @@ parser.add_argument(
 parser.add_argument("--variable", help="Variable name", type=str, required=True)
 args = parser.parse_args()
 
-fn = "%s/MLP/raw_datasets/TWCR/%s_zarr" % (
+fn = "%s/raw_datasets/TWCR/%s_zarr" % (
     os.getenv("PDIR"),
     args.variable,
 )

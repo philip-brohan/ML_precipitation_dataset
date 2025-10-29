@@ -29,8 +29,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Create the output zarr array if it doesn't exist
-fn = "%s/MLP/raw_datasets/GC5-Central/historical/%s/%s_zarr" % (
+fn = "%s/raw_datasets/GC5-Central/historical/%s/%s_zarr" % (
     os.getenv("PDIR"),
+    args.run,
     args.variable,
 )
 

@@ -13,6 +13,9 @@
 (cd GC5-Central && ./make_all_tensors.py --run=dl339 --variable=prate)
 (cd GC5-Central && ./make_all_tensors.py --run=dl340 --variable=prate)
 (cd GC5-Central && ./make_all_tensors.py --run=dl341 --variable=prate)
+(cd GC5-Central && ./make_all_tensors.py --run=dl339 --variable=t2m)
+(cd GC5-Central && ./make_all_tensors.py --run=dl340 --variable=t2m)
+(cd GC5-Central && ./make_all_tensors.py --run=dl341 --variable=t2m)
 
 (cd TWCR && ./make_all_tensors.py --variable=TMP2m)
 (cd TWCR && ./make_all_tensors.py --variable=SST)

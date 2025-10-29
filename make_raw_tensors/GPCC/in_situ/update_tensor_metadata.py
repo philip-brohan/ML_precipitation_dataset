@@ -12,7 +12,7 @@ sDir = os.path.dirname(os.path.realpath(__file__))
 
 
 # Find the raw_tensor zarr array
-fn = "%s/MLP/raw_datasets/GPCC/in_situ/precipitation_zarr" % (os.getenv("PDIR"),)
+fn = "%s/raw_datasets/GPCC/in_situ/precipitation_zarr" % (os.getenv("PDIR"),)
 
 # Add date range to array as metadata
 zarr_ds = zarr.open(fn, mode="r+")

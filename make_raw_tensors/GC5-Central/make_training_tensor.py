@@ -33,7 +33,7 @@ parser.add_argument("--variable", help="Variable name", type=str, required=True)
 parser.add_argument("--run", help="Run name", type=str, required=True)
 args = parser.parse_args()
 
-fn = "%s/MLP/raw_datasets/GC5-Central/historical/%s/%s_zarr" % (
+fn = "%s/raw_datasets/GC5-Central/historical/%s/%s_zarr" % (
     os.getenv("PDIR"),
     args.run,
     args.variable,
@@ -50,10 +50,11 @@ dataset = ts.open(
 try:
     qd = load_raw(args.year, args.month, run=args.run, variable=args.variable)
     ict = raw_to_tensor(qd)
-except Exception:
+except Exception as e:
     warnings.warn(
         "Failed to load data for %s %s %04d-%02d" % (args.run, args.variable, args.year, args.month)
     )
+    print(e)
     ict = tf.fill([721, 1440], tf.constant(np.nan, dtype=tf.float32))
 
 # Write to file
