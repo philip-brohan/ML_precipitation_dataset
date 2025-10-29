@@ -1,25 +1,26 @@
-name: MLP
+name: MLP2
 
 # Extension of Tammy's tensorflow environment for the H100
+# Attempt to update to the latest version or iris
 
 channels:
   - conda-forge
 dependencies:
 
-  - python=3.10
-  - pip=22.3.1
-  - pandas=2.2.2
-  - numpy=1.23.5
-  - scipy~=1.14.0
+  - python==3.11
+  - pip>=22.3.1
+  - pandas>=2.2.2
+  - numpy>=2.3
+  - scipy>=1.14.0
 
   # Extras
   - libwebp>=1.3.2 # Earlier versions have a security vulnerability
-  - iris>=3.6
+  - iris>=3.13
   - mo_pack
   - cmocean>=4.0
   - parallel
   # Efficient disc storage
-  - zarr>=2.18
+  - zarr>=3.1
   # For convolution with missing data
   - astropy>=5.3
   # Get data from ERA5
@@ -39,26 +40,26 @@ dependencies:
   # Almost certainly I don't need all these, but I have not done the work to prune them.
   - pip
   - pip:
-    - setuptools==72.1.0
-    - wheel==0.44.0
-    - matplotlib~=3.5.0
-    - psutil~=5.8.0
-    - tqdm~=4.66.3
-    - ipykernel~=6.20.2
-    - azureml-core==1.59.0
-    - azureml-defaults==1.59.0
-    - azureml-mlflow==1.59.0.post1
-    - azureml-telemetry==1.59.0
-    - tensorboard~=2.16.0
+  #   - setuptools==72.1.0
+  #   - wheel==0.44.0
+  #   - matplotlib>=3.5.0
+  #   - psutil~=5.8.0
+  #   - tqdm~=4.66.3
+  #   - ipykernel~=6.20.2
+  #   - azureml-core==1.59.0
+  #   - azureml-defaults==1.59.0
+  #   - azureml-mlflow==1.59.0.post1
+  #   - azureml-telemetry==1.59.0
+  #   - tensorboard~=2.16.0
     - tensorflow[and-cuda]==2.16.2
-    - tensorflow-datasets~=4.9.0
-    - keras==3.3.2
-    - tf-keras==2.16.0
-    - debugpy~=1.6.3
-    - cryptography>=41.0.4
-    - idna>=3.
-    - scikit-learn
-    - tensorflow-probability
+  #   - tensorflow-datasets~=4.9.0
+  #   - keras==3.3.2
+  #   - tf-keras==2.16.0
+  #   - debugpy~=1.6.3
+  #   - cryptography>=41.0.4
+  #   - idna>=3.0
+  #   - scikit-learn
+  #   - tensorflow-probability
     - tensorstore
   
 
