@@ -8,7 +8,7 @@ sDir = os.path.dirname(os.path.realpath(__file__))
 
 
 def is_done(month, variable):
-    fn = "%s/MLP/normalization/SPI_monthly/TWCR_tf_MM/%s/shape_m%02d.nc" % (
+    fn = "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/shape_m%02d.nc" % (
         os.getenv("PDIR"),
         variable,
         month,

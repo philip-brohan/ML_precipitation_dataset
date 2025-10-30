@@ -11,15 +11,15 @@ import iris
 # Load the pre-calculated fitted values
 def load_fitted(month, variable="PRATE"):
     shape = iris.load_cube(
-        "%s/MLP/normalization/SPI_monthly/TWCR_tf_MM/%s/shape_m%02d.nc"
+        "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/shape_m%02d.nc"
         % (os.getenv("PDIR"), variable, month),
     )
     location = iris.load_cube(
-        "%s/MLP/normalization/SPI_monthly/TWCR_tf_MM/%s/location_m%02d.nc"
+        "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/location_m%02d.nc"
         % (os.getenv("PDIR"), variable, month),
     )
     scale = iris.load_cube(
-        "%s/MLP/normalization/SPI_monthly/TWCR_tf_MM/%s/scale_m%02d.nc"
+        "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/scale_m%02d.nc"
         % (os.getenv("PDIR"), variable, month),
     )
     return (shape, location, scale)

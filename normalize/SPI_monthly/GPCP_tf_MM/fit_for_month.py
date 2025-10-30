@@ -31,7 +31,7 @@ parser.add_argument(
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/MLP/normalization/SPI_monthly/GPCP_tf_MM/blended" % os.getenv("PDIR"),
+    default="%s/normalization/SPI_monthly/GPCP_tf_MM/blended" % os.getenv("PDIR"),
 )
 args = parser.parse_args()
 opdir = args.opdir

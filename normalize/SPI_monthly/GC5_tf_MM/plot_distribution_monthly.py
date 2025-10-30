@@ -8,7 +8,7 @@ import sys
 import numpy as np
 
 from utilities import plots, grids
-from get_data.HadCRUT import HadCRUT
+from get_data.GC5_Central import GC5_monthly
 
 from normalize import load_fitted, normalize_cube
 
@@ -29,28 +29,26 @@ parser.add_argument(
 parser.add_argument(
     "--month", help="Month to plot", type=int, required=False, default=3
 )
-
 parser.add_argument(
-    "--member",
-    help="Ensemble member to use. (Default, sample randomly)",
-    type=int,
-    default=1,
+    "--run", help="Run to plot", type=str, required=False, default='dl339'
+)
+parser.add_argument(
+    "--variable",
+    help="Name of variable to use (t2m, prate, ...)",
+    type=str,
+    default="prate",
 )
 args = parser.parse_args()
 
-#opdir = "%s/normalization/SPI_monthly/plots/HadCRUT_tf_MM" % os.getenv("PDIR")
-opdir = "./outputs"
-if not os.path.isdir(opdir):
-    os.makedirs(opdir, exist_ok=True)
-
 # Load the fitted values
-(shape, location, scale) = load_fitted(args.month)
+(shape, location, scale) = load_fitted(args.month, variable=args.variable)
 
 # Load the raw data for the selected month
-raw = HadCRUT.load(
+raw = GC5_monthly.load(
+    run=args.run,
+    variable=args.variable,
     year=args.year,
     month=args.month,
-    member=args.member,
     grid=grids.E5sCube,
 )
 
@@ -89,17 +87,24 @@ axb.add_patch(
     )
 )
 
-# choose actual and normalized data colour maps
+# choose actual and normalized data colour maps based on variable
 cmaps = (cmocean.cm.balance, cmocean.cm.balance)
+if args.variable == "prate":
+    cmaps = (cmocean.cm.rain, cmocean.cm.tarn)
+if args.variable == "mslp":
+    cmaps = (cmocean.cm.diff, cmocean.cm.diff)
 
 
 ax_raw = fig.add_axes([0.02, 0.515, 0.607, 0.455])
-vMin = np.percentile(raw.data.compressed(), 1)
+if args.variable == "prate":
+    vMin = 0
+else:
+    vMin = np.percentile(raw.data.compressed(), 5)
 plots.plotFieldAxes(
     ax_raw,
     raw,
     vMin=vMin,
-    vMax=np.percentile(raw.data.data, 99),
+    vMax=np.percentile(raw.data.compressed(), 95),
     cMap=cmaps[0],
 )
 
@@ -119,4 +124,4 @@ ax_hist_normalized = fig.add_axes([0.683, 0.05, 0.303, 0.435])
 plots.plotHistAxes(ax_hist_normalized, normalized, vMin=-0.25, vMax=1.25, bins=25)
 
 
-fig.savefig("%s/monthly.webp" % opdir)
+fig.savefig("outputs/monthly.webp")

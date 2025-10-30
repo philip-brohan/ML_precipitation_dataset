@@ -19,13 +19,11 @@ if not os.path.isfile("%s/land_mask.nc" % opdir):  # Only bother if we don't hav
     # Just want something that is only defined in land grid-cells.
 
     ctrlB = {
-        "variable": "soil_temperature_level_1",
-        "year": "2001",
-        "month": "03",
-        "time": "00:00",
-        "format": "netcdf",
-        "product_type": "monthly_averaged_reanalysis",
+        "variable": ["land_sea_mask"],
+        "data_format": "netcdf",
+        "download_format": "unarchived"
     }
+
 
     c = cdsapi.Client()
     c.retrieve(

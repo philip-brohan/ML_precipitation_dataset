@@ -8,18 +8,43 @@ import zarr
 import tensorstore as ts
 
 
-# Get a dataset - all the tensors for a given and variable
+# Get a full dataset - all three runs one after the other
 def getDataset(
     variable,
     startyear=None,
     endyear=None,
     blur=None,
     cache=False,
+    prefetch=True,
+):
+    ds1=getrunDataset('dl339',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False)
+    ds1 = ds1.concatenate(getrunDataset('dl340',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False))
+    ds1 = ds1.concatenate(getrunDataset('dl341',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False))
+
+    # Optimisation
+    if cache:
+        ds1 = ds1.cache()  # Great, iff you have enough RAM for it
+
+    if prefetch:
+        ds1 = ds1.prefetch(tf.data.experimental.AUTOTUNE)
+
+    return ds1
+
+# Get a run dataset - all the tensors for a given run and variable
+def getrunDataset(
+    run,
+    variable,
+    startyear=None,
+    endyear=None,
+    blur=None,
+    cache=False,
+    prefetch=False,
 ):
 
     # Get the index of the last month in the raw tensors
-    fn = "%s/raw_datasets/ERA5/%s_zarr" % (
+    fn = "%s/raw_datasets/GC5-Central/historical/%s/%s_zarr" % (
         os.getenv("PDIR"),
+        run,
         variable,
     )
     zarr_array = zarr.open(fn, mode="r")
@@ -74,6 +99,7 @@ def getDataset(
     if cache:
         tz_data = tz_data.cache()  # Great, iff you have enough RAM for it
 
-    tz_data = tz_data.prefetch(tf.data.experimental.AUTOTUNE)
+    if prefetch:
+        tz_data = tz_data.prefetch(tf.data.experimental.AUTOTUNE)
 
     return tz_data

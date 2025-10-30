@@ -43,6 +43,8 @@ def load(
         varC = varC.regrid(grid, iris.analysis.Nearest())
     if constraint is not None:
         varC = varC.extract(constraint)
+    # Convert to masked array (for consistency with other data sources).
+    varC.data = np.ma.MaskedArray(varC.data, mask=np.zeros(varC.data.shape, dtype=bool))
     return varC
 
 

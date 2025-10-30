@@ -4,6 +4,7 @@
 # For a specified month - shape, location, and scale.
 
 import os
+import sys
 import iris
 import iris.time
 import numpy as np
@@ -24,23 +25,24 @@ parser.add_argument(
 )
 parser.add_argument(
     "--variable",
-    help="Name of variable to use (PRATE, TMP2m, PRMSL, ...)",
+    help="Name of variable to use (t2m, prate, ...)",
     type=str,
-    default="PRATE",
+    default="prate",
 )
 args = parser.parse_args()
 
+
 # Load the fitted values
 shape = iris.load_cube(
-    "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/shape_m%02d.nc"
+    "%s/normalization/SPI_monthly/GC5_tf_MM/%s/shape_m%02d.nc"
     % (os.getenv("PDIR"), args.variable, args.month),
 )
 location = iris.load_cube(
-    "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/location_m%02d.nc"
+    "%s/normalization/SPI_monthly/GC5_tf_MM/%s/location_m%02d.nc"
     % (os.getenv("PDIR"), args.variable, args.month),
 )
 scale = iris.load_cube(
-    "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/scale_m%02d.nc"
+    "%s/normalization/SPI_monthly/GC5_tf_MM/%s/scale_m%02d.nc"
     % (os.getenv("PDIR"), args.variable, args.month),
 )
 

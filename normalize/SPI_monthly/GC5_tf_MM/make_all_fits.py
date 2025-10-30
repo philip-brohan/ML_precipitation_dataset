@@ -8,7 +8,7 @@ sDir = os.path.dirname(os.path.realpath(__file__))
 
 
 def is_done(month, variable):
-    fn = "%s/normalization/SPI_monthly/ERA5_tf_MM/%s/shape_m%02d.nc" % (
+    fn = "%s/normalization/SPI_monthly/GC5_tf_MM/%s/shape_m%02d.nc" % (
         os.getenv("PDIR"),
         variable,
         month,
@@ -20,10 +20,8 @@ def is_done(month, variable):
 
 count = 0
 for variable in (
-    "2m_temperature",
-    "mean_sea_level_pressure",
-    "total_precipitation",
-    "sea_surface_temperature",
+    "t2m",
+    "prate",
 ):
     for month in range(1, 13):
         if is_done(month, variable):

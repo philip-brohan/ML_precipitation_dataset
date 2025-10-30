@@ -11,6 +11,7 @@ import numpy as np
 # Supress TensorFlow moaning about cuda - we don't need a GPU for this
 # Also the warning message confuses people.
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 import tensorflow as tf
 
 from makeDataset import getDataset
@@ -26,14 +27,11 @@ parser.add_argument(
 parser.add_argument(
     "--endyear", help="End Year", type=int, required=False, default=2014
 )
-parser.add_argument(
-    "--memberidx", help="Member index (0-9)", type=int, required=False, default=None
-)
 
 parser.add_argument(
     "--opdir",
     help="Directory for output files",
-    default="%s/normalization/SPI_monthly/TWCR_tf_MM" % os.getenv("PDIR"),
+    default="%s/normalization/SPI_monthly/GC5_tf_MM" % os.getenv("PDIR"),
 )
 args = parser.parse_args()
 opdir = "%s/%s" % (args.opdir, args.variable)
@@ -46,7 +44,6 @@ trainingData = getDataset(
     args.variable,
     startyear=args.startyear,
     endyear=args.endyear,
-    member_idx=args.memberidx,
     cache=False,
     blur=1.0e-9,
 ).batch(1)
@@ -98,7 +95,7 @@ enough = count >= 10
 variance = tf.where(enough, variance / count, np.nan)
 
 # Artificially expand under-sea-ice variability in SST
-if args.variable == "SST":
+if args.variable == "sea_surface_temperature":
     variance = tf.where(np.logical_and(enough, mean < 273), variance + 0.5, variance)
 
 # Gamma parameter estimates:

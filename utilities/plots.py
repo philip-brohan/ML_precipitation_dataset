@@ -77,7 +77,7 @@ def get_land_mask(grid_cube=None):
     lm = iris.util.squeeze(lm)
     lm.coord("latitude").coord_system = iris.coord_systems.RotatedGeogCS(90, 180, 0)
     lm.coord("longitude").coord_system = iris.coord_systems.RotatedGeogCS(90, 180, 0)
-    lm.data = np.where(lm.data.mask, 0, 1)
+    lm.data.mask=lm.data.data==0.0
     if grid_cube is not None:
         lm = lm.regrid(grid_cube, iris.analysis.Linear())
     return lm
@@ -132,7 +132,7 @@ def plotFieldAxes(
         )
     )
     # Plot the field
-    T_img = ax_map.pcolorfast(
+    T_img = ax_map.pcolormesh(
         lons,
         lats,
         field.data,
@@ -145,7 +145,7 @@ def plotFieldAxes(
 
     # Overlay the land mask
     if show_land:
-        mask_img = ax_map.pcolorfast(
+        mask_img = ax_map.pcolormesh(
             lMask.coord("longitude").points,
             lMask.coord("latitude").points,
             lMask.data,
@@ -154,7 +154,7 @@ def plotFieldAxes(
             ),
             vmin=0,
             vmax=1,
-            alpha=1,
+            alpha=0.1,
             zorder=100,
         )
     return T_img

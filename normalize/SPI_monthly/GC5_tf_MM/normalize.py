@@ -9,18 +9,18 @@ import iris
 
 
 # Load the pre-calculated fitted values
-def load_fitted(month):
+def load_fitted(month, variable="total_precipitation"):
     shape = iris.load_cube(
-        "%s/normalization/SPI_monthly/HadCRUT_tf_MM/shape_m%02d.nc"
-        % (os.getenv("PDIR"), month),
+        "%s/normalization/SPI_monthly/GC5_tf_MM/%s/shape_m%02d.nc"
+        % (os.getenv("PDIR"), variable, month),
     )
     location = iris.load_cube(
-        "%s/normalization/SPI_monthly/HadCRUT_tf_MM/location_m%02d.nc"
-        % (os.getenv("PDIR"), month),
+        "%s/normalization/SPI_monthly/GC5_tf_MM/%s/location_m%02d.nc"
+        % (os.getenv("PDIR"), variable, month),
     )
     scale = iris.load_cube(
-        "%s/normalization/SPI_monthly/HadCRUT_tf_MM/scale_m%02d.nc"
-        % (os.getenv("PDIR"), month),
+        "%s/normalization/SPI_monthly/GC5_tf_MM/%s/scale_m%02d.nc"
+        % (os.getenv("PDIR"), variable, month),
     )
     return (shape, location, scale)
 
@@ -50,7 +50,7 @@ def normalize_cube(raw, shape, location, scale, norm_mean=0.5, norm_sd=0.2):
     cdf[cdf < 0.00001] = 0.00001  # Most of these will be missing data
     spi = norm.ppf(cdf, loc=norm_mean, scale=norm_sd)
     result = raw.copy()
-    result.data = np.ma.MaskedArray(spi, np.logical_or(raw.data.mask, shape.data.mask))
+    result.data = np.ma.MaskedArray(spi, np.logical_and(raw.data.mask, shape.data.mask))
     result.data.data[result.data.mask] = 0.0
     return result
 

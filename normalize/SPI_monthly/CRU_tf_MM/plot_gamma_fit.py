@@ -26,15 +26,15 @@ args = parser.parse_args()
 
 # Load the fitted values
 shape = iris.load_cube(
-    "%s/MLP/normalization/SPI_monthly/CRU_tf_MM/precip/shape_m%02d.nc"
+    "%s/normalization/SPI_monthly/CRU_tf_MM/precip/shape_m%02d.nc"
     % (os.getenv("PDIR"), args.month),
 )
 location = iris.load_cube(
-    "%s/MLP/normalization/SPI_monthly/CRU_tf_MM/precip/location_m%02d.nc"
+    "%s/normalization/SPI_monthly/CRU_tf_MM/precip/location_m%02d.nc"
     % (os.getenv("PDIR"), args.month),
 )
 scale = iris.load_cube(
-    "%s/MLP/normalization/SPI_monthly/CRU_tf_MM/precip/scale_m%02d.nc"
+    "%s/normalization/SPI_monthly/CRU_tf_MM/precip/scale_m%02d.nc"
     % (os.getenv("PDIR"), args.month),
 )
 

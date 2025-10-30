@@ -24,21 +24,21 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-opdir = "%s/MLP/normalization/SPI_monthly/plots/HadCRUT_tf_MM" % os.getenv("PDIR")
+opdir = "%s/normalization/SPI_monthly/plots/HadCRUT_tf_MM" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir, exist_ok=True)
 
 # Load the fitted values
 shape = iris.load_cube(
-    "%s/MLP/normalization/SPI_monthly/HadCRUT_tf_MM/shape_m%02d.nc"
+    "%s/normalization/SPI_monthly/HadCRUT_tf_MM/shape_m%02d.nc"
     % (os.getenv("PDIR"), args.month),
 )
 location = iris.load_cube(
-    "%s/MLP/normalization/SPI_monthly/HadCRUT_tf_MM/location_m%02d.nc"
+    "%s/normalization/SPI_monthly/HadCRUT_tf_MM/location_m%02d.nc"
     % (os.getenv("PDIR"), args.month),
 )
 scale = iris.load_cube(
-    "%s/MLP/normalization/SPI_monthly/HadCRUT_tf_MM/scale_m%02d.nc"
+    "%s/normalization/SPI_monthly/HadCRUT_tf_MM/scale_m%02d.nc"
     % (os.getenv("PDIR"), args.month),
 )
 

@@ -19,7 +19,7 @@ def getDataset(
 ):
 
     # Get the index of the last month in the raw tensors
-    fn = "%s/MLP/raw_datasets/TWCR/%s_zarr" % (
+    fn = "%s/raw_datasets/TWCR/%s_zarr" % (
         os.getenv("PDIR"),
         variable,
     )
