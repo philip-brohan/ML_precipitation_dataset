@@ -26,13 +26,13 @@ from normalize.SPI_monthly.GPCP_tf_MM.normalize import match_normal, load_fitted
 sDir = os.path.dirname(os.path.realpath(__file__))
 
 # Get the date range from the input zarr array
-fn = "%s/MLP/raw_datasets/GPCP/blended/precipitation_zarr" % (os.getenv("PDIR"),)
+fn = "%s/raw_datasets/GPCP/blended/precipitation_zarr" % (os.getenv("PDIR"),)
 input_zarr = zarr.open(fn, mode="r")
 AvailableMonths = input_zarr.attrs["AvailableMonths"]
 
 
 # Create the output zarr array
-fn = "%s/MLP/normalized_datasets/GPCP_tf_MM/precipitation_zarr" % (os.getenv("PDIR"),)
+fn = "%s/normalized_datasets/GPCP_tf_MM/precipitation_zarr" % (os.getenv("PDIR"),)
 # Delete any previous version
 if os.path.exists(fn):
     rmtree(fn)

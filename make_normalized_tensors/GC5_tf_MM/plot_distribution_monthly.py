@@ -16,7 +16,7 @@ import tensorflow as tf
 import zarr
 
 from utilities import plots
-from make_normalized_tensors.GPCC_tf_MM.in_situ.tensor_utils import tensor_to_cube
+from make_normalized_tensors.ERA5_tf_MM.tensor_utils import tensor_to_cube
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -33,14 +33,35 @@ parser.add_argument(
 parser.add_argument(
     "--month", help="Month to plot", type=int, required=False, default=3
 )
+parser.add_argument(
+    "--variable",
+    help="Name of variable to use (mean_sea_level_pressure, 2m_temperature, ...)",
+    type=str,
+    default="prate",
+)
+parser.add_argument(
+    "--run",
+    help="Name of run to use (dl339, dl340, or dl341)",
+    type=str,
+    default="dl339",
+)
 args = parser.parse_args()
 
-fn = "%s/normalized_datasets/GPCC_tf_MM/precipitation_zarr" % (os.getenv("PDIR"),)
+fn = "%s/normalized_datasets/GC55_tf_MM/historical/%s/%s_zarr" % (
+    os.getenv("PDIR"),
+    args.run,
+    args.variable,
+)
 
 
 # Get the raw data
 raw_zarr = zarr.open(
-    "%s/raw_datasets/GPCC/in_situ/precipitation_zarr" % (os.getenv("PDIR"),),
+    "%s/raw_datasets/GC5-Central/historical/%s/%s_zarr"
+    % (
+        os.getenv("PDIR"),
+        args.run,
+        args.variable,
+    ),
     mode="r",
 )
 AvailableMonths = raw_zarr.attrs["AvailableMonths"]
@@ -48,18 +69,24 @@ AvailableMonths = raw_zarr.attrs["AvailableMonths"]
 
 idx = AvailableMonths["%04d-%02d" % (args.year, args.month)]
 raw = tensor_to_cube(tf.convert_to_tensor(raw_zarr[:, :, idx], tf.float32))
-raw.data.data[np.isnan(raw.data.data)] = 0.0
-raw.data.mask = np.logical_or(raw.data.mask, raw.data.data == 0.0)
+raw.data.data[np.isnan(raw.data.data)] = 0
+raw.data.mask[raw.data.data == 0] = True
 
 # Get the normalized data
 normalized_zarr = zarr.open(
-    "%s/normalized_datasets/GPCC_tf_MM/precipitation_zarr" % (os.getenv("PDIR"),),
+    "%s/normalized_datasets/GC5_tf_MM/historical/%s/%s_zarr"
+    % (
+        os.getenv("PDIR"),
+        args.run,
+        args.variable,
+    ),
     mode="r",
 )
+
 normalized = tensor_to_cube(
     tf.convert_to_tensor(normalized_zarr[:, :, idx], tf.float32)
 )
-
+normalized.data.mask[normalized.data.data == 0] = True
 
 # Make the plot
 fig = Figure(
@@ -94,11 +121,18 @@ axb.add_patch(
 )
 
 # choose actual and normalized data colour maps based on variable
-cmaps = (cmocean.cm.rain, cmocean.cm.tarn)
+cmaps = (cmocean.cm.balance, cmocean.cm.balance)
+if args.variable == "prate":
+    cmaps = (cmocean.cm.rain, cmocean.cm.tarn)
+if args.variable == "mslp":
+    cmaps = (cmocean.cm.diff, cmocean.cm.diff)
 
 
 ax_raw = fig.add_axes([0.02, 0.515, 0.607, 0.455])
-vMin = 0
+if args.variable == "prate":
+    vMin = 0
+else:
+    vMin = np.percentile(raw.data.compressed(), 5)
 plots.plotFieldAxes(
     ax_raw,
     raw,

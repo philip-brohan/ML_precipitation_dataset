@@ -48,7 +48,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-fn = "%s/MLP/normalized_datasets/TWCR_tf_MM/%s_zarr" % (
+fn = "%s/normalized_datasets/TWCR_tf_MM/%s_zarr" % (
     os.getenv("PDIR"),
     args.variable,
 )
@@ -56,7 +56,7 @@ fn = "%s/MLP/normalized_datasets/TWCR_tf_MM/%s_zarr" % (
 
 # Get the raw data
 raw_zarr = zarr.open(
-    "%s/MLP/raw_datasets/TWCR/%s_zarr"
+    "%s/raw_datasets/TWCR/%s_zarr"
     % (
         os.getenv("PDIR"),
         args.variable,
@@ -75,7 +75,7 @@ raw.data.mask[raw.data.data == 0] = True
 
 # Get the normalized data
 normalized_zarr = zarr.open(
-    "%s/MLP/normalized_datasets/TWCR_tf_MM/%s_zarr"
+    "%s/normalized_datasets/TWCR_tf_MM/%s_zarr"
     % (
         os.getenv("PDIR"),
         args.variable,

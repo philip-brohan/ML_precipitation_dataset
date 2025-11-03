@@ -4,6 +4,7 @@
 
 import os
 import sys
+import argparse
 import iris
 import numpy as np
 from shutil import rmtree
@@ -19,20 +20,43 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 import tensorflow as tf
 import tensorstore as ts
-from normalize.SPI_monthly.GPCC_tf_MM.in_situ.makeDataset import getDataset
-from normalize.SPI_monthly.GPCC_tf_MM.in_situ.normalize import match_normal, load_fitted
+from normalize.SPI_monthly.GC5_tf_MM.makeDataset import getDataset
+from normalize.SPI_monthly.GC5_tf_MM.normalize import match_normal, load_fitted
 
 
 sDir = os.path.dirname(os.path.realpath(__file__))
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--run",
+    help="Run name",
+    type=str,
+    required=True,
+)
+parser.add_argument(
+    "--variable",
+    help="Variable name",
+    type=str,
+    required=True,
+)
+args = parser.parse_args()
+
 # Get the date range from the input zarr array
-fn = "%s/raw_datasets/GPCC/in_situ/precipitation_zarr" % (os.getenv("PDIR"),)
+fn = "%s/raw_datasets/GC5-Central/historical/%s/%s_zarr" % (
+    os.getenv("PDIR"),
+    args.run,
+    args.variable,
+)
 input_zarr = zarr.open(fn, mode="r")
 AvailableMonths = input_zarr.attrs["AvailableMonths"]
 
 
 # Create the output zarr array
-fn = "%s/normalized_datasets/GPCC_tf_MM/precipitation_zarr" % (os.getenv("PDIR"),)
+fn = "%s/normalized_datasets/GC5_tf_MM/historical/%s/%s_zarr" % (
+    os.getenv("PDIR"),
+    args.run,
+    args.variable,
+)
 # Delete any previous version
 if os.path.exists(fn):
     rmtree(fn)
@@ -56,12 +80,13 @@ zarr_ds.attrs["AvailableMonths"] = AvailableMonths
 # Load the pre-calculated normalisation parameters
 fitted = []
 for month in range(1, 13):
-    cubes = load_fitted(month)
+    cubes = load_fitted(month, variable=args.variable)
     fitted.append([cubes[0].data, cubes[1].data, cubes[2].data])
 
 
 # Go through raw dataset  and make normalized tensors
 trainingData = getDataset(
+    args.variable,
     cache=False,
     blur=1.0e-9,
 ).batch(1)
