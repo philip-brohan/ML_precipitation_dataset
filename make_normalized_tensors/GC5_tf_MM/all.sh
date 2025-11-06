@@ -1,0 +1,6 @@
+./make_all_tensors.py --run=dl339 --variable=prate
+./make_all_tensors.py --run=dl339 --variable=t2m
+./make_all_tensors.py --run=dl340 --variable=prate
+./make_all_tensors.py --run=dl340 --variable=t2m
+./make_all_tensors.py --run=dl341 --variable=prate
+./make_all_tensors.py --run=dl341 --variable=t2m

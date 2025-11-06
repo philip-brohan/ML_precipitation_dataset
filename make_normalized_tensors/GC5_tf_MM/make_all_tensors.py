@@ -20,7 +20,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 import tensorflow as tf
 import tensorstore as ts
-from normalize.SPI_monthly.GC5_tf_MM.makeDataset import getDataset
+from normalize.SPI_monthly.GC5_tf_MM.makeDataset import getrunDataset
 from normalize.SPI_monthly.GC5_tf_MM.normalize import match_normal, load_fitted
 
 
@@ -85,7 +85,8 @@ for month in range(1, 13):
 
 
 # Go through raw dataset  and make normalized tensors
-trainingData = getDataset(
+trainingData = getrunDataset(
+    args.run,
     args.variable,
     cache=False,
     blur=1.0e-9,

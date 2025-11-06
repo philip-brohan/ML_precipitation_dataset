@@ -34,12 +34,12 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-fn = "%s/MLP/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (os.getenv("PDIR"),)
+fn = "%s/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (os.getenv("PDIR"),)
 
 
 # Get the raw data
 raw_zarr = zarr.open(
-    "%s/MLP/raw_datasets/HadISST/temperature_zarr" % (os.getenv("PDIR"),),
+    "%s/raw_datasets/HadISST/temperature_zarr" % (os.getenv("PDIR"),),
     mode="r",
 )
 AvailableMonths = raw_zarr.attrs["AvailableMonths"]
@@ -52,7 +52,7 @@ raw.data.mask = np.logical_or(raw.data.mask, raw.data.data == 0.0)
 
 # Get the normalized data
 normalized_zarr = zarr.open(
-    "%s/MLP/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (os.getenv("PDIR"),),
+    "%s/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (os.getenv("PDIR"),),
     mode="r",
 )
 normalized = tensor_to_cube(
