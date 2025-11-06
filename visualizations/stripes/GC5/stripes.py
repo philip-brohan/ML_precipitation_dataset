@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# GPCC in-situ stripes - normalized values.
+# ERA5 stripes - normalized values.
 # Monthly, resolved in latitude,
 
 import os
@@ -42,6 +42,10 @@ parser.add_argument(
 parser.add_argument(
     "--convolve", help="Convolution filter", type=str, required=False, default="none"
 )
+parser.add_argument("--global_mean", help="show global mean", action="store_true")
+parser.add_argument("--annual_mean", help="show annual_mean", action="store_true")
+parser.add_argument("--variable", help="Variable", type=str, required=True)
+parser.add_argument("--run", help="Model Run", type=str, required=False,default=None)
 parser.add_argument(
     "--vmin",
     type=float,
@@ -58,7 +62,7 @@ parser.add_argument(
     "--startyear",
     type=int,
     required=False,
-    default=1891,
+    default=1950,
 )
 parser.add_argument(
     "--endyear",
@@ -66,8 +70,6 @@ parser.add_argument(
     required=False,
     default=2023,
 )
-parser.add_argument("--global_mean", help="show global mean", action="store_true")
-parser.add_argument("--annual_mean", help="show annual_mean", action="store_true")
 args = parser.parse_args()
 
 start = datetime.datetime(args.startyear, 1, 1, 0, 0)
@@ -115,27 +117,50 @@ def csmooth(choice, ndata):
 
 
 # Colourmap
-cmap = cmocean.cm.tarn
+cmap = {
+    "t2m": cmocean.cm.balance,
+    "prmsl": cmocean.cm.balance,
+    "prate": cmocean.cm.tarn,
+}.get(args.variable)
+if cmap is None:
+    cmap = cmocean.cm.balance
 
-# Go through data and extract zonal mean for each month
 dts = []
 ndata = None
 trainingData = getDataset(
+    args.variable,
     startyear=start.year,
     endyear=end.year,
     cache=False,
     blur=None,
 ).batch(1)
 
+selected_run = {}
 for batch in trainingData:
     year = int(batch[1].numpy()[0][:4])
     month = int(batch[1].numpy()[0][5:7])
+    run = batch[1].numpy()[0][8:14].decode('utf-8')
+    if args.run is not None:
+        if run != args.run:
+            continue
+    else:
+        mstr = "%04d-%02d" % (year, month)
+        if mstr not in selected_run:
+            selected_run[mstr] = rng.choice(('dl339','dl340','dl341'))
+        if run != selected_run[mstr]:
+            continue
     dts.append(datetime.datetime(year, month, 15, 0))
     ndmo = longitude_reduce(args.reduce, batch[0])
     if ndata is None:
         ndata = ndmo
     else:
         ndata = np.concatenate((ndata, ndmo), axis=1)
+
+# Sort the data into chronological order
+order = np.argsort(np.array([dt.timestamp() for dt in dts]))  #
+dts = [dts[i] for i in order]
+ndata = ndata[:, order]
+
 
 ndata = np.ma.MaskedArray(ndata, ndata == 0.0)
 omask = ndata.mask.copy()
@@ -307,14 +332,15 @@ cb = fig.colorbar(
 )
 
 
-opdir = "%s/visualizations/stripes/GPCC/" % os.getenv("PDIR")
+opdir = "%s/visualizations/stripes/GC5/historical" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
-
-fname = "%s/%s_%s_%s" % (opdir, "in_situ", args.reduce, args.convolve)
+fname = "%s/%s_%s_%s" % (opdir, args.variable, args.reduce, args.convolve)
 if args.global_mean:
     fname += "_globalmean"
 if args.annual_mean:
     fname += "_annualmean"
+if args.run is not None:
+    fname += "_%s" % args.run
 
 fig.savefig("%s.webp" % fname)

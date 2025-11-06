@@ -17,7 +17,7 @@ def getDataset(
 ):
 
     # Get the index of the last month in the raw tensors
-    fn = "%s/MLP/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (
+    fn = "%s/normalized_datasets/HadISST_tf_MM/temperature_zarr" % (
         os.getenv("PDIR"),
     )
     zarr_array = zarr.open(fn, mode="r")

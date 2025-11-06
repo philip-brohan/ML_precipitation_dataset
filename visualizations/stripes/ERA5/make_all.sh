@@ -25,4 +25,5 @@ echo "$SCRIPT_DIR/stripes.py --variable=sea_surface_temperature --convolve=none 
 echo "$SCRIPT_DIR/stripes.py --variable=sea_surface_temperature --convolve=11x13 --startyear=1850 --vmin=0.25 --vmax=0.75"
 echo "$SCRIPT_DIR/stripes.py --variable=sea_surface_temperature --convolve=sub-11x13 --startyear=1850"
 echo "$SCRIPT_DIR/stripes.py --variable=sea_surface_temperature --reduce=mean --startyear=1850"
-echo "$SCRIPT_DIR/stripes.py --variable=sea_temperature --reduce=mean --global_mean --annual_mean --vmin=0.25 --vmax=0.75 --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=sea_surface_temperature --reduce=mean --global_mean --annual_mean --vmin=0.25 --vmax=0.75 --startyear=1850"
+cr 

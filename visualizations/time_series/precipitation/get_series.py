@@ -45,7 +45,7 @@ args = parser.parse_args()
 # Load the mask file if provided
 if args.mask_file is not None:
     mask = iris.load_cube(
-        "%s/MLP/visualizations/time_series/masks/%s.nc"
+        "%s/visualizations/time_series/masks/%s.nc"
         % (os.getenv("PDIR"), args.mask_file)
     )
 
@@ -149,7 +149,7 @@ if args.mask_file is None:
 else:
     args.mask_file = os.path.splitext(os.path.basename(args.mask_file))[0]
 
-opdir = "%s/MLP/visualizations/time_series/precipitation" % os.getenv("PDIR")
+opdir = "%s/visualizations/time_series/precipitation" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 

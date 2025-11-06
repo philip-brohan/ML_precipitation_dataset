@@ -314,7 +314,7 @@ cb = fig.colorbar(
 )
 
 
-opdir = "%s/MLP/visualizations/stripes/ERA5" % os.getenv("PDIR")
+opdir = "%s/visualizations/stripes/ERA5" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 fname = "%s/%s_%s_%s" % (opdir, args.variable, args.reduce, args.convolve)

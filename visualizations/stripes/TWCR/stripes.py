@@ -330,7 +330,7 @@ cb = fig.colorbar(
     label="Quantile",
 )
 
-opdir = "%s/MLP/visualizations/stripes/TWCR" % os.getenv("PDIR")
+opdir = "%s/visualizations/stripes/TWCR" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 

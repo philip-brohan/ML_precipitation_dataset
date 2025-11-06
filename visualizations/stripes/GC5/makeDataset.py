@@ -1,4 +1,4 @@
-# Create raw data dataset for normalization
+# Create normalized dataset
 
 import os
 import sys
@@ -8,18 +8,44 @@ import zarr
 import tensorstore as ts
 
 
-# Get a dataset - all the tensors for a given and variable
+# Get a full dataset - all three runs one after the other
 def getDataset(
+    variable,
     startyear=None,
     endyear=None,
-    member_idx=None,
     blur=None,
     cache=False,
+    prefetch=True,
+):
+    ds1=getrunDataset('dl339',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False)
+    ds1 = ds1.concatenate(getrunDataset('dl340',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False))
+    ds1 = ds1.concatenate(getrunDataset('dl341',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False))
+
+    # Optimisation
+    if cache:
+        ds1 = ds1.cache()  # Great, iff you have enough RAM for it
+
+    if prefetch:
+        ds1 = ds1.prefetch(tf.data.experimental.AUTOTUNE)
+
+    return ds1
+
+# Get a run dataset - all the tensors for a given run and variable
+def getrunDataset(
+    run,
+    variable,
+    startyear=None,
+    endyear=None,
+    blur=None,
+    cache=False,
+    prefetch=False,
 ):
 
-    # Get the index of the last month in the raw tensors
-    fn = "%s/normalized_datasets/HadCRUT_tf_MM/temperature_zarr" % (
+    # Get the index of the last month in the normalized tensors
+    fn = "%s/normalized_datasets/GC5_tf_MM/historical/%s/%s_zarr" % (
         os.getenv("PDIR"),
+        run,
+        variable,
     )
     zarr_array = zarr.open(fn, mode="r")
     AvailableMonths = zarr_array.attrs["AvailableMonths"]
@@ -28,16 +54,15 @@ def getDataset(
         dates = [date for date in dates if int(date[:4]) >= startyear]
     if endyear is not None:
         dates = [date for date in dates if int(date[:4]) <= endyear]
-    if member_idx is not None:
-        dates = [date for date in dates if int(date[-2:]) == member_idx]
-    # index = member_idx*10000 + month_idx
-    indices = [int(date[-2:]) * 10000 + AvailableMonths[date] for date in dates]
+    indices = [AvailableMonths[date] for date in dates]
+    # Will use dates as tensor labels, so need to append run to identify that
+    dates_run = [date+'_'+run for date in dates]
 
     # Create TensorFlow Dataset object from the source file dates
-    tn_data = tf.data.Dataset.from_tensor_slices(tf.constant(dates, tf.string))
+    tn_data = tf.data.Dataset.from_tensor_slices(tf.constant(dates_run, tf.string))
     ts_data = tf.data.Dataset.from_tensor_slices(tf.constant(indices, tf.int32))
 
-    # Convert from list ofavailable months to Dataset of source file contents
+    # Convert from list of available months to Dataset of source file contents
     tsa = ts.open(
         {
             "driver": "zarr",
@@ -47,10 +72,7 @@ def getDataset(
 
     # Need the indirect function as zarr can't take tensor indices and .map prohibits .numpy()
     def load_tensor_from_index_py(idx):
-        lidx = idx.numpy()
-        m_idx = lidx // 10000
-        d_idx = lidx % 10000
-        return tf.convert_to_tensor(tsa[:, :, m_idx, d_idx].read().result(), tf.float32)
+        return tf.convert_to_tensor(tsa[:, :, idx.numpy()].read().result(), tf.float32)
 
     def load_tensor_from_index(idx):
         result = tf.py_function(
@@ -79,6 +101,7 @@ def getDataset(
     if cache:
         tz_data = tz_data.cache()  # Great, iff you have enough RAM for it
 
-    tz_data = tz_data.prefetch(tf.data.experimental.AUTOTUNE)
+    if prefetch:
+        tz_data = tz_data.prefetch(tf.data.experimental.AUTOTUNE)
 
     return tz_data
