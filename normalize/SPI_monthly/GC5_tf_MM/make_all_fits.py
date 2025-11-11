@@ -22,6 +22,7 @@ count = 0
 for variable in (
     "t2m",
     "prate",
+    "prmsl",
 ):
     for month in range(1, 13):
         if is_done(month, variable):

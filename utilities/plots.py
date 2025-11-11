@@ -77,7 +77,7 @@ def get_land_mask(grid_cube=None):
     lm = iris.util.squeeze(lm)
     lm.coord("latitude").coord_system = iris.coord_systems.RotatedGeogCS(90, 180, 0)
     lm.coord("longitude").coord_system = iris.coord_systems.RotatedGeogCS(90, 180, 0)
-    lm.data.mask=lm.data.data==0.0
+    lm.data.mask = lm.data.data == 0.0
     if grid_cube is not None:
         lm = lm.regrid(grid_cube, iris.analysis.Linear())
     return lm

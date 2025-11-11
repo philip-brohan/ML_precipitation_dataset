@@ -3,16 +3,17 @@
 # Get global mean series of normalized values and store as pickle
 
 import os
+
+import iris
 import numpy as np
 
-# Suppress cuda warnings from TensorFlow - don't need a GPU for this
+# Suppress warnings from TensorFlow - don't need a GPU for this
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
-import tensorflow as tf
 import pickle
-from utilities.grids import E5sCube_grid_areas
 
-sDir = os.path.dirname(os.path.realpath(__file__))
+import tensorflow as tf
+from utilities.grids import E5sCube_grid_areas
 
 rng = np.random.default_rng()
 
@@ -32,7 +33,21 @@ parser.add_argument(
     required=False,
     default=None,
 )
+parser.add_argument(
+    "--mask_file",
+    help="File containing averaging data mask",
+    type=str,
+    required=False,
+    default=None,
+)
 args = parser.parse_args()
+
+# Load the mask file if provided
+if args.mask_file is not None:
+    mask = iris.load_cube(
+        "%s/visualizations/time_series/masks/%s.nc"
+        % (os.getenv("PDIR"), args.mask_file)
+    )
 
 if args.source == "ERA5_t2m":
     from visualizations.stripes.ERA5.makeDataset import getDataset
@@ -40,7 +55,7 @@ if args.source == "ERA5_t2m":
     trainingData = getDataset(
         "2m_temperature",
         startyear=1950,
-        endyear=2023,
+        endyear=2025,
         cache=False,
         blur=None,
     ).batch(1)
@@ -50,7 +65,7 @@ elif args.source == "ERA5_sst":
     trainingData = getDataset(
         "sea_surface_temperature",
         startyear=1950,
-        endyear=2023,
+        endyear=2025,
         cache=False,
         blur=None,
     ).batch(1)
@@ -69,6 +84,16 @@ elif args.source == "TWCR_sst":
 
     trainingData = getDataset(
         "SST",
+        startyear=1850,
+        endyear=2023,
+        cache=False,
+        blur=None,
+    ).batch(1)
+elif args.source == "GC5":
+    from visualizations.stripes.GC5.makeDataset import getDataset
+
+    trainingData = getDataset(
+        "t2m",
         startyear=1850,
         endyear=2023,
         cache=False,
@@ -97,6 +122,8 @@ else:
 
 
 def latlon_reduce(choice, ndata):
+    if args.mask_file is not None:
+        ndata[mask.data == 0] = 0
     if choice is None:
         ndata = ndata.flatten()
         ndata = ndata[ndata != 0]
@@ -117,14 +144,16 @@ members = np.zeros([1000])
 for batch in trainingData:
     year = int(batch[1].numpy()[0][:4])
     month = int(batch[1].numpy()[0][5:7])
-    try:
+    member = 0
+    if args.source[:4] == "TWCR" or args.source == "HadCRUT":
         member = int(batch[1].numpy()[0][8:11])
-    except Exception:
-        member = 0
+    if args.source == "GC5":
+        member = int(batch[1].numpy()[0][10:13]) - 339  # Convert 'dl339,dl340, -> 0,1,
     key = "%04d%02d%03d" % (year, month, member)
     members[member] += 1
     ndmo = batch[0].numpy().squeeze()
     ndata[key] = latlon_reduce(args.rchoice, ndmo)
+
 
 # Fill in any gaps with np.nan
 members = np.where(members != 0)
@@ -137,10 +166,16 @@ for year in range(1850, 2050):
 
 if args.rchoice is None:
     args.rchoice = "None"
+if args.mask_file is None:
+    args.mask_file = "None"
+else:
+    args.mask_file = os.path.splitext(os.path.basename(args.mask_file))[0]
 
 opdir = "%s/visualizations/time_series/temperature" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 
-with open("%s/%s_%s.pkl" % (opdir, args.rchoice, args.source), "wb") as dfile:
+with open(
+    "%s/%s_%s_%s.pkl" % (opdir, args.mask_file, args.rchoice, args.source), "wb"
+) as dfile:
     pickle.dump(ndata, dfile)

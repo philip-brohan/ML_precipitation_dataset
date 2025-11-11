@@ -38,7 +38,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-#opdir = "%s/normalization/SPI_monthly/plots/HadCRUT_tf_MM" % os.getenv("PDIR")
+# opdir = "%s/normalization/SPI_monthly/plots/HadCRUT_tf_MM" % os.getenv("PDIR")
 opdir = "./outputs"
 if not os.path.isdir(opdir):
     os.makedirs(opdir, exist_ok=True)

@@ -17,9 +17,37 @@ def getDataset(
     cache=False,
     prefetch=True,
 ):
-    ds1=getrunDataset('dl339',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False)
-    ds1 = ds1.concatenate(getrunDataset('dl340',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False))
-    ds1 = ds1.concatenate(getrunDataset('dl341',variable,startyear=startyear,endyear=endyear,blur=blur,cache=False,prefetch=False))
+    ds1 = getrunDataset(
+        "dl339",
+        variable,
+        startyear=startyear,
+        endyear=endyear,
+        blur=blur,
+        cache=False,
+        prefetch=False,
+    )
+    ds1 = ds1.concatenate(
+        getrunDataset(
+            "dl340",
+            variable,
+            startyear=startyear,
+            endyear=endyear,
+            blur=blur,
+            cache=False,
+            prefetch=False,
+        )
+    )
+    ds1 = ds1.concatenate(
+        getrunDataset(
+            "dl341",
+            variable,
+            startyear=startyear,
+            endyear=endyear,
+            blur=blur,
+            cache=False,
+            prefetch=False,
+        )
+    )
 
     # Optimisation
     if cache:
@@ -29,6 +57,7 @@ def getDataset(
         ds1 = ds1.prefetch(tf.data.experimental.AUTOTUNE)
 
     return ds1
+
 
 # Get a run dataset - all the tensors for a given run and variable
 def getrunDataset(

@@ -7,6 +7,8 @@
 
 (cd ERA5_tf_MM && ./make_all_fits.py)
 
+(cd GC5_tf_MM && ./make_all_fits.py)
+
 (cd TWCR_tf_MM && ./make_all_fits.py)
 
 (cd ./GPCC_tf_MM/in_situ && ./make_all_fits.py)

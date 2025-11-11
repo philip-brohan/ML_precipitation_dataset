@@ -84,6 +84,19 @@ parser.add_argument(
     help="Don't plot model datasets",
     action="store_true",
 )
+parser.add_argument(
+    "--spectrum",
+    help="Plot frequency spectrum (power) instead of time series",
+    action="store_true",
+)
+parser.add_argument(
+    "--max_frequency",
+    help="Max frequency to show in spectrum plots (in 1/years)",
+    type=float,
+    required=False,
+    default=1.0,
+)
+
 
 args = parser.parse_args()
 
@@ -93,8 +106,12 @@ end = datetime.date(args.end_year, 12, 15)
 
 
 # Make the plot
+if args.spectrum:
+    figsize = (10, 10)
+else:
+    figsize = (20, 10)
 fig = Figure(
-    figsize=(20, 10),
+    figsize=figsize,
     dpi=100,
     facecolor=(1, 1, 1, 1),
     edgecolor=None,
@@ -122,15 +139,22 @@ if not args.nosat:
     datasets["ERA5"] = (0, 0, 1, 1)
     datasets["GPCP"] = (0, 0.5, 1, 1)
 if not args.nomodel:
-    datasets['GC5'] = (1, 0.5, 0.5, 1)
+    datasets["GC5"] = (1, 0.5, 0.5, 1)
 
 # Data axes
-ax_ts = fig.add_axes(
-    [0.05, 0.1, 0.9, 0.75],
-    xlim=(start, end),
-    ylim=(args.ymin, args.ymax),
-)
-ax_ts.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
+if args.spectrum:
+    # frequency axis in cycles per year (monthly sampling -> Nyquist = 6 cyc/yr)
+    ax_ts = fig.add_axes([0.1, 0.1, 0.85, 0.85], xlim=(0.0, args.max_frequency))
+    ax_ts.set_xlabel("Frequency (cycles/year)")
+    ax_ts.set_ylabel("Power")
+    ax_ts.set_yscale("log")
+else:
+    ax_ts = fig.add_axes(
+        [0.05, 0.1, 0.9, 0.75],
+        xlim=(start, end),
+        ylim=(args.ymin, args.ymax),
+    )
+    ax_ts.grid(color=(0, 0, 0, 1), linestyle="-", linewidth=0.1)
 
 
 def plot_var(ndata, width, col, label):
@@ -148,18 +172,40 @@ def plot_var(ndata, width, col, label):
         ts[member].append(datetime.date(year, month, 15))
         t[member].append(ndata[dk])
     for member in ts.keys():
-        tp = csmooth(args.nmonths, t[member])
-        ax_ts.add_line(
-            Line2D(
-                ts[member],
-                tp,
-                linewidth=width,
-                color=col,
-                zorder=50,
-                label=label,
+        if args.spectrum:
+            y = np.asarray(t[member], dtype=float)
+            # handle NaNs: replace with mean so FFT works
+            if np.isnan(y).any():
+                y = np.nan_to_num(y, nan=np.nanmean(y))
+            # remove mean
+            y = y - np.mean(y)
+            N = y.size
+            if N < 2:
+                continue
+            # real FFT, sampling interval d = 1 month -> sampling rate = 12 samples/year
+            yf = np.fft.rfft(y)
+            psd = (np.abs(yf) ** 2) / N
+            freqs = np.fft.rfftfreq(N, d=1.0 / 12.0)  # cycles per year
+            # skip the zero-frequency term for plotting if desired
+            psd = csmooth(args.nmonths, psd[1:])
+            ax_ts.plot(
+                freqs[1:], psd, linewidth=width, color=col, zorder=50, label=label
             )
-        )
-        label = None  # Only label once per dataset
+            ax_ts.set_xscale("linear")
+            label = None
+        else:
+            tp = csmooth(args.nmonths, t[member])
+            ax_ts.add_line(
+                Line2D(
+                    ts[member],
+                    tp,
+                    linewidth=width,
+                    color=col,
+                    zorder=50,
+                    label=label,
+                )
+            )
+            label = None  # Only label once per dataset
 
 
 def csmooth(nmonths, ndata):
@@ -184,11 +230,16 @@ for ds in datasets.keys():
     plot_var(ndata, args.linewidth, col=datasets[ds], label=ds)
 
 handles, labels = ax_ts.get_legend_handles_labels()
-ax_ts.legend(handles, labels, loc="upper left", ncol=5)
+if args.spectrum:
+    ax_ts.legend(handles, labels, loc="upper right", ncol=3)
+else:
+    ax_ts.legend(handles, labels, loc="upper left", ncol=6)
 
 ns = ""
 if args.nosat:
     ns = "ns_"
+if args.spectrum:
+    ns = "spectrum_%s" % ns
 fig.savefig(
     "%s/%s%s_%s_precipitation_%03d.webp"
     % (sDir, ns, args.mask_file, args.rchoice, args.nmonths)

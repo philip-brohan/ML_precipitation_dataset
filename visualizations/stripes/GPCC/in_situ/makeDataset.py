@@ -17,9 +17,7 @@ def getDataset(
 ):
 
     # Get the index of the last month in the raw tensors
-    fn = "%s/normalized_datasets/GPCC_tf_MM/precipitation_zarr" % (
-        os.getenv("PDIR"),
-    )
+    fn = "%s/normalized_datasets/GPCC_tf_MM/precipitation_zarr" % (os.getenv("PDIR"),)
     zarr_array = zarr.open(fn, mode="r")
     AvailableMonths = zarr_array.attrs["AvailableMonths"]
     dates = sorted(AvailableMonths.keys())

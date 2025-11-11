@@ -124,7 +124,7 @@ axb.add_patch(
 cmaps = (cmocean.cm.balance, cmocean.cm.balance)
 if args.variable == "prate":
     cmaps = (cmocean.cm.rain, cmocean.cm.tarn)
-if args.variable == "mslp":
+if args.variable == "prmsl":
     cmaps = (cmocean.cm.diff, cmocean.cm.diff)
 
 

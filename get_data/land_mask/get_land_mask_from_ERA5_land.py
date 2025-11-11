@@ -21,9 +21,8 @@ if not os.path.isfile("%s/land_mask.nc" % opdir):  # Only bother if we don't hav
     ctrlB = {
         "variable": ["land_sea_mask"],
         "data_format": "netcdf",
-        "download_format": "unarchived"
+        "download_format": "unarchived",
     }
-
 
     c = cdsapi.Client()
     c.retrieve(

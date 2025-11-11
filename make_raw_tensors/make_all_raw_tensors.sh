@@ -16,6 +16,9 @@
 (cd GC5-Central && ./make_all_tensors.py --run=dl339 --variable=t2m)
 (cd GC5-Central && ./make_all_tensors.py --run=dl340 --variable=t2m)
 (cd GC5-Central && ./make_all_tensors.py --run=dl341 --variable=t2m)
+(cd GC5-Central && ./make_all_tensors.py --run=dl339 --variable=prmsl)
+(cd GC5-Central && ./make_all_tensors.py --run=dl340 --variable=prmsl)
+(cd GC5-Central && ./make_all_tensors.py --run=dl341 --variable=prmsl)
 
 (cd TWCR && ./make_all_tensors.py --variable=TMP2m)
 (cd TWCR && ./make_all_tensors.py --variable=SST)

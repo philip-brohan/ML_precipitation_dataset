@@ -31,7 +31,7 @@ parser.add_argument(
     "--month", help="Month to extract", type=int, required=False, default=3
 )
 parser.add_argument(
-    "--run", help="Run to use", type=str, required=False, default='dl339'
+    "--run", help="Run to use", type=str, required=False, default="dl339"
 )
 parser.add_argument(
     "--variable",

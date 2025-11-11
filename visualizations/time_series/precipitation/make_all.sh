@@ -6,6 +6,7 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 OP_DIR="$PDIR/visualizations/time_series/precipitation"
+mkdir -p "$OP_DIR"
 
 # Re-create the processed time-series if needed
 for source in TWCR ERA5 GPCC_in-situ GPCP CRU GC5

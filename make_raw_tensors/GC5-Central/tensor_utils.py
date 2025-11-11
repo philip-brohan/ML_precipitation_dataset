@@ -21,7 +21,7 @@ def index_to_date(idx):
 
 
 # Load the data for 1 month (on the standard cube).
-def load_raw(year, month, run='dl339', variable="prate"):
+def load_raw(year, month, run="dl339", variable="prate"):
     raw = GC5_monthly.load(
         variable=variable,
         year=year,
@@ -29,7 +29,7 @@ def load_raw(year, month, run='dl339', variable="prate"):
         run=run,
         grid=grids.E5sCube,
     )
-    raw.data = np.ma.MaskedArray(raw.data,mask=np.isnan(raw.data))
+    raw.data = np.ma.MaskedArray(raw.data, mask=np.isnan(raw.data))
     return raw
 
 

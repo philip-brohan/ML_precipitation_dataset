@@ -13,8 +13,6 @@ import tensorflow as tf
 import pickle
 from utilities.grids import E5sCube_grid_areas
 
-sDir = os.path.dirname(os.path.realpath(__file__))
-
 rng = np.random.default_rng()
 
 import argparse
@@ -133,11 +131,11 @@ members = np.zeros([1000])
 for batch in trainingData:
     year = int(batch[1].numpy()[0][:4])
     month = int(batch[1].numpy()[0][5:7])
-    member=0
-    if args.source=='TWCR':
+    member = 0
+    if args.source == "TWCR":
         member = int(batch[1].numpy()[0][8:11])
-    if args.source=='GC5':
-        member = int(batch[1].numpy()[0][10:13])-339 # Convert 'dl339,dl340, -> 0,1,
+    if args.source == "GC5":
+        member = int(batch[1].numpy()[0][10:13]) - 339  # Convert 'dl339,dl340, -> 0,1,
     key = "%04d%02d%03d" % (year, month, member)
     members[member] += 1
     ndmo = batch[0].numpy().squeeze()

@@ -36,17 +36,17 @@ def load(
         variable,
     )
     long_names = {
-        'total_precipitation': 'Total precipitation',
-        '2m_temperature': '2 metre temperature',
-        'sea_surface_temperature': 'Sea surface temperature',
-        'mean_sea_level_pressure': 'Mean sea level pressure',
+        "total_precipitation": "Total precipitation",
+        "2m_temperature": "2 metre temperature",
+        "sea_surface_temperature": "Sea surface temperature",
+        "mean_sea_level_pressure": "Mean sea level pressure",
     }
     if not os.path.isfile(fname):
         raise Exception("No data file %s" % fname)
     ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
     varC = iris.load_cube(fname, long_names[variable])
-    varC.remove_coord('expver') # Weird ERA5 feature breaks iris
-    varC=varC.extract(ftt) # Must remove expver before applying constraint
+    varC.remove_coord("expver")  # Weird ERA5 feature breaks iris
+    varC = varC.extract(ftt)  # Must remove expver before applying constraint
     add_coord_system(varC)
     varC.long_name = variable
     if grid is not None:

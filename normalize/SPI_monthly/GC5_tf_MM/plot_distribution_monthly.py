@@ -30,7 +30,7 @@ parser.add_argument(
     "--month", help="Month to plot", type=int, required=False, default=3
 )
 parser.add_argument(
-    "--run", help="Run to plot", type=str, required=False, default='dl339'
+    "--run", help="Run to plot", type=str, required=False, default="dl339"
 )
 parser.add_argument(
     "--variable",
@@ -91,7 +91,7 @@ axb.add_patch(
 cmaps = (cmocean.cm.balance, cmocean.cm.balance)
 if args.variable == "prate":
     cmaps = (cmocean.cm.rain, cmocean.cm.tarn)
-if args.variable == "mslp":
+if args.variable == "prmsl":
     cmaps = (cmocean.cm.diff, cmocean.cm.diff)
 
 

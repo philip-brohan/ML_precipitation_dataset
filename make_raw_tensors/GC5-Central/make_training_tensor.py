@@ -52,7 +52,8 @@ try:
     ict = raw_to_tensor(qd)
 except Exception as e:
     warnings.warn(
-        "Failed to load data for %s %s %04d-%02d" % (args.run, args.variable, args.year, args.month)
+        "Failed to load data for %s %s %04d-%02d"
+        % (args.run, args.variable, args.year, args.month)
     )
     print(e)
     ict = tf.fill([721, 1440], tf.constant(np.nan, dtype=tf.float32))

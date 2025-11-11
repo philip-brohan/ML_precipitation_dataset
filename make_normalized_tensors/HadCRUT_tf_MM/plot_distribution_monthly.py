@@ -41,8 +41,8 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-#opdir = "%s/normalized_datasets/plots/HadCRUT_tf_MM" % (os.getenv("PDIR"),)
-opdir= "."
+# opdir = "%s/normalized_datasets/plots/HadCRUT_tf_MM" % (os.getenv("PDIR"),)
+opdir = "."
 os.makedirs(opdir, exist_ok=True)
 
 fn = "%s/normalized_datasets/HadCRUT_tf_MM/temperature_zarr" % (os.getenv("PDIR"),)

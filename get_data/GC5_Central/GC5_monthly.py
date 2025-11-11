@@ -7,6 +7,7 @@ import numpy as np
 # Don't really understand this, but it gets rid of the error messages.
 iris.FUTURE.datum_support = True
 
+
 def load(
     variable="prate", run="dl339", year=None, month=None, constraint=None, grid=None
 ):
@@ -17,7 +18,7 @@ def load(
         return varC
     if year is None or month is None:
         raise Exception("Year and month must be specified")
-    if variable=="t2m":
+    if variable == "t2m":
         fname = "%s/GC5-Central/Historical/monthly/%s/%04d.pp" % (
             os.getenv("PDIR"),
             run,

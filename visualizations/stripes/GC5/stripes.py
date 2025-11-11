@@ -45,7 +45,7 @@ parser.add_argument(
 parser.add_argument("--global_mean", help="show global mean", action="store_true")
 parser.add_argument("--annual_mean", help="show annual_mean", action="store_true")
 parser.add_argument("--variable", help="Variable", type=str, required=True)
-parser.add_argument("--run", help="Model Run", type=str, required=False,default=None)
+parser.add_argument("--run", help="Model Run", type=str, required=False, default=None)
 parser.add_argument(
     "--vmin",
     type=float,
@@ -119,7 +119,7 @@ def csmooth(choice, ndata):
 # Colourmap
 cmap = {
     "t2m": cmocean.cm.balance,
-    "prmsl": cmocean.cm.balance,
+    "prmsl": cmocean.cm.diff,
     "prate": cmocean.cm.tarn,
 }.get(args.variable)
 if cmap is None:
@@ -139,14 +139,14 @@ selected_run = {}
 for batch in trainingData:
     year = int(batch[1].numpy()[0][:4])
     month = int(batch[1].numpy()[0][5:7])
-    run = batch[1].numpy()[0][8:14].decode('utf-8')
+    run = batch[1].numpy()[0][8:14].decode("utf-8")
     if args.run is not None:
         if run != args.run:
             continue
     else:
         mstr = "%04d-%02d" % (year, month)
         if mstr not in selected_run:
-            selected_run[mstr] = rng.choice(('dl339','dl340','dl341'))
+            selected_run[mstr] = rng.choice(("dl339", "dl340", "dl341"))
         if run != selected_run[mstr]:
             continue
     dts.append(datetime.datetime(year, month, 15, 0))

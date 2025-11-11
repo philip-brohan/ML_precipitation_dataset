@@ -21,6 +21,9 @@
 (cd GC5-Central && ./update_tensor_metadata --run=dl339 --variable=t2m)
 (cd GC5-Central && ./update_tensor_metadata --run=dl340 --variable=t2m)
 (cd GC5-Central && ./update_tensor_metadata --run=dl341 --variable=t2m)
+(cd GC5-Central && ./update_tensor_metadata --run=dl339 --variable=prmsl)
+(cd GC5-Central && ./update_tensor_metadata --run=dl340 --variable=prmsl)
+(cd GC5-Central && ./update_tensor_metadata --run=dl341 --variable=prmsl)
 
 (cd ./GPCC/in_situ && ./update_tensor_metadata.py)
 
