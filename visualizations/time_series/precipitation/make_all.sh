@@ -8,7 +8,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 OP_DIR="$PDIR/visualizations/time_series/precipitation"
 
 # Re-create the processed time-series if needed
-for source in TWCR ERA5 GPCC_in-situ GPCP CRU
+for source in TWCR ERA5 GPCC_in-situ GPCP CRU GC5
 do
     if ! [ -f "$OP_DIR/None_None_$source.pkl" ]; then
         $SCRIPT_DIR/get_series.py --source=$source

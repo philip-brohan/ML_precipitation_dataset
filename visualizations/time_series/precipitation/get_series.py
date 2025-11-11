@@ -69,6 +69,16 @@ elif args.source == "TWCR":
         cache=False,
         blur=None,
     ).batch(1)
+elif args.source == "GC5":
+    from visualizations.stripes.GC5.makeDataset import getDataset
+
+    trainingData = getDataset(
+        "prate",
+        startyear=1850,
+        endyear=2023,
+        cache=False,
+        blur=None,
+    ).batch(1)
 elif args.source == "CRU":
     from visualizations.stripes.CRU.makeDataset import getDataset
 
@@ -123,10 +133,11 @@ members = np.zeros([1000])
 for batch in trainingData:
     year = int(batch[1].numpy()[0][:4])
     month = int(batch[1].numpy()[0][5:7])
-    try:
+    member=0
+    if args.source=='TWCR':
         member = int(batch[1].numpy()[0][8:11])
-    except Exception:
-        member = 0
+    if args.source=='GC5':
+        member = int(batch[1].numpy()[0][10:13])-339 # Convert 'dl339,dl340, -> 0,1,
     key = "%04d%02d%03d" % (year, month, member)
     members[member] += 1
     ndmo = batch[0].numpy().squeeze()

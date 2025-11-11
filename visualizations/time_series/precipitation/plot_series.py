@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 from astropy.convolution import convolve
 
-sDir = "%s/MLP/visualizations/time_series/precipitation" % os.getenv("PDIR")
+sDir = "%s/visualizations/time_series/precipitation" % os.getenv("PDIR")
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -76,9 +76,15 @@ parser.add_argument(
 )
 parser.add_argument(
     "--nosat",
-    help="Dont plot satellite based datasets",
+    help="Don't plot satellite based datasets",
     action="store_true",
 )
+parser.add_argument(
+    "--nomodel",
+    help="Don't plot model datasets",
+    action="store_true",
+)
+
 args = parser.parse_args()
 
 
@@ -115,6 +121,8 @@ datasets = {
 if not args.nosat:
     datasets["ERA5"] = (0, 0, 1, 1)
     datasets["GPCP"] = (0, 0.5, 1, 1)
+if not args.nomodel:
+    datasets['GC5'] = (1, 0.5, 0.5, 1)
 
 # Data axes
 ax_ts = fig.add_axes(

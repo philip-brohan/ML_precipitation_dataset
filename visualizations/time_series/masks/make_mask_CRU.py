@@ -16,7 +16,7 @@ raw.data.data[raw.data.mask == True] = 0
 raw.data.data[raw.data.mask == False] = 1
 raw.data = raw.data.data  # Don't bother with masking
 
-lDir = "%s/MLP/visualizations/time_series/masks" % os.getenv("PDIR")
+lDir = "%s/visualizations/time_series/masks" % os.getenv("PDIR")
 if not os.path.exists(lDir):
     os.makedirs(lDir)
 

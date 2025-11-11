@@ -138,7 +138,7 @@ for year in range(1850, 2050):
 if args.rchoice is None:
     args.rchoice = "None"
 
-opdir = "%s/MLP/visualizations/time_series/temperature" % os.getenv("PDIR")
+opdir = "%s/visualizations/time_series/temperature" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 

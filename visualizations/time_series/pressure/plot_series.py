@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 from astropy.convolution import convolve
 
-sDir = os.path.dirname(os.path.realpath(__file__))
+sDir = "%s/visualizations/time_series/pressure" % os.getenv("PDIR")
 
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas

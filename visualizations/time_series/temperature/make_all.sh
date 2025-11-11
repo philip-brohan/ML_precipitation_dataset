@@ -5,7 +5,7 @@
 # Delete the .pkl files to force their recreation from the current tensors
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-OP_DIR="$SCRATCH/MLP/visualizations/time_series/temperature"
+OP_DIR="$SCRATCH/visualizations/time_series/temperature"
 
 # Re-create the processed time-series if needed
 for source in TWCR_sst TWCR_t2m ERA5_sst ERA5_t2m HadCRUT HadISST

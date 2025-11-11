@@ -11,7 +11,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import tensorflow as tf
 import pickle
 
-sDir = os.path.dirname(os.path.realpath(__file__))
+sDir = "%s/visualizations/time_series/pressure" % os.getenv("PDIR")
 
 rng = np.random.default_rng()
 
