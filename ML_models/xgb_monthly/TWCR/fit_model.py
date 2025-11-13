@@ -44,18 +44,22 @@ params = {
     "objective": "reg:squarederror",
     "booster": "gbtree",
     "eta": 0.1,                # smaller learning rate (was 1)
-    "max_depth": 20,           # increase depth from 2
+    "max_depth": 10,           # increase depth from 2
     "subsample": 0.8,         # row subsampling
     "colsample_bytree": 0.8,  # feature subsampling
     "min_child_weight": 1,    # control complexity
     "lambda": 5.0,            # L2 regularization
-    "alpha": 0.0,             # L1 regularization
+    "alpha": 1.0,             # L1 regularization
     "seed": 42,
     "verbosity": 1,
     "tree_method": "hist",   # uncomment for faster CPU training on large data
     # "tree_method": "gpu_hist" # use if you have GPU support and want GPU training
 }
 
+# Weight extreme values more than typical values
+labels = dtrain.get_label()
+weights = (labels-0.5)**2 +0.1
+dtrain.set_weight(weights)
 
 # fit the model
 #bst = xgb.train(params,dtrain)
