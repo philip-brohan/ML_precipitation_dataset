@@ -49,9 +49,9 @@ def load_model_and_data(label,mlabel):
 
     # Load the model
     if mlabel is None:
-        fname = "%s/TWCR.bst" % opdir
+        fname = "%s/TWCR.ubj" % opdir
     else:
-        fname = "%s/TWCR_%s.bst" % (opdir,mlabel)
+        fname = "%s/TWCR_%s.ubj" % (opdir,mlabel)
 
     bst=xgb.Booster()
     bst.load_model(fname)

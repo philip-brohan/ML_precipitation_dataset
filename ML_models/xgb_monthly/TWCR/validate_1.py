@@ -36,9 +36,9 @@ dval=xgb.DMatrix(fname)
 
 # Load the model
 if args.mlabel is None:
-    fname = "%s/TWCR.bst" % opdir
+    fname = "%s/TWCR.ubj" % opdir
 else:
-    fname = "%s/TWCR_%s.bst" % (opdir,args.mlabel)
+    fname = "%s/TWCR_%s.ubj" % (opdir,args.mlabel)
 
 bst=xgb.Booster()
 bst.load_model(fname)

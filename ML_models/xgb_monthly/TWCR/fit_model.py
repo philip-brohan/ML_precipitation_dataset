@@ -76,17 +76,24 @@ cvres = xgb.cv(
 )
 best_rounds = int(cvres["test-rmse-mean"].idxmin() + 1)
 
-# fit the model with chosen rounds
-bst = xgb.train(params, dtrain, num_boost_round=best_rounds)
+# fit the model with chosen rounds and show progress
+bst = xgb.train(
+    params,
+    dtrain,
+    num_boost_round=best_rounds,
+    evals=[(dtrain, "train")],      # show training metrics; add validation DMatrix here if available
+    verbose_eval=10,                # print metrics every 10 rounds (True prints every round)
+    callbacks=[xgb.callback.ProgressBar()],  # optional progress bar (xgboost >= 1.6)
+)
 
 # Save the model
 opdir = "%s/ML_models/xgb_monthly" % os.getenv('PDIR')
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 if args.mlabel is None:
-    fname = "%s/TWCR.bst" % opdir
+    fname = "%s/TWCR.ubj" % opdir
 else:
-    fname = "%s/TWCR_%s.bst" % (opdir,args.mlabel)
+    fname = "%s/TWCR_%s.ubj" % (opdir,args.mlabel)
 
 bst.save_model(fname)
 
