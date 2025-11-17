@@ -15,7 +15,7 @@ parser.add_argument(
     "--label1",
     type=str,
     required=False,
-    default='test',
+    default="train",
 )
 parser.add_argument(
     "--mlabel1",
@@ -27,7 +27,7 @@ parser.add_argument(
     "--label2",
     type=str,
     required=False,
-    default='train',
+    default="test",
 )
 parser.add_argument(
     "--mlabel2",
@@ -38,24 +38,27 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Load a model and data
-opdir = "%s/ML_models/xgb_monthly" % os.getenv('PDIR')
-def load_model_and_data(label,mlabel):
+opdir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
+
+
+def load_model_and_data(label, mlabel):
     if label is None:
         fname = "%s/TWCR.dt" % opdir
     else:
-        fname = "%s/TWCR_%s.dt" % (opdir,label)
+        fname = "%s/TWCR_%s.dt" % (opdir, label)
 
-    dval=xgb.DMatrix(fname)
+    dval = xgb.DMatrix(fname)
 
     # Load the model
     if mlabel is None:
         fname = "%s/TWCR.ubj" % opdir
     else:
-        fname = "%s/TWCR_%s.ubj" % (opdir,mlabel)
+        fname = "%s/TWCR_%s.ubj" % (opdir, mlabel)
 
-    bst=xgb.Booster()
+    bst = xgb.Booster()
     bst.load_model(fname)
-    return bst,dval
+    return bst, dval
+
 
 # Load both models + data
 bst1, dval1 = load_model_and_data(args.label1, args.mlabel1)
@@ -69,7 +72,13 @@ y2, preds2 = dval2.get_label(), bst2.predict(dval2)
 fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharex=False, sharey=False)
 
 for ax, y, preds, title in zip(
-    axes, (y1, y2), (preds1, preds2), (f"Model: {args.mlabel1 or 'default'}", f"Model: {args.mlabel2 or 'default'}")
+    axes,
+    (y1, y2),
+    (preds1, preds2),
+    (
+        f"{args.mlabel1 or 'default'} : {args.label1}",
+        f"{args.mlabel2 or 'default'}: {args.label2}",
+    ),
 ):
     hb = ax.hexbin(y, preds, gridsize=60, cmap="viridis", bins="log")
     ax.plot([y.min(), y.max()], [y.min(), y.max()], "k--", linewidth=0.8)

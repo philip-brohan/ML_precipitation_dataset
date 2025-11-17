@@ -85,10 +85,10 @@ if args.no_pressure:
 m_precip = get_month(prate, args.year, args.month).flatten()
 m_latitude = lat_idx.flatten() / 720
 if args.fix_lat is not None:
-    m_latitude = np.full_like(m_latitude, args.fix_lat/180 +0.5)
+    m_latitude = np.full_like(m_latitude, args.fix_lat / 180 + 0.5)
 m_longitude = lon_idx.flatten() / 1440
 if args.fix_lon is not None:
-    m_longitude = np.full_like(m_longitude, args.fix_lon/360+0.5)
+    m_longitude = np.full_like(m_longitude, args.fix_lon / 360 + 0.5)
 m_month = np.full_like(m_temperature, args.month)
 if args.fix_month is not None:
     m_month = np.full_like(m_month, args.fix_month)
@@ -112,13 +112,16 @@ bst.load_model(fname)
 
 preds = bst.predict(source)
 
-# Layout: left = two panels (top: observed field, bottom: model), right = large scatter (spans both rows)
+# Layout: left = two panels (top: observed field, bottom: model field)
+# Right column split into two: top = scatter, bottom = observation - model difference
 fig = plt.figure(figsize=(14, 6))
-gs = fig.add_gridspec(2, 2, width_ratios=(1, 1), wspace=0.08, hspace=0.12)
+# make the right column narrower so the scatter can be drawn with a 1:1 data aspect
+gs = fig.add_gridspec(2, 2, width_ratios=(1, 0.8), wspace=0.08, hspace=0.12)
 
 ax_lt = fig.add_subplot(gs[0, 0])  # left top: observed field
 ax_lb = fig.add_subplot(gs[1, 0])  # left bottom: model field
-ax_r = fig.add_subplot(gs[:, 1])  # right: scatter spanning two rows
+ax_r_top = fig.add_subplot(gs[0, 1])  # right top: obs - model diff (swapped)
+ax_r_bot = fig.add_subplot(gs[1, 1])  # right bottom: scatter (swapped)
 
 # reshape flattened arrays back to 2D
 obs_grid = precip.reshape(721, 1440)
@@ -136,6 +139,7 @@ ax_lt.set_aspect(1)
 ax_lt.set_title("Observed")
 ax_lt.set_xticks([])
 ax_lt.set_yticks([])
+fig.colorbar(im1, ax=ax_lt, fraction=0.046, pad=0.02)
 
 # plot model field (left bottom)
 im2 = ax_lb.imshow(
@@ -146,18 +150,49 @@ im2 = ax_lb.imshow(
     vmax=1.25,
 )
 ax_lb.set_aspect(1)
-ax_lb.set_title("Model")
+ax_lb.set_title("Predicted")
 ax_lb.set_xticks([])
 ax_lb.set_yticks([])
+fig.colorbar(im2, ax=ax_lb, fraction=0.046, pad=0.02)
 
-# scatter / hexbin on the right (spanning both rows)
-hb = ax_r.hexbin(precip, preds, gridsize=60, cmap="viridis", bins="log")
-ax_r.plot(
-    [precip.min(), precip.max()], [precip.min(), precip.max()], "k--", linewidth=0.8
+# difference field (right top) = observed - model (use same colormap and data range)
+diff_grid = obs_grid - pred_grid
+im3 = ax_r_top.imshow(
+    diff_grid,
+    origin="lower",
+    cmap=cmocean.cm.tarn,      # use same colormap as observed/model
+    vmin=-0.75,                
+    vmax=0.755,                # data range as im1/im2, but centred on 0
 )
-ax_r.set_xlabel("Observed")
-ax_r.set_ylabel("Predicted")
-ax_r.set_title("%04d-%02d" % (args.year, args.month))
-fig.colorbar(hb, ax=ax_r, label="log10(count)")
+ax_r_top.set_aspect("equal", adjustable="box")
+ax_r_top.set_title("Difference")
+ax_r_top.set_xticks([])
+ax_r_top.set_yticks([])
+fig.colorbar(im3, ax=ax_r_top, fraction=0.046, pad=0.02)
+
+# scatter (right bottom) (moved to bottom)
+hb = ax_r_bot.hexbin(precip, preds, gridsize=60, cmap="viridis", bins="log")
+ax_r_bot.plot(
+    [precip.min(), precip.max()], [precip.min(), preds.max()], "k--", linewidth=0.8
+)
+ax_r_bot.set_xlabel("Observed")
+ax_r_bot.set_ylabel("Predicted")
+ax_r_bot.set_title("%04d-%02d" % (args.year, args.month))
+fig.colorbar(hb, ax=ax_r_bot, label="log10(count)", fraction=0.046, pad=0.02)
+
+# Revert manual positioning: put the scatter axis back into its GridSpec slot
+ax_r_bot.set_position(gs[1, 1].get_position(fig))
+ax_r_bot.set_aspect("equal", adjustable="box")
+
+# after creating/plotting ax_r_bot (the scatter axis), keep its size/shape but center it horizontally in the right column
+col_bbox = gs[:, 1].get_position(fig)
+col_x0, col_w = col_bbox.x0, col_bbox.width
+
+cur_bbox = ax_r_bot.get_position()
+cur_y0, cur_h, cur_w = cur_bbox.y0, cur_bbox.height, cur_bbox.width
+
+# new x so the axis is centred horizontally in the right column, keep same width/height
+new_x0 = col_x0 + 0.5 * (col_w - cur_w)
+ax_r_bot.set_position([new_x0, cur_y0, cur_w, cur_h])
 
 fig.savefig("monthly.webp", dpi=150, bbox_inches="tight")

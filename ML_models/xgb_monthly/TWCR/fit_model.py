@@ -13,7 +13,13 @@ parser.add_argument(
     "--label",
     type=str,
     required=False,
-    default='train',
+    default="train",
+)
+parser.add_argument(
+    "--test_label",
+    type=str,
+    required=False,
+    default="test",
 )
 parser.add_argument(
     "--mlabel",
@@ -23,16 +29,21 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# Load the pre-prepared DMatrix 
-opdir = "%s/ML_models/xgb_monthly" % os.getenv('PDIR')
+# Load the pre-prepared training DMatrix
+opdir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 if args.label is None:
     fname = "%s/TWCR.dt" % opdir
 else:
-    fname = "%s/TWCR_%s.dt" % (opdir,args.label)
-
-dtrain=xgb.DMatrix(fname)
+    fname = "%s/TWCR_%s.dt" % (opdir, args.label)
+dtrain = xgb.DMatrix(fname)
+# Same with the test DMatrix
+if args.test_label is None:
+    fname = "%s/TWCR.dt" % opdir
+else:
+    fname = "%s/TWCR_%s.dt" % (opdir, args.test_label)
+dtest = xgb.DMatrix(fname)
 
 # Specify the model
 # params = {
@@ -43,31 +54,31 @@ dtrain=xgb.DMatrix(fname)
 params = {
     "objective": "reg:squarederror",
     "booster": "gbtree",
-    "eta": 0.1,                # smaller learning rate (was 1)
-    "max_depth": 10,           # increase depth from 2
-    "subsample": 0.8,         # row subsampling
+    "eta": 0.2,  # smaller learning rate (was 1)
+    "max_depth": 10,  # increase depth from 2
+    "subsample": 0.8,  # row subsampling
     "colsample_bytree": 0.8,  # feature subsampling
-    "min_child_weight": 1,    # control complexity
-    "lambda": 5.0,            # L2 regularization
-    "alpha": 1.0,             # L1 regularization
+    "min_child_weight": 5,  # control complexity
+    "lambda": 5.0,  # L2 regularization
+    "alpha": 1.0,  # L1 regularization
     "seed": 42,
     "verbosity": 1,
-    "tree_method": "hist",   # uncomment for faster CPU training on large data
+    "tree_method": "hist",  # uncomment for faster CPU training on large data
     # "tree_method": "gpu_hist" # use if you have GPU support and want GPU training
 }
 
 # Weight extreme values more than typical values
 labels = dtrain.get_label()
-weights = (labels-0.5)**2 +0.1
+weights = (labels - 0.5) ** 2 + 0.1
 dtrain.set_weight(weights)
 
 # fit the model
-#bst = xgb.train(params,dtrain)
+# bst = xgb.train(params,dtrain)
 # Option A: use cross-validation to pick rounds
 cvres = xgb.cv(
     params,
     dtrain,
-    num_boost_round=1000,
+    num_boost_round=2000,
     nfold=5,
     metrics=("rmse",),
     early_stopping_rounds=20,
@@ -81,19 +92,19 @@ bst = xgb.train(
     params,
     dtrain,
     num_boost_round=best_rounds,
-    evals=[(dtrain, "train")],      # show training metrics; add validation DMatrix here if available
-    verbose_eval=10,                # print metrics every 10 rounds (True prints every round)
-    callbacks=[xgb.callback.ProgressBar()],  # optional progress bar (xgboost >= 1.6)
+    evals=[
+        (dtrain, "train"),(dtest,'test'),
+    ],  # show training metrics; add validation DMatrix here if available
+    verbose_eval=10,  # print metrics every 10 rounds (True prints every round)
 )
 
 # Save the model
-opdir = "%s/ML_models/xgb_monthly" % os.getenv('PDIR')
+opdir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 if args.mlabel is None:
     fname = "%s/TWCR.ubj" % opdir
 else:
-    fname = "%s/TWCR_%s.ubj" % (opdir,args.mlabel)
+    fname = "%s/TWCR_%s.ubj" % (opdir, args.mlabel)
 
 bst.save_model(fname)
-
