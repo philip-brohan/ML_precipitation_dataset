@@ -55,4 +55,7 @@ cmd = "wget -O %s %s" % (
 wg_retvalue = subprocess.call(cmd, shell=True)
 if wg_retvalue != 0:
     raise Exception("Failed to retrieve data")
+if(os.path.getsize(local_name(args.variable, args.year))<500): # HPSS login failure
+    os.remove(local_name(args.variable, args.year))
+    raise Exception("HPSS login failure for %s %s" % (args.variable, args.year))
 unpack_local(args.variable, args.year)

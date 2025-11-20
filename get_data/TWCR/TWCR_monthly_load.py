@@ -77,7 +77,7 @@ def load_monthly_member(
             raise Exception("No data file %s" % fname)
         ftt = iris.Constraint(time=lambda cell: cell.point.month == month)
         hslice = iris.load_cube(fname, ftt)
-        if variable == "TMP2m":
+        if variable in ("TMP2m", "UGRD10m", "VGRD10m", "RH2m"):
             hslice = iris.util.squeeze(hslice)
         hslice.coord("latitude").coord_system = coord_s
         hslice.coord("longitude").coord_system = coord_s

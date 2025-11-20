@@ -9,6 +9,9 @@
 (cd ERA5_tf_MM && ./make_all_tensors.py --variable=sea_surface_temperature)
 (cd ERA5_tf_MM && ./make_all_tensors.py --variable=mean_sea_level_pressure)
 (cd ERA5_tf_MM && ./make_all_tensors.py --variable=total_precipitation)
+(cd ERA5_tf_MM && ./make_all_tensors.py --variable=10m_u_component_of_wind)
+(cd ERA5_tf_MM && ./make_all_tensors.py --variable=10m_v_component_of_wind)
+(cd ERA5_tf_MM && ./make_all_tensors.py --variable=2m_dewpoint_temperature)
 
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=prate)
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=t2m)
@@ -21,6 +24,9 @@
 (cd TWCR_tf_MM && ./make_all_tensors.py --variable=SST)
 (cd TWCR_tf_MM && ./make_all_tensors.py --variable=PRMSL)
 (cd TWCR_tf_MM && ./make_all_tensors.py --variable=PRATE)
+(cd TWCR_tf_MM && ./make_all_tensors.py --variable=UGRD10m)
+(cd TWCR_tf_MM && ./make_all_tensors.py --variable=VGRD10m)
+(cd TWCR_tf_MM && ./make_all_tensors.py --variable=RH2m)
 
 (cd ./GPCC_tf_MM/in_situ && ./make_all_tensors.py)
 

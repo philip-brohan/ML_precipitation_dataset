@@ -17,6 +17,9 @@ for year in range(args.startyear, args.endyear + 1):
         "sea_surface_temperature",
         "mean_sea_level_pressure",
         "total_precipitation",
+        "10m_u_component_of_wind",
+        "10m_v_component_of_wind",
+        "2m_dewpoint_temperature",
     ]:
         opfile = "%s/ERA5/monthly/reanalysis/%04d/%s.nc" % (
             os.getenv("PDIR"),

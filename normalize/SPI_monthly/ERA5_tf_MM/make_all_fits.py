@@ -24,6 +24,9 @@ for variable in (
     "mean_sea_level_pressure",
     "total_precipitation",
     "sea_surface_temperature",
+    "10m_u_component_of_wind",
+    "10m_v_component_of_wind",
+    "2m_dewpoint_temperature",
 ):
     for month in range(1, 13):
         if is_done(month, variable):

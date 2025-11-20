@@ -40,6 +40,9 @@ def load(
         "2m_temperature": "2 metre temperature",
         "sea_surface_temperature": "Sea surface temperature",
         "mean_sea_level_pressure": "Mean sea level pressure",
+        "10m_u_component_of_wind": "10 metre U wind component",
+        "10m_v_component_of_wind": "10 metre V wind component",
+        "2m_dewpoint_temperature": "2 metre dewpoint temperature",
     }
     if not os.path.isfile(fname):
         raise Exception("No data file %s" % fname)

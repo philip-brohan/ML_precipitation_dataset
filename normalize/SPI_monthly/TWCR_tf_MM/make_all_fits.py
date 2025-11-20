@@ -19,7 +19,7 @@ def is_done(month, variable):
 
 
 count = 0
-for variable in ("TMP2m", "PRMSL", "PRATE", "SST"):
+for variable in ("TMP2m", "PRMSL", "PRATE", "SST", "UGRD10m", "VGRD10m", "RH2m"):
     for month in range(1, 13):
         if is_done(month, variable):
             continue

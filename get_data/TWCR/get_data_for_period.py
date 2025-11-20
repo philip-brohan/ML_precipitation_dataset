@@ -16,6 +16,9 @@ for year in range(args.startyear, args.endyear + 1):
         "TMP2m",
         "PRMSL",
         "PRATE",
+        "UGRD10m",
+        "VGRD10m",
+        "RH2m",
     ]:
         opfile = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem080.nc" % (
             os.getenv("PDIR"),
