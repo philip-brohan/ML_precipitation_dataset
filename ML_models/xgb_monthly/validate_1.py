@@ -28,7 +28,7 @@ parser.add_argument(
     "--out",
     type=str,
     required=False,
-    default='validate1.webp',
+    default="validate1.webp",
 )
 args = parser.parse_args()
 

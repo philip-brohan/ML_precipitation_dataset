@@ -38,6 +38,9 @@ parser.add_argument(
 )
 parser.add_argument("--no_pressure", action="store_true")
 parser.add_argument("--no_temperature", action="store_true")
+parser.add_argument("--no_uwind", action="store_true")
+parser.add_argument("--no_vwind", action="store_true")
+parser.add_argument("--no_humidity", action="store_true")
 parser.add_argument("--fix_month", type=int, required=False, default=None)
 parser.add_argument("--fix_lat", type=int, required=False, default=None)
 parser.add_argument("--fix_lon", type=int, required=False, default=None)
@@ -69,6 +72,9 @@ source, target = get_source_and_target(
     end_month=args.month,
     no_temperature=args.no_temperature,
     no_pressure=args.no_pressure,
+    no_uwind=args.no_uwind,
+    no_vwind=args.no_vwind,
+    no_humidity=args.no_humidity,
     fix_lat=args.fix_lat,
     fix_lon=args.fix_lon,
     fix_month=args.fix_month,

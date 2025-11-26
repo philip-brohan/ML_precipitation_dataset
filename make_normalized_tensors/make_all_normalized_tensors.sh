@@ -12,6 +12,7 @@
 (cd ERA5_tf_MM && ./make_all_tensors.py --variable=10m_u_component_of_wind)
 (cd ERA5_tf_MM && ./make_all_tensors.py --variable=10m_v_component_of_wind)
 (cd ERA5_tf_MM && ./make_all_tensors.py --variable=2m_dewpoint_temperature)
+(cd ERA5_tf_MM && ./make_all_tensors.py --variable=2m_relative_humidity)
 
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=prate)
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=t2m)

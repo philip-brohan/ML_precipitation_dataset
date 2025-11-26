@@ -18,6 +18,9 @@ parser.add_argument(
 )
 parser.add_argument("--no_pressure", action="store_true")
 parser.add_argument("--no_temperature", action="store_true")
+parser.add_argument("--no_uwind", action="store_true")
+parser.add_argument("--no_vwind", action="store_true")
+parser.add_argument("--no_humidity", action="store_true")
 parser.add_argument("--fix_month", type=int, required=False, default=None)
 parser.add_argument("--fix_lat", type=int, required=False, default=None)
 parser.add_argument("--fix_lon", type=int, required=False, default=None)
@@ -47,17 +50,27 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-for year in range(args.start_year,args.end_year+1):
-    print("./validate_time_series.py --source=%s --start_year=%04d --end_year=%04d --label=%s " % (args.source, year,year,args.label), end="")
+for year in range(args.start_year, args.end_year + 1):
+    print(
+        "./validate_time_series.py --source=%s --start_year=%04d --end_year=%04d --label=%s "
+        % (args.source, year, year, args.label),
+        end="",
+    )
     print("--mlabel=%s " % args.mlabel, end="")
     if args.no_pressure:
         print("--no_pressure ", end="")
     if args.no_temperature:
         print("--no_temperature ", end="")
+    if args.no_uwind:
+        print("--no_uwind ", end="")
+    if args.no_vwind:
+        print("--no_vwind ", end="")
+    if args.no_humidity:
+        print("--no_humidity ", end="")
     if args.fix_month is not None:
         print("--fix_month=%s" % args.fix_month, end="")
     if args.fix_lat is not None:
         print("--fix_lat=%s" % args.fix_lat, end="")
     if args.fix_lon is not None:
         print("--fix_lon=%s" % args.fix_lon, end="")
-    print("") # add \n
+    print("")  # add \n

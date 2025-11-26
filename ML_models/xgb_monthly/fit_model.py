@@ -45,10 +45,10 @@ params = {
     "objective": "reg:squarederror",
     "booster": "gbtree",
     "eta": 0.1,  # smaller learning rate (was 1)
-    "max_depth": 10,  # increase depth from 2
+    "max_depth": 20,  # increase depth from 2
     "subsample": 0.8,  # row subsampling
     "colsample_bytree": 0.8,  # feature subsampling
-    "min_child_weight": 5,  # control complexity
+    "min_child_weight": 50,  # control complexity
     "lambda": 5.0,  # L2 regularization
     "alpha": 1.0,  # L1 regularization
     "seed": 42,
@@ -77,7 +77,8 @@ bst = xgb.train(
     dtrain,
     num_boost_round=best_rounds,
     evals=[
-        (dtrain, "train"),(dtest,'test'),
+        (dtrain, "train"),
+        (dtest, "test"),
     ],  # show training metrics; add validation DMatrix here if available
     verbose_eval=10,  # print metrics every 10 rounds (True prints every round)
 )

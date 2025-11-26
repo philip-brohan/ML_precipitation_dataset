@@ -28,6 +28,29 @@ def load(
         varC.data.data[np.where(varC.data.mask == True)] = 0
         varC.data.data[np.where(varC.data.mask == False)] = 1
         return varC
+    if variable == "2m_relative_humidity":
+        varA = load(
+            variable="2m_temperature",
+            year=year,
+            month=month,
+            grid=grid,
+        )
+        varA.data -= 273.15  # Convert to degC
+        varB = load(
+            variable="2m_dewpoint_temperature",
+            year=year,
+            month=month,
+            grid=grid,
+        )
+        varB.data -= 273.15  # Convert to degC
+        rh_data = 100.0 * (
+            np.exp((17.625 * varB.data) / (243.04 + varB.data))
+            / np.exp((17.625 * varA.data) / (243.04 + varA.data))
+        )
+        varC = varA.copy()
+        varC.data = rh_data
+        varC.long_name = "2m_relative_humidity"
+        return varC
     if year is None or month is None:
         raise Exception("Year and month must be specified")
     fname = "%s/ERA5/monthly/reanalysis/%04d/%s.nc" % (

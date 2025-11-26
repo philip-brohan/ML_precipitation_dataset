@@ -28,6 +28,9 @@ parser.add_argument(
 )
 parser.add_argument("--no_pressure", action="store_true")
 parser.add_argument("--no_temperature", action="store_true")
+parser.add_argument("--no_uwind", action="store_true")
+parser.add_argument("--no_vwind", action="store_true")
+parser.add_argument("--no_humidity", action="store_true")
 parser.add_argument("--fix_month", type=int, required=False, default=None)
 parser.add_argument("--fix_lat", type=int, required=False, default=None)
 parser.add_argument("--fix_lon", type=int, required=False, default=None)
@@ -71,23 +74,26 @@ elif args.source == "ERA5":
 elif args.source == "GC5":
     from GC5 import get_month
 
+
 # Get the predictions for a month
-def get_predictions(model,source,target):
-    dm = to_DMatrix(source,target)
+def get_predictions(model, source, target):
+    dm = to_DMatrix(source, target)
     preds = model.predict(dm)
     return preds
+
 
 # Reduce a field to a scalar (mean or otherwise)
 def reduce_to_scalar(field):
     return np.mean(field)
 
+
 # Make timeseries by doing data retrieval, modelling, and reduction for each month
 date_ts = []
 prediction_ts = []
-target_ts=[]
-for year in range(args.start_year,args.end_year+1):
-    for month in range(1,13):
-       source,target = get_source_and_target(
+target_ts = []
+for year in range(args.start_year, args.end_year + 1):
+    for month in range(1, 13):
+        source, target = get_source_and_target(
             get_month,
             year,
             year,
@@ -95,14 +101,17 @@ for year in range(args.start_year,args.end_year+1):
             end_month=month,
             no_temperature=args.no_temperature,
             no_pressure=args.no_pressure,
+            no_uwind=args.no_uwind,
+            no_vwind=args.no_vwind,
+            no_humidity=args.no_humidity,
             fix_lat=args.fix_lat,
             fix_lon=args.fix_lon,
             fix_month=args.fix_month,
         )
-       prediction = get_predictions(model,source,target)
-       date_ts.append("%04d-%02d" % (year,month))
-       prediction_ts.append(reduce_to_scalar(prediction))
-       target_ts.append(reduce_to_scalar(target))
+        prediction = get_predictions(model, source, target)
+        date_ts.append("%04d-%02d" % (year, month))
+        prediction_ts.append(reduce_to_scalar(prediction))
+        target_ts.append(reduce_to_scalar(target))
 
 # save the time-series results
 opdir = f"{os.getenv('PDIR')}/ML_models/xgb_monthly/ts_validation/{args.label}/"

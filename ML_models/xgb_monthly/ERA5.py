@@ -27,6 +27,9 @@ def get_zarr(variable):
 t2m = get_zarr("2m_temperature")
 prmsl = get_zarr("mean_sea_level_pressure")
 prate = get_zarr("total_precipitation")
+uwnd = get_zarr("10m_u_component_of_wind")
+vwnd = get_zarr("10m_v_component_of_wind")
+rh = get_zarr("2m_relative_humidity")
 
 
 # load the selected member, or ensemble mean for a month
@@ -38,6 +41,12 @@ def get_month(variable, year, month):
         zf = prmsl
     elif variable == "precipitation":
         zf = prate
+    elif variable == "uwind":
+        zf = uwnd
+    elif variable == "vwind":
+        zf = vwnd
+    elif variable == "humidity":
+        zf = rh
     else:
         raise Exception("Unsupported ERA5 variable %s" % variable)
     d_idx = zf.attrs["AvailableMonths"]["%04d-%02d" % (year, month)]

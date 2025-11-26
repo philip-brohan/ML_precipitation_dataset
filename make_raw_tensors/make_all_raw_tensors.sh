@@ -12,6 +12,7 @@
 (cd ERA5 && ./make_all_tensors.py --variable=10m_u_component_of_wind)
 (cd ERA5 && ./make_all_tensors.py --variable=10m_u_component_of_wind)
 (cd ERA5 && ./make_all_tensors.py --variable=2m_dewpoint_temperature)
+(cd ERA5 && ./make_all_tensors.py --variable=2m_relative_humidity)
 
 
 (cd GC5-Central && ./make_all_tensors.py --run=dl339 --variable=prate)

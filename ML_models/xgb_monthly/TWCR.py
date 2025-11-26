@@ -27,6 +27,9 @@ def get_zarr(variable):
 t2m = get_zarr("TMP2m")
 prmsl = get_zarr("PRMSL")
 prate = get_zarr("PRATE")
+uwnd = get_zarr("UGRD10m")
+vwnd = get_zarr("VGRD10m")
+rh = get_zarr("RH2m")
 
 
 # load the selected member, or ensemble mean for a month
@@ -38,6 +41,12 @@ def get_month(variable, year, month, member_idx=None):
         zf = prmsl
     elif variable == "precipitation":
         zf = prate
+    elif variable == "uwind":
+        zf = uwnd
+    elif variable == "vwind":
+        zf = vwnd
+    elif variable == "humidity":
+        zf = rh
     else:
         raise Exception("Unsupported TWCR variable %s" % variable)
     d_idx = zf.attrs["AvailableMonths"]["%04d-%02d_00" % (year, month)]

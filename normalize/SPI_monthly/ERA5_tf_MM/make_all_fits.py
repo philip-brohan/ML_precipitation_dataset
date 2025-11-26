@@ -27,6 +27,7 @@ for variable in (
     "10m_u_component_of_wind",
     "10m_v_component_of_wind",
     "2m_dewpoint_temperature",
+    "2m_relative_humidity",
 ):
     for month in range(1, 13):
         if is_done(month, variable):

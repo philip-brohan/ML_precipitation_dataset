@@ -47,6 +47,17 @@ parser.add_argument(
     required=True,
     default=None,
 )
+parser.add_argument("--no_pressure", action="store_true")
+parser.add_argument("--no_temperature", action="store_true")
+parser.add_argument("--no_uwind", action="store_true")
+parser.add_argument("--no_vwind", action="store_true")
+parser.add_argument("--no_humidity", action="store_true")
+parser.add_argument("--fix_month", type=int, required=False, default=None)
+parser.add_argument("--fix_lat", type=int, required=False, default=None)
+parser.add_argument("--fix_lon", type=int, required=False, default=None)
+parser.add_argument("--lat_offset", type=int, required=False, default=5)
+parser.add_argument("--lon_offset", type=int, required=False, default=5)
+
 args = parser.parse_args()
 
 # Load the data entry function - source specific
@@ -63,7 +74,20 @@ elif args.source == "GC5":
 #  precipitation (normalised)
 
 source, target = get_source_and_target(
-    get_month, args.start_year, args.end_year, samples=args.samples
+    get_month,
+    args.start_year,
+    args.end_year,
+    samples=args.samples,
+    no_temperature=args.no_temperature,
+    no_pressure=args.no_pressure,
+    no_uwind=args.no_uwind,
+    no_vwind=args.no_vwind,
+    no_humidity=args.no_humidity,
+    fix_lat=args.fix_lat,
+    fix_lon=args.fix_lon,
+    fix_month=args.fix_month,
+    lat_offset=args.lat_offset,
+    lon_offset=args.lon_offset,
 )
 
 dm = to_DMatrix(source, target)
