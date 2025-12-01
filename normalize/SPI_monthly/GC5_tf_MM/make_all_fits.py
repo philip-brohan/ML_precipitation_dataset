@@ -23,6 +23,9 @@ for variable in (
     "t2m",
     "prate",
     "prmsl",
+    "uwnd",
+    "vwnd",
+    "rh",
 ):
     for month in range(1, 13):
         if is_done(month, variable):

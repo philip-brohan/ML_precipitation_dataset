@@ -16,6 +16,17 @@ def load(
         varC.data.data[np.where(varC.data.mask == True)] = 0
         varC.data.data[np.where(varC.data.mask == False)] = 1
         return varC
+    if variable == "rh":
+        t2m = load("t2m", year=year, month=month, constraint=constraint, grid=grid)
+        sh = load("sh", year=year, month=month, constraint=constraint, grid=grid)
+        pr = load("pr", year=year, month=month, constraint=constraint, grid=grid)
+        e_s = 6.112 * np.exp((17.67 * (t2m.data - 273.15)) / (t2m.data - 29.65))
+        e_a = (sh.data * pr.data) / (0.622 + (0.378 * sh.data))
+        rh_data = (e_a / e_s) * 100.0
+        rhC = t2m.copy()
+        rhC.data = rh_data
+        rhC.long_name = "rh"
+        return rhC
     if year is None or month is None:
         raise Exception("Year and month must be specified")
     if variable == "t2m":

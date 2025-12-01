@@ -16,10 +16,22 @@
 
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=prate)
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=t2m)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=prmsl)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=uwnd)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=vwnd)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl339 --variable=rh)
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl340 --variable=prate)
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl340 --variable=t2m)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl340 --variable=prmsl)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl340 --variable=uwnd)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl340 --variable=vwnd)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl340 --variable=rh)
 (cd GC5_tf_MM && ./make_all_tensors.py --run=dl341 --variable=prate)
-(cd GC5_tf_MM && ./make_all_tensors.py --run=dl341 --variable=t2m)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl341 --variable=t2m)#
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl341 --variable=prmsl)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl341 --variable=uwnd)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl341 --variable=vwnd)
+(cd GC5_tf_MM && ./make_all_tensors.py --run=dl341 --variable=rh)
 
 (cd TWCR_tf_MM && ./make_all_tensors.py --variable=TMP2m)
 (cd TWCR_tf_MM && ./make_all_tensors.py --variable=SST)

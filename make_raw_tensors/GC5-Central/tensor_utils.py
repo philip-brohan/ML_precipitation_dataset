@@ -9,7 +9,7 @@ from utilities import grids
 
 # Convert date into an array index
 FirstYear = 1851
-LastYear = datetime.now().year
+LastYear = 2014  # datetime.now().year
 
 
 def date_to_index(year, month):
