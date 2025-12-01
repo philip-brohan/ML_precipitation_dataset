@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-# Get monthly 20CRv3 members  data for several years, and store on PDIR.
+# Get monthly 20CRv3 members data for several years, and store on PDIR.
 
 import os
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--startyear", type=int, default=1850)
+parser.add_argument("--startyear", type=int, default=1806)
 parser.add_argument("--endyear", type=int, default=2014)
 args = parser.parse_args()
 
