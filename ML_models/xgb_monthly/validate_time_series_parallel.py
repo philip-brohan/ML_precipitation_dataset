@@ -24,6 +24,8 @@ parser.add_argument("--no_humidity", action="store_true")
 parser.add_argument("--fix_month", type=int, required=False, default=None)
 parser.add_argument("--fix_lat", type=int, required=False, default=None)
 parser.add_argument("--fix_lon", type=int, required=False, default=None)
+parser.add_argument("--lat_offset", type=int, required=False, default=None)
+parser.add_argument("--lon_offset", type=int, required=False, default=None)
 parser.add_argument(
     "--start_year",
     type=int,
@@ -48,12 +50,24 @@ parser.add_argument(
     required=True,
     default=None,
 )
+parser.add_argument(
+    "--target",
+    type=str,  # 'TWCR','ERA5','GC5','GPCC','CRU','GPCP'
+    required=True,
+    default=None,
+)
 args = parser.parse_args()
+if args.target is None:
+    args.target = args.source
 
 for year in range(args.start_year, args.end_year + 1):
+    if os.path.exists(
+        "%s/%s/ts_validation/%04d_%04d.pkl" % (opdir, args.label, year, year)
+    ):
+        continue  # already done
     print(
-        "./validate_time_series.py --source=%s --start_year=%04d --end_year=%04d --label=%s "
-        % (args.source, year, year, args.label),
+        "./validate_time_series.py --source=%s --target=%s --start_year=%04d --end_year=%04d --label=%s "
+        % (args.source, args.target, year, year, args.label),
         end="",
     )
     print("--mlabel=%s " % args.mlabel, end="")
@@ -68,9 +82,13 @@ for year in range(args.start_year, args.end_year + 1):
     if args.no_humidity:
         print("--no_humidity ", end="")
     if args.fix_month is not None:
-        print("--fix_month=%s" % args.fix_month, end="")
+        print("--fix_month=%s " % args.fix_month, end="")
+    if args.lat_offset is not None:
+        print("--lat_offset=%s " % args.lat_offset, end="")
     if args.fix_lat is not None:
-        print("--fix_lat=%s" % args.fix_lat, end="")
+        print("--fix_lat=%s " % args.fix_lat, end="")
+    if args.lon_offset is not None:
+        print("--lon_offset=%s " % args.lon_offset, end="")
     if args.fix_lon is not None:
-        print("--fix_lon=%s" % args.fix_lon, end="")
+        print("--fix_lon=%s " % args.fix_lon, end="")
     print("")  # add \n

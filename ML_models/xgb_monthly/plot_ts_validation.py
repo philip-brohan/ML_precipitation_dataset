@@ -26,7 +26,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Pickled files in labeled directory
-ipdir = "%s/ML_models/xgb_monthly/ts_validation/%s/" % (os.getenv("PDIR"),args.label)
+ipdir = "%s/ML_models/xgb_monthly/%s/ts_validation/" % (os.getenv("PDIR"), args.label)
 files = sorted(glob.glob(os.path.join(ipdir, "*.pkl")))
 
 if not files:
@@ -81,7 +81,9 @@ for d in date_ts:
 # Create a 2x2 layout: left column two stacked timeseries (top: pred+target, bottom: difference),
 # right column single axis spanning both rows for the scatter
 fig = plt.figure(figsize=(14, 6))
-gs = fig.add_gridspec(2, 2, width_ratios=(3, 1), height_ratios=(1, 1), wspace=0.18, hspace=0.18)
+gs = fig.add_gridspec(
+    2, 2, width_ratios=(3, 1), height_ratios=(1, 1), wspace=0.18, hspace=0.18
+)
 
 # Top-left: time series (prediction + target)
 ax_ts = fig.add_subplot(gs[0, 0])
@@ -146,7 +148,6 @@ plt.tight_layout()
 
 out = args.out
 if out is None:
-    out="ts_%s.webp" % args.label
+    out = "ts_%s.webp" % args.label
 
 fig.savefig(out, dpi=150, bbox_inches="tight")
-

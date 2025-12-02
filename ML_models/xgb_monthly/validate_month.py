@@ -8,6 +8,7 @@
 #  3) scatter plot
 
 import os
+import sys
 import numpy as np
 import xgboost as xgb
 import matplotlib.pyplot as plt
@@ -36,6 +37,12 @@ parser.add_argument(
     required=True,
     default=None,
 )
+parser.add_argument(
+    "--target",
+    type=str,  # 'TWCR','ERA5','GC5','GPCC','CRU','GPCP'
+    required=True,
+    default=None,
+)
 parser.add_argument("--no_pressure", action="store_true")
 parser.add_argument("--no_temperature", action="store_true")
 parser.add_argument("--no_uwind", action="store_true")
@@ -44,6 +51,8 @@ parser.add_argument("--no_humidity", action="store_true")
 parser.add_argument("--fix_month", type=int, required=False, default=None)
 parser.add_argument("--fix_lat", type=int, required=False, default=None)
 parser.add_argument("--fix_lon", type=int, required=False, default=None)
+parser.add_argument("--lat_offset", type=int, required=False, default=None)
+parser.add_argument("--lon_offset", type=int, required=False, default=None)
 parser.add_argument(
     "--out",
     type=str,
@@ -51,21 +60,37 @@ parser.add_argument(
     default="monthly.webp",
 )
 args = parser.parse_args()
+if args.target is None:
+    args.target = args.source
 
 if args.source == "TWCR":
-    from TWCR import get_month
+    from TWCR import get_month as get_s_month
 elif args.source == "ERA5":
-    from ERA5 import get_month
+    from ERA5 import get_month as get_s_month
 elif args.source == "GC5":
-    from GC5 import get_month
+    from GC5 import get_month as get_s_month
+else:
+    print("Source %s not recognised" % args.source)
+    sys.exit(1)
+if args.target == "TWCR":
+    from TWCR import get_month as get_t_month
+elif args.target == "ERA5":
+    from ERA5 import get_month as get_t_month
+elif args.target == "GC5":
+    from GC5 import get_month as get_t_month
+else:
+    print("Target %s not recognised" % args.target)
+    sys.exit(1)
+
 
 # Source is a n*5 array containing 5 features:
 #  pressure, temperature, latitude, longitude, month (all normalised)
 # Target is an n*1 array containing one feature:
 #  precipitation (normalised)
 
-source, target = get_source_and_target(
-    get_month,
+source, target, feature_names = get_source_and_target(
+    get_s_month,
+    get_t_month,
     args.year,
     args.year,
     start_month=args.month,
@@ -78,9 +103,11 @@ source, target = get_source_and_target(
     fix_lat=args.fix_lat,
     fix_lon=args.fix_lon,
     fix_month=args.fix_month,
+    lat_offset=args.lat_offset,
+    lon_offset=args.lon_offset,
 )
 
-dm = to_DMatrix(source, target)
+dm = to_DMatrix(source, target, feature_names=feature_names)
 
 # Load the model
 fname = "%s/%s.ubj" % (opdir, args.mlabel)

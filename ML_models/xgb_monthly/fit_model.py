@@ -34,18 +34,25 @@ opdir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 fname = "%s/%s.dt" % (opdir, args.label)
-dtrain = xgb.DMatrix(fname)
+if os.path.isfile(fname):
+    dtrain = xgb.DMatrix(fname)
+else:
+    print("Training DMatrix file %s not found" % (fname))
+    sys.exit(1)
 # Same with the test DMatrix
-if args.test_label is not None:
-    fname = "%s/%s.dt" % (opdir, args.test_label)
-dtest = xgb.DMatrix(fname)
+fname = "%s/%s.dt" % (opdir, args.test_label)
+if os.path.isfile(fname):
+    dtest = xgb.DMatrix(fname)
+else:
+    print("Test DMatrix file %s not found" % (fname))
+    sys.exit(1)
 
 # Specify the model
 params = {
     "objective": "reg:squarederror",
     "booster": "gbtree",
     "eta": 0.1,  # smaller learning rate (was 1)
-    "max_depth": 20,  # increase depth from 2
+    "max_depth": 10,  # increase depth from 2
     "subsample": 0.8,  # row subsampling
     "colsample_bytree": 0.8,  # feature subsampling
     "min_child_weight": 50,  # control complexity

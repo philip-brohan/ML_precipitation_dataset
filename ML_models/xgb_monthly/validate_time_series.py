@@ -9,6 +9,7 @@
 #  3) scatter plot
 
 import os
+import sys
 import numpy as np
 import xgboost as xgb
 import pickle
@@ -34,6 +35,8 @@ parser.add_argument("--no_humidity", action="store_true")
 parser.add_argument("--fix_month", type=int, required=False, default=None)
 parser.add_argument("--fix_lat", type=int, required=False, default=None)
 parser.add_argument("--fix_lon", type=int, required=False, default=None)
+parser.add_argument("--lat_offset", type=int, required=False, default=None)
+parser.add_argument("--lon_offset", type=int, required=False, default=None)
 parser.add_argument(
     "--start_year",
     type=int,
@@ -58,7 +61,15 @@ parser.add_argument(
     required=True,
     default=None,
 )
+parser.add_argument(
+    "--target",
+    type=str,  # 'TWCR','ERA5','GC5','GPCC','CRU','GPCP'
+    required=True,
+    default=None,
+)
 args = parser.parse_args()
+if args.target is None:
+    args.target = args.source
 
 ipdir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
 # Load the model
@@ -66,18 +77,29 @@ fname = "%s/%s.ubj" % (ipdir, args.mlabel)
 model = xgb.Booster()
 model.load_model(fname)
 
-# Load the data
 if args.source == "TWCR":
-    from TWCR import get_month
+    from TWCR import get_month as get_s_month
 elif args.source == "ERA5":
-    from ERA5 import get_month
+    from ERA5 import get_month as get_s_month
 elif args.source == "GC5":
-    from GC5 import get_month
+    from GC5 import get_month as get_s_month
+else:
+    print("Source %s not recognised" % args.source)
+    sys.exit(1)
+if args.target == "TWCR":
+    from TWCR import get_month as get_t_month
+elif args.target == "ERA5":
+    from ERA5 import get_month as get_t_month
+elif args.target == "GC5":
+    from GC5 import get_month as get_t_month
+else:
+    print("Target %s not recognised" % args.target)
+    sys.exit(1)
 
 
 # Get the predictions for a month
-def get_predictions(model, source, target):
-    dm = to_DMatrix(source, target)
+def get_predictions(model, source, target, feature_names=None):
+    dm = to_DMatrix(source, target, feature_names=feature_names)
     preds = model.predict(dm)
     return preds
 
@@ -91,10 +113,12 @@ def reduce_to_scalar(field):
 date_ts = []
 prediction_ts = []
 target_ts = []
+feature_names = None
 for year in range(args.start_year, args.end_year + 1):
     for month in range(1, 13):
-        source, target = get_source_and_target(
-            get_month,
+        source, target, feature_names = get_source_and_target(
+            get_s_month,
+            get_t_month,
             year,
             year,
             start_month=month,
@@ -107,14 +131,16 @@ for year in range(args.start_year, args.end_year + 1):
             fix_lat=args.fix_lat,
             fix_lon=args.fix_lon,
             fix_month=args.fix_month,
+            lat_offset=args.lat_offset,
+            lon_offset=args.lon_offset,
         )
-        prediction = get_predictions(model, source, target)
+        prediction = get_predictions(model, source, target, feature_names=feature_names)
         date_ts.append("%04d-%02d" % (year, month))
         prediction_ts.append(reduce_to_scalar(prediction))
         target_ts.append(reduce_to_scalar(target))
 
 # save the time-series results
-opdir = f"{os.getenv('PDIR')}/ML_models/xgb_monthly/ts_validation/{args.label}/"
+opdir = f"{os.getenv('PDIR')}/ML_models/xgb_monthly/{args.label}/ts_validation/"
 if not os.path.isdir(opdir):
     os.makedirs(opdir)
 out_name = f"{args.start_year:04d}_{args.end_year:04d}.pkl"

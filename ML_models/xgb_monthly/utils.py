@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Utility functions for the XGBoost model
+# Utility functions for the XGBoost model (refactored to reduce repetition)
 
 import os
 import sys
@@ -9,34 +9,61 @@ import numpy as np
 
 rng = np.random.default_rng()
 
-
 # lat and long indices are the same for all fields
 lat_idx = np.transpose(np.tile(np.arange(721, dtype=int), (1440, 1)))
 lon_idx = np.tile(np.arange(1440, dtype=int), (721, 1))
 
 
-# Months are (1..12) want them normalised (0-1) and also switched to sinusoidal
-#  seasonal cycle
 def normalize_month(month):
+    """Months are (1..12) -> normalised sinusoidal value (0-1 range-ish)."""
     return np.sin(np.pi * (month - 0.5) / 12)
 
 
-# Get offset monthly data - same as regular data but shifted in lat or lon
 def get_month_offset(field, lat_offset=0, lon_offset=0):
-    if lat_offset != 0:
-        data = np.roll(field, shift=lat_offset, axis=0)
-    if lon_offset != 0:
-        data = np.roll(field, shift=lon_offset, axis=1)
+    """Return a copy of field rolled by given offsets (0 => unchanged)."""
+    data = field
+    if lat_offset:
+        data = np.roll(data, shift=lat_offset, axis=0)
+    if lon_offset:
+        data = np.roll(data, shift=lon_offset, axis=1)
     return data
 
 
-# Source is a n*5 array containing 5 features:
-#  pressure, temperature, latitude, longitude, month (all normalised)
-# Target is an n*1 array containing one feature:
-#  precipitation (normalised)
-# we add sample rows to each array from each month
-def get_source_and_target(
+def _prepare_field(
     get_month,
+    field_name,
+    year,
+    month,
+    base_template,
+    lat_offset=None,
+    lon_offset=None,
+    fill_val=None,
+):
+    """
+    Helper to fetch/prepare a single field and optional offset variants.
+    Returns tuple (base_flat, o_lat_flat or None, o_lon_flat or None).
+    If fill_val is not None, uses an array filled with fill_val (same shape as base_template).
+    """
+    if fill_val is None:
+        field = get_month(field_name, year, month)
+    else:
+        field = np.full_like(base_template, fill_val)
+
+    base_flat = field.flatten()
+
+    o_lat = None
+    o_lon = None
+    if lat_offset is not None:
+        o_lat = get_month_offset(field, lat_offset=lat_offset, lon_offset=0).flatten()
+    if lon_offset is not None:
+        o_lon = get_month_offset(field, lat_offset=0, lon_offset=lon_offset).flatten()
+
+    return base_flat, o_lat, o_lon
+
+
+def get_source_and_target(
+    get_s_month,
+    get_t_month,
     start_year,
     end_year,
     start_month=None,
@@ -50,180 +77,207 @@ def get_source_and_target(
     fix_lat=None,
     fix_lon=None,
     fix_month=None,
-    lat_offset=5,
-    lon_offset=5,
+    lat_offset=None,
+    lon_offset=None,
 ):
+    """
+    Build source (features) and target (precipitation) arrays across months/years.
+    Uses helper functions to avoid repetitive code.
+    Returns (source, target, feature_names) where feature_names matches source columns.
+    """
     source = None
     target = None
+    feature_names_out = None
+
     for year in range(start_year, end_year + 1):
         for month in range(1, 13):
             if start_month is not None and year == start_year and month < start_month:
                 continue
             if end_month is not None and year == end_year and month > end_month:
                 break
-            m_precip = get_month("precipitation", year, month).flatten()
-            if no_temperature:
-                m_temperature = np.full_like(m_precip, 0.5)
-                m_temperature_o_lat = m_temperature
-                m_temperature_o_lon = m_temperature
-            else:
-                m_temperature = get_month("temperature", year, month)
-                m_temperature_o_lat = get_month_offset(
-                    m_temperature, lat_offset=lat_offset, lon_offset=0
-                ).flatten()
-                m_temperature_o_lon = get_month_offset(
-                    m_temperature, lat_offset=0, lon_offset=lon_offset
-                ).flatten()
-                m_temperature = m_temperature.flatten()
-            if no_pressure:
-                m_pressure = np.full_like(m_precip, 0.5)
-                m_pressure_o_lat = m_pressure
-                m_pressure_o_lon = m_pressure
-            else:
-                m_pressure = get_month("pressure", year, month)
-                m_pressure_o_lat = get_month_offset(
-                    m_pressure, lat_offset=lat_offset, lon_offset=0
-                ).flatten()
-                m_pressure_o_lon = get_month_offset(
-                    m_pressure, lat_offset=0, lon_offset=lon_offset
-                ).flatten()
-                m_pressure = m_pressure.flatten()
-            if no_uwind:
-                m_uwind = np.full_like(m_precip, 0.5)
-                m_uwind_o_lat = m_uwind
-                m_uwind_o_lon = m_uwind
-            else:
-                m_uwind = get_month("uwind", year, month)
-                m_uwind_o_lat = get_month_offset(
-                    m_uwind, lat_offset=lat_offset, lon_offset=0
-                ).flatten()
-                m_uwind_o_lon = get_month_offset(
-                    m_uwind, lat_offset=0, lon_offset=lon_offset
-                ).flatten()
-                m_uwind = m_uwind.flatten()
-            if no_vwind:
-                m_vwind = np.full_like(m_precip, 0.5)
-                m_vwind_o_lat = m_vwind
-                m_vwind_o_lon = m_vwind
-            else:
-                m_vwind = get_month("vwind", year, month)
-                m_vwind_o_lat = get_month_offset(
-                    m_vwind, lat_offset=lat_offset, lon_offset=0
-                ).flatten()
-                m_vwind_o_lon = get_month_offset(
-                    m_vwind, lat_offset=0, lon_offset=lon_offset
-                ).flatten()
-                m_vwind = m_vwind.flatten()
-            if no_humidity:
-                m_humidity = np.full_like(m_precip, 0.5)
-                m_humidity_o_lat = m_humidity
-                m_humidity_o_lon = m_humidity
-            else:
-                m_humidity = get_month("humidity", year, month)
-                m_humidity_o_lat = get_month_offset(
-                    m_humidity, lat_offset=lat_offset, lon_offset=0
-                ).flatten()
-                m_humidity_o_lon = get_month_offset(
-                    m_humidity, lat_offset=0, lon_offset=lon_offset
-                ).flatten()
-                m_humidity = m_humidity.flatten()
+
+            # precipitation (target)
+            m_precip_field = get_t_month("precipitation", year, month)
+            m_precip = m_precip_field.flatten()
+
+            # base template for full_like fills
+            base_template = m_precip_field
+
+            # Prepare each field (base, offset-lat, offset-lon)
+            m_temperature, m_temperature_o_lat, m_temperature_o_lon = _prepare_field(
+                get_s_month,
+                "temperature",
+                year,
+                month,
+                base_template,
+                lat_offset=lat_offset,
+                lon_offset=lon_offset,
+                fill_val=0.5 if no_temperature else None,
+            )
+            m_pressure, m_pressure_o_lat, m_pressure_o_lon = _prepare_field(
+                get_s_month,
+                "pressure",
+                year,
+                month,
+                base_template,
+                lat_offset=lat_offset,
+                lon_offset=lon_offset,
+                fill_val=0.5 if no_pressure else None,
+            )
+            m_uwind, m_uwind_o_lat, m_uwind_o_lon = _prepare_field(
+                get_s_month,
+                "uwind",
+                year,
+                month,
+                base_template,
+                lat_offset=lat_offset,
+                lon_offset=lon_offset,
+                fill_val=0.5 if no_uwind else None,
+            )
+            m_vwind, m_vwind_o_lat, m_vwind_o_lon = _prepare_field(
+                get_s_month,
+                "vwind",
+                year,
+                month,
+                base_template,
+                lat_offset=lat_offset,
+                lon_offset=lon_offset,
+                fill_val=0.5 if no_vwind else None,
+            )
+            m_humidity, m_humidity_o_lat, m_humidity_o_lon = _prepare_field(
+                get_s_month,
+                "humidity",
+                year,
+                month,
+                base_template,
+                lat_offset=lat_offset,
+                lon_offset=lon_offset,
+                fill_val=0.5 if no_humidity else None,
+            )
+
+            # latitude / longitude / month
             if fix_lat is not None:
                 m_latitude = np.full_like(m_precip, fix_lat / 180 + 0.5)
             else:
                 m_latitude = lat_idx.flatten() / 720
+
             if fix_lon is not None:
                 m_longitude = np.full_like(m_precip, fix_lon / 180 + 0.5)
             else:
                 m_longitude = lon_idx.flatten() / 1440
+
             if fix_month is not None:
-                m_month = np.full_like(m_precip, normalize_month(fix_month))
+                m_month = np.full_like(m_temperature, normalize_month(fix_month))
             else:
                 m_month = np.full_like(m_temperature, normalize_month(month))
 
-            # Subsample?
+            # Subsample selection (apply same sel to all arrays)
+            sel = None
             if samples is not None:
-                # pick `samples` indices (without replacement) from this month's grid
                 npoints = m_temperature.size
                 if samples >= npoints:
-                    # nothing to do, requested more/equal points than available
                     sel = np.arange(npoints, dtype=int)
                 else:
                     sel = rng.choice(npoints, size=samples, replace=False)
-                # apply the same selection to all arrays so they stay aligned
-                m_precip = m_precip[sel]
-                m_temperature = m_temperature[sel]
-                m_temperature_o_lat = m_temperature_o_lat[sel]
-                m_temperature_o_lon = m_temperature_o_lon[sel]
-                m_pressure = m_pressure[sel]
-                m_pressure_o_lat = m_pressure_o_lat[sel]
-                m_pressure_o_lon = m_pressure_o_lon[sel]
-                m_uwind = m_uwind[sel]
-                m_uwind_o_lat = m_uwind_o_lat[sel]
-                m_uwind_o_lon = m_uwind_o_lon[sel]
-                m_vwind = m_vwind[sel]
-                m_vwind_o_lat = m_vwind_o_lat[sel]
-                m_vwind_o_lon = m_vwind_o_lon[sel]
-                m_humidity = m_humidity[sel]
-                m_humidity_o_lat = m_humidity_o_lat[sel]
-                m_humidity_o_lon = m_humidity_o_lon[sel]
-                m_latitude = m_latitude[sel]
-                m_longitude = m_longitude[sel]
-                m_month = m_month[sel]
-            # Combine into feature array
-            m_source = np.column_stack(
-                (
-                    m_pressure,
-                    m_pressure_o_lat,
-                    m_pressure_o_lon,
-                    m_temperature,
-                    m_temperature_o_lat,
-                    m_temperature_o_lon,
-                    m_uwind,
-                    m_uwind_o_lat,
-                    m_uwind_o_lon,
-                    m_vwind,
-                    m_vwind_o_lat,
-                    m_vwind_o_lon,
-                    m_humidity,
-                    m_humidity_o_lat,
-                    m_humidity_o_lon,
-                    m_latitude,
-                    m_longitude,
-                    m_month,
-                )
-            )
-            # Get this month's target similarly
-            m_target = m_precip
-            # Concatenate the monthly source and target onto the accumulator arrays
+
+            def _apply_sel(arr):
+                return arr if sel is None else arr[sel]
+
+            # Apply selection to all arrays (including offset variants if present)
+            m_precip_s = _apply_sel(m_precip)
+            m_temperature_s = _apply_sel(m_temperature)
+            m_pressure_s = _apply_sel(m_pressure)
+            m_uwind_s = _apply_sel(m_uwind)
+            m_vwind_s = _apply_sel(m_vwind)
+            m_humidity_s = _apply_sel(m_humidity)
+            m_latitude_s = _apply_sel(m_latitude)
+            m_longitude_s = _apply_sel(m_longitude)
+            m_month_s = _apply_sel(m_month)
+
+            # Offsets
+            def _maybe_sel(arr):
+                return None if arr is None else _apply_sel(arr)
+
+            m_temperature_o_lat_s = _maybe_sel(m_temperature_o_lat)
+            m_temperature_o_lon_s = _maybe_sel(m_temperature_o_lon)
+            m_pressure_o_lat_s = _maybe_sel(m_pressure_o_lat)
+            m_pressure_o_lon_s = _maybe_sel(m_pressure_o_lon)
+            m_uwind_o_lat_s = _maybe_sel(m_uwind_o_lat)
+            m_uwind_o_lon_s = _maybe_sel(m_uwind_o_lon)
+            m_vwind_o_lat_s = _maybe_sel(m_vwind_o_lat)
+            m_vwind_o_lon_s = _maybe_sel(m_vwind_o_lon)
+            m_humidity_o_lat_s = _maybe_sel(m_humidity_o_lat)
+            m_humidity_o_lon_s = _maybe_sel(m_humidity_o_lon)
+
+            # Build named columns in the same order as feature_names in to_DMatrix()
+            cols_named = [
+                ("pressure", m_pressure_s),
+                ("pressure_o_lat", m_pressure_o_lat_s),
+                ("pressure_o_lon", m_pressure_o_lon_s),
+                ("temperature", m_temperature_s),
+                ("temperature_o_lat", m_temperature_o_lat_s),
+                ("temperature_o_lon", m_temperature_o_lon_s),
+                ("uwind", m_uwind_s),
+                ("uwind_o_lat", m_uwind_o_lat_s),
+                ("uwind_o_lon", m_uwind_o_lon_s),
+                ("vwind", m_vwind_s),
+                ("vwind_o_lat", m_vwind_o_lat_s),
+                ("vwind_o_lon", m_vwind_o_lon_s),
+                ("humidity", m_humidity_s),
+                ("humidity_o_lat", m_humidity_o_lat_s),
+                ("humidity_o_lon", m_humidity_o_lon_s),
+                ("latitude", m_latitude_s),
+                ("longitude", m_longitude_s),
+                ("month", m_month_s),
+            ]
+
+            # Filter out None columns and keep matching names
+            cols_filtered = [arr for (name, arr) in cols_named if arr is not None]
+            names_filtered = [name for (name, arr) in cols_named if arr is not None]
+
+            m_source = np.column_stack(tuple(cols_filtered))
+            m_target = m_precip_s
+
+            # Set feature names on first encounter (they're constant across months)
+            if feature_names_out is None:
+                feature_names_out = names_filtered
+
+            # Concatenate month onto accumulator arrays
             if source is None:
                 source = m_source
                 target = m_target
             else:
                 source = np.concatenate((source, m_source), axis=0)
                 target = np.concatenate((target, m_target), axis=0)
-    return source, target
+
+    return source, target, feature_names_out
 
 
-def to_DMatrix(source, target):
-    feature_names = [
-        "pressure",
-        "pressure_o_lat",
-        "pressure_o_lon",
-        "temperature",
-        "temperature_o_lat",
-        "temperature_o_lon",
-        "uwind",
-        "uwind_o_lat",
-        "uwind_o_lon",
-        "vwind",
-        "vwind_o_lat",
-        "vwind_o_lon",
-        "humidity",
-        "humidity_o_lat",
-        "humidity_o_lon",
-        "latitude",
-        "longitude",
-        "month",
-    ]
+def to_DMatrix(source, target, feature_names=None):
+    """
+    Build xgboost DMatrix. If feature_names is provided use it, otherwise
+    fall back to the legacy full-name list (keeps backward compatibility).
+    """
+    if feature_names is None:
+        feature_names = [
+            "pressure",
+            "pressure_o_lat",
+            "pressure_o_lon",
+            "temperature",
+            "temperature_o_lat",
+            "temperature_o_lon",
+            "uwind",
+            "uwind_o_lat",
+            "uwind_o_lon",
+            "vwind",
+            "vwind_o_lat",
+            "vwind_o_lon",
+            "humidity",
+            "humidity_o_lat",
+            "humidity_o_lon",
+            "latitude",
+            "longitude",
+            "month",
+        ]
     m = xgb.DMatrix(data=source, label=target, feature_names=feature_names)
     return m

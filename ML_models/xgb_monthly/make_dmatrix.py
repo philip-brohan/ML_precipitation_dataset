@@ -42,8 +42,20 @@ parser.add_argument(
     default=None,
 )
 parser.add_argument(
+    "--opdir",
+    type=str,
+    required=False,
+    default=None,
+)
+parser.add_argument(
     "--source",
     type=str,  # 'TWCR','ERA5', or 'GC5'
+    required=True,
+    default=None,
+)
+parser.add_argument(
+    "--target",
+    type=str,  # 'TWCR','ERA5','GC5','GPCC','CRU','GPCP'
     required=True,
     default=None,
 )
@@ -55,26 +67,37 @@ parser.add_argument("--no_humidity", action="store_true")
 parser.add_argument("--fix_month", type=int, required=False, default=None)
 parser.add_argument("--fix_lat", type=int, required=False, default=None)
 parser.add_argument("--fix_lon", type=int, required=False, default=None)
-parser.add_argument("--lat_offset", type=int, required=False, default=5)
-parser.add_argument("--lon_offset", type=int, required=False, default=5)
+parser.add_argument("--lat_offset", type=int, required=False, default=None)
+parser.add_argument("--lon_offset", type=int, required=False, default=None)
 
 args = parser.parse_args()
+if args.target is None:
+    args.target = args.source
 
 # Load the data entry function - source specific
 if args.source == "TWCR":
-    from TWCR import get_month
+    from TWCR import get_month as get_s_month
 elif args.source == "ERA5":
-    from ERA5 import get_month
+    from ERA5 import get_month as get_s_month
 elif args.source == "GC5":
-    from GC5 import get_month
+    from GC5 import get_month as get_s_month
+else:
+    print("Source %s not recognised" % args.source)
+    sys.exit(1)
+if args.target == "TWCR":
+    from TWCR import get_month as get_t_month
+elif args.target == "ERA5":
+    from ERA5 import get_month as get_t_month
+elif args.target == "GC5":
+    from GC5 import get_month as get_t_month
+else:
+    print("Target %s not recognised" % args.target)
+    sys.exit(1)
 
-# Source is a n*5 array containing 5 features:
-#  pressure, temperature, latitude, longitude, month (all normalised)
-# Target is an n*1 array containing one feature:
-#  precipitation (normalised)
 
-source, target = get_source_and_target(
-    get_month,
+source, target, feature_names = get_source_and_target(
+    get_s_month,
+    get_t_month,
     args.start_year,
     args.end_year,
     samples=args.samples,
@@ -90,15 +113,16 @@ source, target = get_source_and_target(
     lon_offset=args.lon_offset,
 )
 
-dm = to_DMatrix(source, target)
+dm = to_DMatrix(source, target, feature_names=feature_names)
 
 # Save the files as xgboost DMatrix native
-opdir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
-if not os.path.isdir(opdir):
-    os.makedirs(opdir)
+if args.opdir is None:
+    args.opdir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
+if not os.path.isdir(args.opdir):
+    os.makedirs(args.opdir)
 if args.label is None:
-    fname = "%s/%s.dt" % (opdir, args.source)
+    fname = "%s/%s.dt" % (args.opdir, args.source)
 else:
-    fname = "%s/%s_%s.dt" % (opdir, args.source, args.label)
+    fname = "%s/%s_%s.dt" % (args.opdir, args.source, args.label)
 
 dm.save_binary(fname)
