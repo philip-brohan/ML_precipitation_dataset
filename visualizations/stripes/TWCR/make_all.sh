@@ -25,3 +25,21 @@ echo "$SCRIPT_DIR/stripes.py --variable=SST --convolve=11x13 --startyear=1850 --
 echo "$SCRIPT_DIR/stripes.py --variable=SST --convolve=sub-11x13 --startyear=1850"
 echo "$SCRIPT_DIR/stripes.py --variable=SST --reduce=mean --startyear=1850"
 echo "$SCRIPT_DIR/stripes.py --variable=SST --reduce=mean --global_mean --annual_mean --vmin=0.25 --vmax=0.75 --startyear=1850"
+
+echo "$SCRIPT_DIR/stripes.py --variable=RH2m --convolve=none --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=RH2m --convolve=11x13 --startyear=1850 --vmin=0.25 --vmax=0.75"
+echo "$SCRIPT_DIR/stripes.py --variable=RH2m --convolve=sub-11x13 --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=RH2m --reduce=mean --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=RH2m --reduce=mean --global_mean --annual_mean --vmin=0.25 --vmax=0.75 --startyear=1850"
+
+echo "$SCRIPT_DIR/stripes.py --variable=UGRD10m --convolve=none --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=UGRD10m --convolve=11x13 --startyear=1850 --vmin=0.25 --vmax=0.75"
+echo "$SCRIPT_DIR/stripes.py --variable=UGRD10m --convolve=sub-11x13 --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=UGRD10m --reduce=mean --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=UGRD10m --reduce=mean --global_mean --annual_mean --vmin=0.25 --vmax=0.75 --startyear=1850"
+
+echo "$SCRIPT_DIR/stripes.py --variable=VGRD10m --convolve=none --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=VGRD10m --convolve=11x13 --startyear=1850 --vmin=0.25 --vmax=0.75"
+echo "$SCRIPT_DIR/stripes.py --variable=VGRD10m --convolve=sub-11x13 --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=VGRD10m --reduce=mean --startyear=1850"
+echo "$SCRIPT_DIR/stripes.py --variable=VGRD10m --reduce=mean --global_mean --annual_mean --vmin=0.25 --vmax=0.75 --startyear=1850"
