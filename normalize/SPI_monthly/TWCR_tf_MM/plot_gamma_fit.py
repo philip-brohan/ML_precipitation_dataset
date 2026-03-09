@@ -28,20 +28,21 @@ parser.add_argument(
     type=str,
     default="PRATE",
 )
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 args = parser.parse_args()
 
 # Load the fitted values
 shape = iris.load_cube(
     "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/shape_m%02d.nc"
-    % (os.getenv("PDIR"), args.variable, args.month),
+    % (os.getenv("PDIR"), args.variable + ("_sd" if args.sd else ""), args.month),
 )
 location = iris.load_cube(
     "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/location_m%02d.nc"
-    % (os.getenv("PDIR"), args.variable, args.month),
+    % (os.getenv("PDIR"), args.variable + ("_sd" if args.sd else ""), args.month),
 )
 scale = iris.load_cube(
     "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/scale_m%02d.nc"
-    % (os.getenv("PDIR"), args.variable, args.month),
+    % (os.getenv("PDIR"), args.variable + ("_sd" if args.sd else ""), args.month),
 )
 
 # Make the plot

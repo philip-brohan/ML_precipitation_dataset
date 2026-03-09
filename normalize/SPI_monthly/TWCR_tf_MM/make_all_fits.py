@@ -32,3 +32,17 @@ for variable in ("TMP2m", "PRMSL", "PRATE", "SST", "UGRD10m", "VGRD10m", "RH2m")
             )
         )
         print(cmd)
+
+for variable in ("PRMSL",):
+    for month in range(1, 13):
+        if is_done(month, variable + "_sd"):
+            continue
+        cmd = (
+            "%s/fit_for_month.py --month=%02d --variable=%s --startyear=1950 --endyear=2014 --sd"
+            % (
+                sDir,
+                month,
+                variable,
+            )
+        )
+        print(cmd)

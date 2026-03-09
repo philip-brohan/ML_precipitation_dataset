@@ -35,6 +35,7 @@ parser.add_argument(
     type=str,
     default="PRATE",
 )
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 parser.add_argument(
     "--member",
     help="Ensemble member to use. (Default, sample randomly)",
@@ -44,7 +45,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Load the fitted values
-(shape, location, scale) = load_fitted(args.month, variable=args.variable)
+(shape, location, scale) = load_fitted(args.month, variable=args.variable, sd=args.sd)
 
 # Load the raw data for the selected month
 raw = TWCR_monthly_load.load_monthly_member(
@@ -53,6 +54,7 @@ raw = TWCR_monthly_load.load_monthly_member(
     month=args.month,
     member=args.member,
     grid=grids.E5sCube,
+    sd=args.sd,
 )
 
 # Make the normalized version

@@ -47,6 +47,7 @@ parser.add_argument(
 parser.add_argument("--global_mean", help="show global mean", action="store_true")
 parser.add_argument("--annual_mean", help="show annual_mean", action="store_true")
 parser.add_argument("--variable", help="Variable", type=str, required=True)
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 parser.add_argument(
     "--vmin",
     type=float,
@@ -135,6 +136,7 @@ trainingData = getDataset(
     endyear=end.year,
     cache=False,
     blur=None,
+    sd=args.sd,
 ).batch(1)
 
 for batch in trainingData:
@@ -335,9 +337,12 @@ if not os.path.isdir(opdir):
     os.makedirs(opdir)
 
 fname = "%s/%s_%s_%s" % (opdir, args.variable, args.reduce, args.convolve)
+
 if args.global_mean:
     fname += "_globalmean"
 if args.annual_mean:
     fname += "_annualmean"
+if args.sd:
+    fname += "_sd"
 
 fig.savefig("%s.webp" % fname)

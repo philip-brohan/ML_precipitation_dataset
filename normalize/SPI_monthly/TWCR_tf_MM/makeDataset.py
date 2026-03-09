@@ -16,13 +16,20 @@ def getDataset(
     member_idx=None,
     blur=None,
     cache=False,
+    sd=False,
 ):
 
     # Get the index of the last month in the raw tensors
-    fn = "%s/raw_datasets/TWCR/%s_zarr" % (
-        os.getenv("PDIR"),
-        variable,
-    )
+    if sd:
+        fn = "%s/raw_datasets/TWCR/%s_sd_zarr" % (
+            os.getenv("PDIR"),
+            variable,
+        )
+    else:
+        fn = "%s/raw_datasets/TWCR/%s_zarr" % (
+            os.getenv("PDIR"),
+            variable,
+        )
     zarr_array = zarr.open(fn, mode="r")
     AvailableMonths = zarr_array.attrs["AvailableMonths"]
     dates = sorted(AvailableMonths.keys())
@@ -52,7 +59,8 @@ def getDataset(
         lidx = idx.numpy()
         m_idx = lidx // 10000
         d_idx = lidx % 10000
-        return tf.convert_to_tensor(tsa[:, :, m_idx, d_idx].read().result(), tf.float32)
+        val = tsa[:, :, m_idx, d_idx].read().result()
+        return tf.convert_to_tensor(val, tf.float32)
 
     def load_tensor_from_index(idx):
         result = tf.py_function(

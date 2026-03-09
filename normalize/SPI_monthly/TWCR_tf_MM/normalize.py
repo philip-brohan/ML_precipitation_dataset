@@ -9,7 +9,9 @@ import iris
 
 
 # Load the pre-calculated fitted values
-def load_fitted(month, variable="PRATE"):
+def load_fitted(month, variable="PRATE", sd=False):
+    if sd:
+        variable += "_sd"
     shape = iris.load_cube(
         "%s/normalization/SPI_monthly/TWCR_tf_MM/%s/shape_m%02d.nc"
         % (os.getenv("PDIR"), variable, month),

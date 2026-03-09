@@ -20,6 +20,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--month", help="Month to fit", type=int, required=True)
 parser.add_argument("--variable", help="Variable", type=str, required=True)
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 parser.add_argument(
     "--startyear", help="Start Year", type=int, required=False, default=1950
 )
@@ -37,6 +38,8 @@ parser.add_argument(
 )
 args = parser.parse_args()
 opdir = "%s/%s" % (args.opdir, args.variable)
+if args.sd:
+    opdir += "_sd"
 if not os.path.isdir(opdir):
     os.makedirs(opdir, exist_ok=True)
 
@@ -49,6 +52,7 @@ trainingData = getDataset(
     member_idx=args.memberidx,
     cache=False,
     blur=1.0e-9,
+    sd=args.sd,
 ).batch(1)
 mean = tf.zeros([1, 721, 1440, 1], dtype=tf.float32)
 count = tf.zeros([1, 721, 1440, 1], dtype=tf.float32)
@@ -114,7 +118,7 @@ shape.data = np.ma.MaskedArray(shape.data, np.isnan(shape.data))
 shape.data.data[shape.data.mask] = 1.0
 iris.save(
     shape,
-    "%s/%s/shape_m%02d.nc" % (args.opdir, args.variable, args.month),
+    "%s/shape_m%02d.nc" % (opdir, args.month),
 )
 location = grids.E5sCube.copy()
 location.data = np.squeeze(fg_location.numpy())
@@ -122,7 +126,7 @@ location.data = np.ma.MaskedArray(location.data, np.isnan(location.data))
 location.data.data[location.data.mask] = -1.0
 iris.save(
     location,
-    "%s/%s/location_m%02d.nc" % (args.opdir, args.variable, args.month),
+    "%s/" "location_m%02d.nc" % (opdir, args.month),
 )
 scale = grids.E5sCube.copy()
 scale.data = np.squeeze(fg_scale.numpy())
@@ -130,5 +134,5 @@ scale.data = np.ma.MaskedArray(scale.data, np.isnan(scale.data))
 scale.data.data[scale.data.mask] = 1.0
 iris.save(
     scale,
-    "%s/%s/scale_m%02d.nc" % (args.opdir, args.variable, args.month),
+    "%s/" "scale_m%02d.nc" % (opdir, args.month),
 )

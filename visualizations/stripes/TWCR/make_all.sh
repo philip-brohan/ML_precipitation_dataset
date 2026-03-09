@@ -14,6 +14,12 @@ echo "$SCRIPT_DIR/stripes.py --variable=PRMSL --convolve=sub-11x13 --startyear=1
 echo "$SCRIPT_DIR/stripes.py --variable=PRMSL --reduce=mean --startyear=1850"
 echo "$SCRIPT_DIR/stripes.py --variable=PRMSL --reduce=mean --global_mean --annual_mean --vmin=0.35 --vmax=0.65 --startyear=1850"
 
+echo "$SCRIPT_DIR/stripes.py --variable=PRMSL --convolve=none --startyear=1850 --sd"
+echo "$SCRIPT_DIR/stripes.py --variable=PRMSL --convolve=11x13 --startyear=1850 --vmin=0.25 --vmax=0.75 --sd"
+echo "$SCRIPT_DIR/stripes.py --variable=PRMSL --convolve=sub-11x13 --startyear=1850 --sd"
+echo "$SCRIPT_DIR/stripes.py --variable=PRMSL --reduce=mean --startyear=1850 --sd"
+echo "$SCRIPT_DIR/stripes.py --variable=PRMSL --reduce=mean --global_mean --annual_mean --vmin=0.35 --vmax=0.65 --startyear=1850 --sd"
+
 echo "$SCRIPT_DIR/stripes.py --variable=PRATE --convolve=none --startyear=1850"
 echo "$SCRIPT_DIR/stripes.py --variable=PRATE --convolve=11x13 --startyear=1850 --vmin=0.25 --vmax=0.75"
 echo "$SCRIPT_DIR/stripes.py --variable=PRATE --convolve=sub-11x13 --startyear=1850"
