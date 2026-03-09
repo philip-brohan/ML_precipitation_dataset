@@ -60,6 +60,7 @@ parser.add_argument(
     default=None,
 )
 parser.add_argument("--no_pressure", action="store_true")
+parser.add_argument("--no_pressure_sd", action="store_true")
 parser.add_argument("--no_temperature", action="store_true")
 parser.add_argument("--no_uwind", action="store_true")
 parser.add_argument("--no_vwind", action="store_true")
@@ -90,6 +91,8 @@ elif args.target == "ERA5":
     from ERA5 import get_month as get_t_month
 elif args.target == "GC5":
     from GC5 import get_month as get_t_month
+elif args.target == "CRU":
+    from CRU import get_month as get_t_month
 else:
     print("Target %s not recognised" % args.target)
     sys.exit(1)
@@ -103,6 +106,7 @@ source, target, feature_names = get_source_and_target(
     samples=args.samples,
     no_temperature=args.no_temperature,
     no_pressure=args.no_pressure,
+    no_pressure_sd=args.no_pressure_sd,
     no_uwind=args.no_uwind,
     no_vwind=args.no_vwind,
     no_humidity=args.no_humidity,
@@ -112,6 +116,11 @@ source, target, feature_names = get_source_and_target(
     lat_offset=args.lat_offset,
     lon_offset=args.lon_offset,
 )
+
+# Filter out any rows where any component of source or target is NaN
+valid_rows = np.isfinite(source).all(axis=1) & np.isfinite(target)
+source = source[valid_rows]
+target = target[valid_rows]
 
 dm = to_DMatrix(source, target, feature_names=feature_names)
 

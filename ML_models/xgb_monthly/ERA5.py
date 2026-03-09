@@ -49,6 +49,9 @@ def get_month(variable, year, month):
         zf = rh
     else:
         raise Exception("Unsupported ERA5 variable %s" % variable)
-    d_idx = zf.attrs["AvailableMonths"]["%04d-%02d" % (year, month)]
-    mnth = zf[:, :, d_idx]
+    try:
+        d_idx = zf.attrs["AvailableMonths"]["%04d-%02d" % (year, month)]
+        mnth = zf[:, :, d_idx]
+    except KeyError:
+        mnth = np.full((721, 1440), np.nan)
     return mnth

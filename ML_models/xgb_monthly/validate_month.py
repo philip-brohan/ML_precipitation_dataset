@@ -44,6 +44,7 @@ parser.add_argument(
     default=None,
 )
 parser.add_argument("--no_pressure", action="store_true")
+parser.add_argument("--no_pressure_sd", action="store_true")
 parser.add_argument("--no_temperature", action="store_true")
 parser.add_argument("--no_uwind", action="store_true")
 parser.add_argument("--no_vwind", action="store_true")
@@ -78,6 +79,8 @@ elif args.target == "ERA5":
     from ERA5 import get_month as get_t_month
 elif args.target == "GC5":
     from GC5 import get_month as get_t_month
+elif args.target == "CRU":
+    from CRU import get_month as get_t_month
 else:
     print("Target %s not recognised" % args.target)
     sys.exit(1)
@@ -97,6 +100,7 @@ source, target, feature_names = get_source_and_target(
     end_month=args.month,
     no_temperature=args.no_temperature,
     no_pressure=args.no_pressure,
+    no_pressure_sd=args.no_pressure_sd,
     no_uwind=args.no_uwind,
     no_vwind=args.no_vwind,
     no_humidity=args.no_humidity,
@@ -107,7 +111,12 @@ source, target, feature_names = get_source_and_target(
     lon_offset=args.lon_offset,
 )
 
-dm = to_DMatrix(source, target, feature_names=feature_names)
+# Filter out any rows where any component of source or target is NaN
+valid_rows = np.isfinite(source).all(axis=1) & np.isfinite(target)
+s2 = source[valid_rows]
+t2 = target[valid_rows]
+
+dm = to_DMatrix(s2, t2, feature_names=feature_names)
 
 # Load the model
 fname = "%s/%s.ubj" % (opdir, args.mlabel)
@@ -115,6 +124,8 @@ bst = xgb.Booster()
 bst.load_model(fname)
 
 preds = bst.predict(dm)
+preds_full = np.full(target.shape, np.nan)
+preds_full[valid_rows] = preds
 
 # Layout: left = two panels (top: observed field, bottom: model field)
 # Right column split into two: top = scatter, bottom = observation - model difference
@@ -129,7 +140,7 @@ ax_r_bot = fig.add_subplot(gs[1, 1])  # right bottom: scatter (swapped)
 
 # reshape flattened arrays back to 2D
 obs_grid = target.reshape(721, 1440)
-pred_grid = preds.reshape(721, 1440)
+pred_grid = preds_full.reshape(721, 1440)
 
 # plot observed field (left top)
 im1 = ax_lt.imshow(
@@ -184,9 +195,9 @@ ax_r_bot.set_ylabel("Predicted")
 ax_r_bot.set_title("%04d-%02d" % (args.year, args.month))
 
 # correlation coefficient (ignore NaNs)
-mask = (~np.isnan(target)) & (~np.isnan(preds))
+mask = (~np.isnan(target)) & (~np.isnan(preds_full))
 if mask.sum() >= 2:
-    corr = np.corrcoef(target[mask], preds[mask])[0, 1]
+    corr = np.corrcoef(target[mask], preds_full[mask])[0, 1]
 else:
     corr = float("nan")
 ax_r_bot.text(

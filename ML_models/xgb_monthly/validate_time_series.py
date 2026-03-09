@@ -11,14 +11,25 @@
 import os
 import sys
 import numpy as np
+import zarr
 import xgboost as xgb
-import pickle
 from utils import get_source_and_target, to_DMatrix
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+import tensorflow as tf
+import tensorstore as ts
+
+import dask
+
+# Going to do external parallelism - run this on one core
+tf.config.threading.set_inter_op_parallelism_threads(1)
+dask.config.set(scheduler="single-threaded")
 
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--year", help="Test year", type=int, required=False, default=1969)
+parser.add_argument("--year", help="Test year", type=int, required=True)
 parser.add_argument(
     "--member_idx", help="Member index (0-9)", type=int, required=False, default=None
 )
@@ -38,15 +49,9 @@ parser.add_argument("--fix_lon", type=int, required=False, default=None)
 parser.add_argument("--lat_offset", type=int, required=False, default=None)
 parser.add_argument("--lon_offset", type=int, required=False, default=None)
 parser.add_argument(
-    "--start_year",
+    "--month",
     type=int,
-    required=False,
-    default=1850,
-)
-parser.add_argument(
-    "--end_year",
-    type=int,
-    required=False,
+    required=True,
     default=2023,
 )
 parser.add_argument(
@@ -92,6 +97,8 @@ elif args.target == "ERA5":
     from ERA5 import get_month as get_t_month
 elif args.target == "GC5":
     from GC5 import get_month as get_t_month
+elif args.target == "CRU":
+    from CRU import get_month as get_t_month
 else:
     print("Target %s not recognised" % args.target)
     sys.exit(1)
@@ -99,60 +106,54 @@ else:
 
 # Get the predictions for a month
 def get_predictions(model, source, target, feature_names=None):
-    dm = to_DMatrix(source, target, feature_names=feature_names)
+    valid_rows = np.isfinite(source).all(axis=1) & np.isfinite(target)
+    s2 = source[valid_rows]
+    t2 = target[valid_rows]
+    dm = to_DMatrix(s2, t2, feature_names=feature_names)
     preds = model.predict(dm)
-    return preds
+    preds_full = np.full(target.shape, np.nan)
+    preds_full[valid_rows] = preds
+    return preds_full
 
 
-# Reduce a field to a scalar (mean or otherwise)
-def reduce_to_scalar(field):
-    return np.mean(field)
-
-
-# Make timeseries by doing data retrieval, modelling, and reduction for each month
+# Make field by doing data retrieval and modelling for each month
 date_ts = []
 prediction_ts = []
 target_ts = []
 feature_names = None
-for year in range(args.start_year, args.end_year + 1):
-    for month in range(1, 13):
-        source, target, feature_names = get_source_and_target(
-            get_s_month,
-            get_t_month,
-            year,
-            year,
-            start_month=month,
-            end_month=month,
-            no_temperature=args.no_temperature,
-            no_pressure=args.no_pressure,
-            no_uwind=args.no_uwind,
-            no_vwind=args.no_vwind,
-            no_humidity=args.no_humidity,
-            fix_lat=args.fix_lat,
-            fix_lon=args.fix_lon,
-            fix_month=args.fix_month,
-            lat_offset=args.lat_offset,
-            lon_offset=args.lon_offset,
-        )
-        prediction = get_predictions(model, source, target, feature_names=feature_names)
-        date_ts.append("%04d-%02d" % (year, month))
-        prediction_ts.append(reduce_to_scalar(prediction))
-        target_ts.append(reduce_to_scalar(target))
+source, target, feature_names = get_source_and_target(
+    get_s_month,
+    get_t_month,
+    args.year,
+    args.year,
+    start_month=args.month,
+    end_month=args.month,
+    no_temperature=args.no_temperature,
+    no_pressure=args.no_pressure,
+    no_uwind=args.no_uwind,
+    no_vwind=args.no_vwind,
+    no_humidity=args.no_humidity,
+    fix_lat=args.fix_lat,
+    fix_lon=args.fix_lon,
+    fix_month=args.fix_month,
+    lat_offset=args.lat_offset,
+    lon_offset=args.lon_offset,
+)
+prediction = get_predictions(model, source, target, feature_names=feature_names)
 
-# save the time-series results
-opdir = f"{os.getenv('PDIR')}/ML_models/xgb_monthly/{args.label}/ts_validation/"
-if not os.path.isdir(opdir):
-    os.makedirs(opdir)
-out_name = f"{args.start_year:04d}_{args.end_year:04d}.pkl"
-out_path = os.path.join(opdir, out_name)
-with open(out_path, "wb") as of:
-    pickle.dump(
-        {
-            "date_ts": date_ts,
-            "prediction_ts": prediction_ts,
-            "target_ts": target_ts,
-            "args": vars(args),
-        },
-        of,
-        protocol=pickle.HIGHEST_PROTOCOL,
-    )
+# save the model field
+opdir = f"{os.getenv('PDIR')}/ML_models/xgb_monthly/{args.label}/ts_validation"
+
+fn = "%s/model_zarr" % (opdir,)
+
+dataset = ts.open(
+    {
+        "driver": "zarr",
+        "kvstore": "file://" + fn,
+    }
+).result()
+zarr_ds = zarr.open(fn, mode="r+")
+FirstYear = zarr_ds.attrs["FirstYear"]
+idx = (args.year - FirstYear) * 12 + (args.month - 1)
+op = dataset[:, :, idx].write(prediction.reshape([721, 1440]).astype(np.float32))
+op.result()  # Ensure write completes before exiting

@@ -71,6 +71,7 @@ def get_source_and_target(
     samples=None,
     no_temperature=False,
     no_pressure=False,
+    no_pressure_sd=False,
     no_uwind=False,
     no_vwind=False,
     no_humidity=False,
@@ -123,6 +124,16 @@ def get_source_and_target(
                 lat_offset=lat_offset,
                 lon_offset=lon_offset,
                 fill_val=0.5 if no_pressure else None,
+            )
+            m_pressure_sd, m_pressure_sd_o_lat, m_pressure_sd_o_lon = _prepare_field(
+                get_s_month,
+                "pressure_sd",
+                year,
+                month,
+                base_template,
+                lat_offset=lat_offset,
+                lon_offset=lon_offset,
+                fill_val=0.5 if no_pressure_sd else None,
             )
             m_uwind, m_uwind_o_lat, m_uwind_o_lon = _prepare_field(
                 get_s_month,

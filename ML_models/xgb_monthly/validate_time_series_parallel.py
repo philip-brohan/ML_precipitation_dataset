@@ -5,6 +5,9 @@
 
 
 import os
+import zarr
+import tensorstore as ts
+import numpy as np
 
 opdir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
 
@@ -60,35 +63,69 @@ args = parser.parse_args()
 if args.target is None:
     args.target = args.source
 
+
+def date_to_index(year, month):
+    return (year - args.start_year) * 12 + month - 1
+
+
+# Create the output zarr array if it doesn't exist
+fn = "%s/%s/ts_validation/model_zarr" % (opdir, args.label)
+
+# Create TensorStore dataset if it doesn't exist
+try:
+    dataset = ts.open(
+        {
+            "driver": "zarr",
+            "kvstore": "file://" + fn,
+        },
+        dtype=ts.float32,
+        chunk_layout=ts.ChunkLayout(chunk_shape=[721, 1440, 1]),
+        create=True,
+        fill_value=np.nan,
+        shape=[
+            721,
+            1440,
+            date_to_index(args.end_year, 12) + 1,
+        ],
+    ).result()
+except ValueError:  # Already exists
+    pass
+
+# Add date range to array as metadata
+# TensorStore doesn't support metadata, so use the underlying zarr array
+zarr_ds = zarr.open(fn, mode="r+")
+zarr_ds.attrs["FirstYear"] = args.start_year
+zarr_ds.attrs["LastYear"] = args.end_year
+
 for year in range(args.start_year, args.end_year + 1):
-    if os.path.exists(
-        "%s/%s/ts_validation/%04d_%04d.pkl" % (opdir, args.label, year, year)
-    ):
-        continue  # already done
-    print(
-        "./validate_time_series.py --source=%s --target=%s --start_year=%04d --end_year=%04d --label=%s "
-        % (args.source, args.target, year, year, args.label),
-        end="",
-    )
-    print("--mlabel=%s " % args.mlabel, end="")
-    if args.no_pressure:
-        print("--no_pressure ", end="")
-    if args.no_temperature:
-        print("--no_temperature ", end="")
-    if args.no_uwind:
-        print("--no_uwind ", end="")
-    if args.no_vwind:
-        print("--no_vwind ", end="")
-    if args.no_humidity:
-        print("--no_humidity ", end="")
-    if args.fix_month is not None:
-        print("--fix_month=%s " % args.fix_month, end="")
-    if args.lat_offset is not None:
-        print("--lat_offset=%s " % args.lat_offset, end="")
-    if args.fix_lat is not None:
-        print("--fix_lat=%s " % args.fix_lat, end="")
-    if args.lon_offset is not None:
-        print("--lon_offset=%s " % args.lon_offset, end="")
-    if args.fix_lon is not None:
-        print("--fix_lon=%s " % args.fix_lon, end="")
-    print("")  # add \n
+    for month in range(1, 13):
+        idx = date_to_index(year, month)
+        slice = zarr_ds[:, :, idx]
+        if np.all(np.isnan(slice)):  # Data missing, so make it
+            print(
+                "./validate_time_series.py --source=%s --target=%s --year=%04d --month=%d --label=%s "
+                % (args.source, args.target, year, month, args.label),
+                end="",
+            )
+            print("--mlabel=%s " % args.mlabel, end="")
+            if args.no_pressure:
+                print("--no_pressure ", end="")
+            if args.no_temperature:
+                print("--no_temperature ", end="")
+            if args.no_uwind:
+                print("--no_uwind ", end="")
+            if args.no_vwind:
+                print("--no_vwind ", end="")
+            if args.no_humidity:
+                print("--no_humidity ", end="")
+            if args.fix_month is not None:
+                print("--fix_month=%s " % args.fix_month, end="")
+            if args.lat_offset is not None:
+                print("--lat_offset=%s " % args.lat_offset, end="")
+            if args.fix_lat is not None:
+                print("--fix_lat=%s " % args.fix_lat, end="")
+            if args.lon_offset is not None:
+                print("--lon_offset=%s " % args.lon_offset, end="")
+            if args.fix_lon is not None:
+                print("--fix_lon=%s " % args.fix_lon, end="")
+            print("")  # add \n

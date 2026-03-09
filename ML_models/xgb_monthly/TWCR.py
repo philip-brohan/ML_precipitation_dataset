@@ -26,6 +26,7 @@ def get_zarr(variable):
 
 t2m = get_zarr("TMP2m")
 prmsl = get_zarr("PRMSL")
+prmsl_sd = get_zarr("PRMSL_sd")
 prate = get_zarr("PRATE")
 uwnd = get_zarr("UGRD10m")
 vwnd = get_zarr("VGRD10m")
@@ -39,6 +40,8 @@ def get_month(variable, year, month, member_idx=None):
         zf = t2m
     elif variable == "pressure":
         zf = prmsl
+    elif variable == "pressure_sd":
+        zf = prmsl_sd
     elif variable == "precipitation":
         zf = prate
     elif variable == "uwind":
@@ -49,10 +52,13 @@ def get_month(variable, year, month, member_idx=None):
         zf = rh
     else:
         raise Exception("Unsupported TWCR variable %s" % variable)
-    d_idx = zf.attrs["AvailableMonths"]["%04d-%02d_00" % (year, month)]
-    mnth = zf[:, :, :, d_idx]
-    if member_idx is not None:
-        mnth = mnth[:, :, member_idx]
-    else:
-        mnth = mnth.mean(axis=2)
+    try:
+        d_idx = zf.attrs["AvailableMonths"]["%04d-%02d_00" % (year, month)]
+        mnth = zf[:, :, :, d_idx]
+        if member_idx is not None:
+            mnth = mnth[:, :, member_idx]
+        else:
+            mnth = mnth.mean(axis=2)
+    except KeyError:
+        mnth = np.full((721, 1440), np.nan)
     return mnth
