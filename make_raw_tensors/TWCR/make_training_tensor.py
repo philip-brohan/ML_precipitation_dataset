@@ -30,16 +30,23 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--year", help="Year", type=int, required=True)
 parser.add_argument("--month", help="Integer month", type=int, required=True)
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 parser.add_argument(
     "--member_idx", help="Ensemble member index (0-9)", type=int, required=True
 )
 parser.add_argument("--variable", help="Variable name", type=str, required=True)
 args = parser.parse_args()
 
-fn = "%s/raw_datasets/TWCR/%s_zarr" % (
-    os.getenv("PDIR"),
-    args.variable,
-)
+if args.sd:
+    fn = "%s/raw_datasets/TWCR/%s_sd_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
+else:
+    fn = "%s/raw_datasets/TWCR/%s_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
 
 dataset = ts.open(
     {
@@ -55,6 +62,7 @@ try:
         args.month,
         member=TWCR_monthly_load.members[args.member_idx],
         variable=args.variable,
+        sd=args.sd,
     )
     ict = raw_to_tensor(qd)
 except Exception:

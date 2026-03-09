@@ -46,6 +46,7 @@ dataset = ts.open(
     }
 ).result()
 
+
 # Load and standardise data
 try:
     qd = load_raw(args.year, args.month, run=args.run, variable=args.variable)

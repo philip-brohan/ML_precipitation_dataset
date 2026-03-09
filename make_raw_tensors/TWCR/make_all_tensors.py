@@ -21,14 +21,21 @@ parser.add_argument(
     type=str,
     required=True,
 )
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 args = parser.parse_args()
 
 
 # Output zarr array location
-fn = "%s/raw_datasets/TWCR/%s_zarr" % (
-    os.getenv("PDIR"),
-    args.variable,
-)
+if args.sd:
+    fn = "%s/raw_datasets/TWCR/%s_sd_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
+else:
+    fn = "%s/raw_datasets/TWCR/%s_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
 
 # Create TensorStore dataset if it doesn't exist
 try:
@@ -63,14 +70,26 @@ for member_idx in range(len(TWCR_monthly_load.members)):
             idx = date_to_index(year, month)
             slice = zarr_ds[:, :, member_idx, idx]
             if np.all(np.isnan(slice)):  # Data missing, so make it
-                cmd = (
-                    "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s --member_idx=%d"
-                    % (
-                        sDir,
-                        year,
-                        month,
-                        args.variable,
-                        member_idx,
+                if args.sd:
+                    cmd = (
+                        "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s --member_idx=%d --sd"
+                        % (
+                            sDir,
+                            year,
+                            month,
+                            args.variable,
+                            member_idx,
+                        )
                     )
-                )
+                else:
+                    cmd = (
+                        "%s/make_training_tensor.py --year=%04d --month=%02d --variable=%s --member_idx=%d"
+                        % (
+                            sDir,
+                            year,
+                            month,
+                            args.variable,
+                            member_idx,
+                        )
+                    )
                 print(cmd)

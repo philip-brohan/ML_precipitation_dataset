@@ -46,25 +46,30 @@ parser.add_argument(
     type=str,
     default="PRATE",
 )
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 args = parser.parse_args()
 
-fn = "%s/normalized_datasets/TWCR_tf_MM/%s_zarr" % (
-    os.getenv("PDIR"),
-    args.variable,
-)
 
-
-# Get the raw data
-raw_zarr = zarr.open(
-    "%s/raw_datasets/TWCR/%s_zarr"
-    % (
-        os.getenv("PDIR"),
-        args.variable,
-    ),
-    mode="r",
-)
+# Get the raw and normalised data
+if args.sd:
+    raw_zarr = zarr.open(
+        "%s/raw_datasets/TWCR/%s_sd_zarr"
+        % (
+            os.getenv("PDIR"),
+            args.variable,
+        ),
+        mode="r",
+    )
+else:
+    raw_zarr = zarr.open(
+        "%s/raw_datasets/TWCR/%s_zarr"
+        % (
+            os.getenv("PDIR"),
+            args.variable,
+        ),
+        mode="r",
+    )
 AvailableMonths = raw_zarr.attrs["AvailableMonths"]
-
 
 idx = AvailableMonths["%04d-%02d_%02d" % (args.year, args.month, args.member_idx)]
 raw = tensor_to_cube(
@@ -74,14 +79,24 @@ raw.data.data[np.isnan(raw.data.data)] = 0
 raw.data.mask[raw.data.data == 0] = True
 
 # Get the normalized data
-normalized_zarr = zarr.open(
-    "%s/normalized_datasets/TWCR_tf_MM/%s_zarr"
-    % (
-        os.getenv("PDIR"),
-        args.variable,
-    ),
-    mode="r",
-)
+if args.sd:
+    normalized_zarr = zarr.open(
+        "%s/normalized_datasets/TWCR_tf_MM/%s_sd_zarr"
+        % (
+            os.getenv("PDIR"),
+            args.variable,
+        ),
+        mode="r",
+    )
+else:
+    normalized_zarr = zarr.open(
+        "%s/normalized_datasets/TWCR_tf_MM/%s_zarr"
+        % (
+            os.getenv("PDIR"),
+            args.variable,
+        ),
+        mode="r",
+    )
 
 normalized = tensor_to_cube(
     tf.convert_to_tensor(normalized_zarr[:, :, args.member_idx, idx], tf.float32)

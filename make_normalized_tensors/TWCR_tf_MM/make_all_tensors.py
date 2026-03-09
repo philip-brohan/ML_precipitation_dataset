@@ -22,6 +22,7 @@ import tensorflow as tf
 import tensorstore as ts
 from normalize.SPI_monthly.TWCR_tf_MM.makeDataset import getDataset
 from normalize.SPI_monthly.TWCR_tf_MM.normalize import match_normal, load_fitted
+from make_raw_tensors.TWCR.tensor_utils import date_to_index
 
 sDir = os.path.dirname(os.path.realpath(__file__))
 
@@ -32,22 +33,35 @@ parser.add_argument(
     type=str,
     required=True,
 )
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 args = parser.parse_args()
 
 # Get the date range from the input zarr array
-fn = "%s/raw_datasets/TWCR/%s_zarr" % (
-    os.getenv("PDIR"),
-    args.variable,
-)
+if args.sd:
+    fn = "%s/raw_datasets/TWCR/%s_sd_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
+else:
+    fn = "%s/raw_datasets/TWCR/%s_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
 input_zarr = zarr.open(fn, mode="r")
 AvailableMonths = input_zarr.attrs["AvailableMonths"]
 
 
 # Create the output zarr array
-fn = "%s/normalized_datasets/TWCR_tf_MM/%s_zarr" % (
-    os.getenv("PDIR"),
-    args.variable,
-)
+if args.sd:
+    fn = "%s/normalized_datasets/TWCR_tf_MM/%s_sd_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
+else:
+    fn = "%s/normalized_datasets/TWCR_tf_MM/%s_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
 # Delete any previous version
 if os.path.exists(fn):
     rmtree(fn)
@@ -71,7 +85,7 @@ zarr_ds.attrs["AvailableMonths"] = AvailableMonths
 # Load the pre-calculated normalisation parameters
 fitted = []
 for month in range(1, 13):
-    cubes = load_fitted(month, variable=args.variable)
+    cubes = load_fitted(month, variable=args.variable, sd=args.sd)
     fitted.append([cubes[0].data, cubes[1].data, cubes[2].data])
 
 
@@ -80,6 +94,7 @@ trainingData = getDataset(
     args.variable,
     cache=False,
     blur=1.0e-9,
+    sd=args.sd,
 ).batch(1)
 
 op = []
@@ -92,11 +107,16 @@ for batch in trainingData:
     raw = batch[0].numpy().squeeze()
     normalized = match_normal(raw, fitted[month - 1])
     ict = tf.convert_to_tensor(normalized, tf.float32)
-    tf.debugging.check_numerics(
-        ict, "Bad data %04d-%02d %02d" % (year, month, member_idx)
-    )
-
-    didx = AvailableMonths["%04d-%02d_%02d" % (year, month, member_idx)]
+    try:
+        tf.debugging.check_numerics(
+            ict, "Bad data %04d-%02d %02d" % (year, month, member_idx)
+        )
+        didx = AvailableMonths["%04d-%02d_%02d" % (year, month, member_idx)]
+    except Exception as e:
+        print(e)
+        print("Bad data for %04d-%02d %02d" % (year, month, member_idx))
+        ict = tf.fill([721, 1440], tf.constant(np.nan, dtype=tf.float32))
+        didx = date_to_index(year, month)
     op.append(normalized_zarr[:, :, member_idx, didx].write(ict))
 
 # Ensure writes complete before exiting

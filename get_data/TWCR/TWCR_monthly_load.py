@@ -49,7 +49,13 @@ lm_TWCR.data.data[np.where(lm_TWCR.data.mask == False)] = 1
 
 
 def load_monthly_member(
-    variable="PRATE", year=None, month=None, member=1, constraint=None, grid=None
+    variable="PRATE",
+    year=None,
+    month=None,
+    member=1,
+    sd=False,
+    constraint=None,
+    grid=None,
 ):
     if variable == "SST":
         ts = load_monthly_member(
@@ -57,6 +63,7 @@ def load_monthly_member(
             year=year,
             month=month,
             member=member,
+            sd=sd,
             constraint=constraint,
             grid=grid,
         )
@@ -66,13 +73,19 @@ def load_monthly_member(
         ts.data = np.ma.MaskedArray(ts.data, lmg.data.mask)
         return ts
     else:
-        fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem%03d.nc" % (
-            os.getenv("PDIR"),
-            year,
-            variable,
-            year,
-            member,
-        )
+        if sd:
+            fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.sd_mem%03d.nc" % (
+                os.getenv("PDIR"),
+                year,variable,year,member,
+            )
+        else:
+            fname = "%s/20CR/version_3/monthly/members/%04d/%s.%04d.mnmean_mem%03d.nc" % (
+                os.getenv("PDIR"),
+                year,
+                variable,
+                year,
+                member,
+            )
         if not os.path.isfile(fname):
             raise Exception("No data file %s" % fname)
         ftt = iris.Constraint(time=lambda cell: cell.point.month == month)

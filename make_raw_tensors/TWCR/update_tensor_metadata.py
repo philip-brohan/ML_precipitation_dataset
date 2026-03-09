@@ -19,13 +19,20 @@ parser.add_argument(
     type=str,
     required=True,
 )
+parser.add_argument("--sd", help="Use sd instead of mean", action="store_true")
 args = parser.parse_args()
 
 # Find the raw_tensor zarr array
-fn = "%s/raw_datasets/TWCR/%s_zarr" % (
-    os.getenv("PDIR"),
-    args.variable,
-)
+if args.sd:
+    fn = "%s/raw_datasets/TWCR/%s_sd_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
+else:
+    fn = "%s/raw_datasets/TWCR/%s_zarr" % (
+        os.getenv("PDIR"),
+        args.variable,
+    )
 
 # Add date range to array as metadata
 print

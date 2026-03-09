@@ -41,14 +41,14 @@ else:
     )
 
 # Disc data dir
-ddir = "%s/20CR/version_3/" % (os.environ["PDIR"])
+ddir = "%s/20CR/version_3/hourly" % (os.environ["PDIR"])
 if not os.path.isdir(ddir):
     os.makedirs(ddir)
 
 
 def _get_data_dir(version="3"):
     """Return the root directory containing 20CR netCDF files"""
-    g = "%s/20CR/version_%s/" % (os.environ["PDIR"], version)
+    g = "%s/20CR/version_%s/hourly/" % (os.environ["PDIR"], version)
     return g
 
 

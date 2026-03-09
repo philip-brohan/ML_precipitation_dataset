@@ -24,11 +24,11 @@ args = parser.parse_args()
 print("Storing %s for %d" % (args.variable, args.year))
 
 # Base location for storage
-mbase = "moose:/adhoc/projects/20cr/"
+mbase = "moose:/adhoc/projects/20cr"
 moose_dir = "%s/version_3/%04d" % (mbase, args.year)
 
 # Disc data dir
-ddir = "%s/20CR/version_3/" % (os.environ["PDIR"])
+ddir = "%s/20CR/version_3/hourly" % (os.environ["PDIR"])
 if not os.path.isdir(ddir):
     os.makedirs(ddir)
 

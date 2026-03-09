@@ -22,7 +22,7 @@ def index_to_date(idx):
 
 
 # Load the data for 1 month (on the standard cube).
-def load_raw(year, month, member=None, variable="PRATE"):
+def load_raw(year, month, member=None, variable="PRATE", sd=False):
     if member is None:
         member = rng.integers(low=1, high=80, size=1)
     raw = TWCR_monthly_load.load_monthly_member(
@@ -30,6 +30,7 @@ def load_raw(year, month, member=None, variable="PRATE"):
         year=year,
         month=month,
         member=member,
+        sd=sd,
         grid=grids.E5sCube,
     )
     if np.ma.is_masked(raw.data):
