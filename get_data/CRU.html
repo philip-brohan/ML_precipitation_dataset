@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>CRU data download and access &#8212; Machine Learning for Precipitation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css?v=34905f61" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="GPCP data download and access" href="GPCP.html" />
     <link rel="prev" title="GPCC data download and access" href="GPCC.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,16 +40,16 @@
           <div class="body" role="main">
             
   <section id="cru-data-download-and-access">
-<h1>CRU data download and access<a class="headerlink" href="#cru-data-download-and-access" title="Permalink to this heading">¶</a></h1>
+<h1>CRU data download and access<a class="headerlink" href="#cru-data-download-and-access" title="Link to this heading">¶</a></h1>
 <p>Monthly average precipitation averaged over land, from station gauge measurements, are available from <a class="reference external" href="https://crudata.uea.ac.uk/cru/data/hrg/">CRU</a>.</p>
 <p>We can download the data from the awesome <a class="reference external" href="https://cds.climate.copernicus.eu/cdsapp#!/home">Copernicus Climate Data Store</a></p>
 <p>Script to do the whole download (about 6Gb). Only downloads data where it is not already on disc.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
-<span class="c1"># Get monthly CRU in-situ precip for several years, and store on SCRATCH.</span>
+<span class="c1"># Get monthly CRU in-situ precip for several years, and store on PDIR.</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--startyear&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1901</span><span class="p">)</span>
@@ -60,7 +60,7 @@
     <span class="n">opfile</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/CRU/in-situ/monthly/precipitation/</span><span class="si">%04d</span><span class="s2">/CRU_total_precipitation_mon_0.5x0.5_global_</span><span class="si">%04d</span><span class="s2">_v4.03.nc&quot;</span>
         <span class="o">%</span> <span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span>
             <span class="n">year</span><span class="p">,</span>
             <span class="n">year</span><span class="p">,</span>
         <span class="p">)</span>
@@ -75,17 +75,17 @@
 <span class="c1"># Retrieve CRU in-situ monthly averages.</span>
 <span class="c1">#  Every month in one year</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">cdsapi</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cdsapi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--year&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Year&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
     <span class="s2">&quot;--opdir&quot;</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Directory for output files&quot;</span><span class="p">,</span>
-    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/CRU/in-situ/monthly/precipitation&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span>
+    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/CRU/in-situ/monthly/precipitation&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 <span class="n">args</span><span class="o">.</span><span class="n">opdir</span> <span class="o">+=</span> <span class="s2">&quot;/</span><span class="si">%04d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="o">.</span><span class="n">year</span>
@@ -100,7 +100,7 @@
     <span class="s2">&quot;time_aggregation&quot;</span><span class="p">:</span> <span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
     <span class="s2">&quot;horizontal_aggregation&quot;</span><span class="p">:</span> <span class="s2">&quot;0_5_x_0_5&quot;</span><span class="p">,</span>
     <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%04d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
-    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;v4.03&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;v4_03&quot;</span><span class="p">,</span>
     <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;zip&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
@@ -120,9 +120,9 @@
 <p>Functions to access downloaded CRU data:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Functions to load CRU in-situ monthly data</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">iris</span>
-<span class="kn">import</span> <span class="nn">iris.coord_systems</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">iris</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">iris.coord_systems</span>
 
 <span class="c1"># Don&#39;t really understand this, but it gets rid of the error messages.</span>
 <span class="n">iris</span><span class="o">.</span><span class="n">FUTURE</span><span class="o">.</span><span class="n">datum_support</span> <span class="o">=</span> <span class="kc">True</span>
@@ -133,19 +133,19 @@
 
 
 <span class="c1"># And a function to add the coord system to a cube (in-place)</span>
-<span class="k">def</span> <span class="nf">add_coord_system</span><span class="p">(</span><span class="n">cbe</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_coord_system</span><span class="p">(</span><span class="n">cbe</span><span class="p">):</span>
     <span class="n">cbe</span><span class="o">.</span><span class="n">coord</span><span class="p">(</span><span class="s2">&quot;latitude&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coord_system</span> <span class="o">=</span> <span class="n">CRU_CMS</span>
     <span class="n">cbe</span><span class="o">.</span><span class="n">coord</span><span class="p">(</span><span class="s2">&quot;longitude&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coord_system</span> <span class="o">=</span> <span class="n">CRU_CMS</span>
 
 
-<span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">year</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">month</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Year and month must be specified&quot;</span><span class="p">)</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/CRU/in-situ/monthly/precipitation/</span><span class="si">%04d</span><span class="s2">/&quot;</span>
         <span class="o">+</span> <span class="s2">&quot;CRU_total_precipitation_mon_0.5x0.5_global_</span><span class="si">%04d</span><span class="s2">_v4.03.nc&quot;</span>
     <span class="p">)</span> <span class="o">%</span> <span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span>
         <span class="n">year</span><span class="p">,</span>
         <span class="n">year</span><span class="p">,</span>
     <span class="p">)</span>
@@ -168,17 +168,26 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/MLP.webp" alt="Logo"/>
+              <img class="logo" src="../_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
             </a></p>
 <h3><a href="../index.html">Table of Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../get_data.html">Monthly datasets of historical precipitation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../normalization/index.html">Normalizing the data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualizations/index.html">Visualizations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils/index.html">Utility functions for plotting and re-gridding</a></li>
@@ -200,7 +209,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">

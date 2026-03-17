@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Estimate normalization parameters for CRU data &#8212; Machine Learning for Precipitation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css?v=34905f61" />
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Check normalization of CRU data" href="validate_for_month.html" />
-    <link rel="prev" title="Check gamma distributions for CRU data" href="validate_for_points.html" /> 
+    <link rel="prev" title="Assemble CRU raw data into a set of tf.tensors" href="make_raw_tensors.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -26,7 +26,7 @@
           <a href="validate_for_month.html" title="Check normalization of CRU data"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="validate_for_points.html" title="Check gamma distributions for CRU data"
+          <a href="make_raw_tensors.html" title="Assemble CRU raw data into a set of tf.tensors"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ML for Precipitation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Normalization</a> &#187;</li>
@@ -41,11 +41,12 @@
           <div class="body" role="main">
             
   <section id="estimate-normalization-parameters-for-cru-data">
-<h1>Estimate normalization parameters for CRU data<a class="headerlink" href="#estimate-normalization-parameters-for-cru-data" title="Permalink to this heading">¶</a></h1>
+<h1>Estimate normalization parameters for CRU data<a class="headerlink" href="#estimate-normalization-parameters-for-cru-data" title="Link to this heading">¶</a></h1>
 <figure class="align-center" id="id1" style="width: 95%">
-<a class="reference internal image-reference" href="../../_images/gamma2.png"><img alt="../../_images/gamma2.png" src="../../_images/gamma2.png" style="width: 65%;" /></a>
+<a class="reference internal image-reference" href="../normalize/SPI_monthly/CRU_tf_MM/gamma.png"><img alt="../normalize/SPI_monthly/CRU_tf_MM/gamma.png" src="../normalize/SPI_monthly/CRU_tf_MM/gamma.png" style="width: 65%;" />
+</a>
 <figcaption>
-<p><span class="caption-text">Fitted gamma distribution parameters for CRU precipitation. Top: location, centre: shape, bottom: scale.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Fitted gamma distribution parameters for CRU precipitation. Top: location, centre: shape, bottom: scale.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Script to make normalization parameters for one calendar month. Takes arguments <cite>–month</cite>, <cite>-variable</cite>, <cite>–startyear</cite>, and <cite>–endyear</cite>:</p>
@@ -53,16 +54,21 @@
 
 <span class="c1"># Find optimum gamma parameters by fitting to the data moments</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">iris</span>
-<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">grids</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">iris</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">grids</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">makeDataset</span> <span class="kn">import</span> <span class="n">getDataset</span>
+<span class="c1"># Supress TensorFlow moaning about cuda - we don&#39;t need a GPU for this</span>
+<span class="c1"># Also the warning message confuses people.</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;3&quot;</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">makeDataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">getDataset</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--month&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Month to fit&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -77,7 +83,7 @@
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
     <span class="s2">&quot;--opdir&quot;</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Directory for output files&quot;</span><span class="p">,</span>
-    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/normalization/SPI_monthly/CRU_tf_MM/precip&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span>
+    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/normalization/SPI_monthly/CRU_tf_MM/precip&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 <span class="n">opdir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">opdir</span>
@@ -175,45 +181,61 @@
 <p>The data are taken from the <cite>tf.tensor</cite> datasets of raw data created during the normalization process. Functions to present these as <cite>tf.data.DataSets</cite>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create raw data dataset for normalization</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zarr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorstore</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ts</span>
 
 
-<span class="c1"># Load a pre-prepared tensor from a file</span>
-<span class="k">def</span> <span class="nf">load_tensor</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
-    <span class="n">sict</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
-    <span class="n">imt</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">parse_tensor</span><span class="p">(</span><span class="n">sict</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-    <span class="n">imt</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">imt</span><span class="p">,</span> <span class="p">[</span><span class="mi">721</span><span class="p">,</span> <span class="mi">1440</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">imt</span>
+<span class="c1"># Get a dataset</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">getDataset</span><span class="p">(</span>
+    <span class="n">startyear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">endyear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">blur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
 
+    <span class="c1"># Get the index of the last month in the raw tensors</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/raw_datasets/CRU/in_situ/precipitation_zarr&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),)</span>
+    <span class="n">zarr_array</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">AvailableMonths</span> <span class="o">=</span> <span class="n">zarr_array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;AvailableMonths&quot;</span><span class="p">]</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">AvailableMonths</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">startyear</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">date</span> <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">dates</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="n">startyear</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">endyear</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">date</span> <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">dates</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">endyear</span><span class="p">]</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">AvailableMonths</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">dates</span><span class="p">]</span>
 
-<span class="c1"># Get a list of filenames containing tensors</span>
-<span class="k">def</span> <span class="nf">getFileNames</span><span class="p">(</span><span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span> <span class="n">endyear</span><span class="o">=</span><span class="mi">2050</span><span class="p">):</span>
-    <span class="n">inFiles</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/raw_datasets/CRU/precip&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">))</span>
+    <span class="c1"># Create TensorFlow Dataset object from the source file dates</span>
+    <span class="n">tn_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">string</span><span class="p">))</span>
+    <span class="n">ts_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span>
+
+    <span class="c1"># Convert from list ofavailable months to Dataset of source file contents</span>
+    <span class="n">tsa</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;driver&quot;</span><span class="p">:</span> <span class="s2">&quot;zarr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;kvstore&quot;</span><span class="p">:</span> <span class="s2">&quot;file://&quot;</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+    <span class="c1"># Need the indirect function as zarr can&#39;t take tensor indices and .map prohibits .numpy()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_tensor_from_index_py</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">tsa</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">idx</span><span class="o">.</span><span class="n">numpy</span><span class="p">()]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">result</span><span class="p">(),</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_tensor_from_index</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">py_function</span><span class="p">(</span>
+            <span class="n">load_tensor_from_index_py</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">[</span><span class="mi">721</span><span class="p">,</span> <span class="mi">1440</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="n">ts_data</span> <span class="o">=</span> <span class="n">ts_data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+        <span class="n">load_tensor_from_index</span><span class="p">,</span> <span class="n">num_parallel_calls</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">AUTOTUNE</span>
     <span class="p">)</span>
-    <span class="n">inFiles</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">fn</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">inFiles</span> <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">fn</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="n">startyear</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">fn</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">endyear</span><span class="p">)</span>
-    <span class="p">]</span>
-    <span class="k">return</span> <span class="n">inFiles</span>
-
-
-<span class="c1"># Get a dataset - all the tensors for a given and variable</span>
-<span class="k">def</span> <span class="nf">getDataset</span><span class="p">(</span><span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span> <span class="n">endyear</span><span class="o">=</span><span class="mi">2050</span><span class="p">,</span> <span class="n">blur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="c1"># Get a list of years to include</span>
-    <span class="n">inFiles</span> <span class="o">=</span> <span class="n">getFileNames</span><span class="p">(</span><span class="n">startyear</span><span class="o">=</span><span class="n">startyear</span><span class="p">,</span> <span class="n">endyear</span><span class="o">=</span><span class="n">endyear</span><span class="p">)</span>
-
-    <span class="c1"># Create TensorFlow Dataset object from the source file names</span>
-    <span class="n">tn_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">inFiles</span><span class="p">))</span>
-
-    <span class="c1"># Convert from list of file names to Dataset of source file contents</span>
-    <span class="n">fnFiles</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/raw_datasets/CRU/precip/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">inFiles</span>
-    <span class="p">]</span>
-    <span class="n">ts_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">fnFiles</span><span class="p">))</span>
-    <span class="n">ts_data</span> <span class="o">=</span> <span class="n">ts_data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">load_tensor</span><span class="p">,</span> <span class="n">num_parallel_calls</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">AUTOTUNE</span><span class="p">)</span>
     <span class="c1"># Add noise to data - needed for some cases where the data is all zero</span>
     <span class="k">if</span> <span class="n">blur</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ts_data</span> <span class="o">=</span> <span class="n">ts_data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
@@ -240,20 +262,20 @@
 <span class="c1"># Plot maps of the three parameters in the gamma normalization fit</span>
 <span class="c1"># For a specified month - shape, location, and scale.</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">iris</span>
-<span class="kn">import</span> <span class="nn">iris.time</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">iris</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">iris.time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">plots</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">plots</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib</span>
-<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_agg</span> <span class="kn">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
-<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
-<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.backends.backend_agg</span><span class="w"> </span><span class="kn">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
 
-<span class="kn">import</span> <span class="nn">cmocean</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cmocean</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -263,16 +285,16 @@
 
 <span class="c1"># Load the fitted values</span>
 <span class="n">shape</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">load_cube</span><span class="p">(</span>
-    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/normalization/SPI_monthly/CRU_tf_MM/precip/shape_m</span><span class="si">%02d</span><span class="s2">.nc&quot;</span>
-    <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">),</span>
+    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/normalization/SPI_monthly/CRU_tf_MM/precip/shape_m</span><span class="si">%02d</span><span class="s2">.nc&quot;</span>
+    <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">location</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">load_cube</span><span class="p">(</span>
-    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/normalization/SPI_monthly/CRU_tf_MM/precip/location_m</span><span class="si">%02d</span><span class="s2">.nc&quot;</span>
-    <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">),</span>
+    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/normalization/SPI_monthly/CRU_tf_MM/precip/location_m</span><span class="si">%02d</span><span class="s2">.nc&quot;</span>
+    <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">scale</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">load_cube</span><span class="p">(</span>
-    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/normalization/SPI_monthly/CRU_tf_MM/precip/scale_m</span><span class="si">%02d</span><span class="s2">.nc&quot;</span>
-    <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">),</span>
+    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/normalization/SPI_monthly/CRU_tf_MM/precip/scale_m</span><span class="si">%02d</span><span class="s2">.nc&quot;</span>
+    <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">),</span>
 <span class="p">)</span>
 
 <span class="c1"># Make the plot</span>
@@ -289,7 +311,7 @@
 <span class="n">canvas</span> <span class="o">=</span> <span class="n">FigureCanvas</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
 <span class="n">font</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;family&quot;</span><span class="p">:</span> <span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sans-serif&quot;</span><span class="p">:</span> <span class="s2">&quot;Arial&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sans-serif&quot;</span><span class="p">:</span> <span class="s2">&quot;DejaVu Sans&quot;</span><span class="p">,</span>
     <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="s2">&quot;normal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
 <span class="p">}</span>
@@ -348,7 +370,7 @@
     <span class="n">shape_img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_shape_cb</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;vertical&quot;</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="mf">1.0</span>
 <span class="p">)</span>
 
-<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;gamma.png&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;outputs/gamma.webp&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -358,14 +380,22 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/MLP.webp" alt="Logo"/>
+              <img class="logo" src="../../_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
             </a></p>
 <h3><a href="../../index.html">Table of Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get_data.html">Monthly datasets of historical precipitation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../get_data/index.html">Selecting, downloading, and handling the data</a></li>
@@ -391,7 +421,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -401,7 +431,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
           <a href="validate_for_month.html" title="Check normalization of CRU data"
              >next</a> |</li>
         <li class="right" >
-          <a href="validate_for_points.html" title="Check gamma distributions for CRU data"
+          <a href="make_raw_tensors.html" title="Assemble CRU raw data into a set of tf.tensors"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ML for Precipitation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Normalization</a> &#187;</li>

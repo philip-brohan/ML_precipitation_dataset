@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Machine Learning for Precipitation Datasets &#8212; Machine Learning for Precipitation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
+    <title>A Homogenized Precipitation Dataset &#8212; Machine Learning for Precipitation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css?v=34905f61" />
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Get the data to be used" href="get_data/index.html" /> 
+    <link rel="next" title="Fitting a decision-tree model with XGBoost" href="fit_model.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="get_data/index.html" title="Get the data to be used"
+          <a href="fit_model.html" title="Fitting a decision-tree model with XGBoost"
              accesskey="N">next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">ML for Precipitation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Machine Learning for Precipitation Datasets</a></li> 
+        <li class="nav-item nav-item-this"><a href="">A Homogenized Precipitation Dataset</a></li> 
       </ul>
     </div>  
 
@@ -34,69 +34,97 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="machine-learning-for-precipitation-datasets">
-<h1>Machine Learning for Precipitation Datasets<a class="headerlink" href="#machine-learning-for-precipitation-datasets" title="Permalink to this heading">¶</a></h1>
+  <section id="a-homogenized-precipitation-dataset">
+<h1>A Homogenized Precipitation Dataset<a class="headerlink" href="#a-homogenized-precipitation-dataset" title="Link to this heading">¶</a></h1>
 <p>Precipitation is a difficult variable.</p>
-<p>It’s not normally distributed, it has low space and time covariance, it’s very sensitive to orography (and so to data resolution), and its magnitude varies dramatically between regions and seasons. This means that the various different gridded historical datasets appear very different from one another:</p>
-<figure class="align-center" id="id1" style="width: 100%">
-<a class="reference internal image-reference" href="_images/raw_precip.png"><img alt="_images/raw_precip.png" src="_images/raw_precip.png" style="width: 95%;" /></a>
-<figcaption>
-<p><span class="caption-text">Precipitation distribution for March 1983 from 5 datasets. (<a class="reference internal" href="visualizations/multi_field_raw_precip.html"><span class="doc">Details</span></a>)</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<p>These show precipitation for one month from five different historical datasets (with different data sources, coverage, processing and resolution). They are all plotted on the same scale, and they all use <a class="reference external" href="https://matplotlib.org/cmocean/#balance">the same red-blue diverging colourmap</a>. (If you are wondering where the red is - look closely at the tropical cyclone just off Madagascar). They are clearly similar, but they are not the same, and it’s not immediately clear how to quantitatively compare them</p>
-<p>With temperature datasets, it’s useful to estimate a global mean from each and compare the time-series (<a class="reference external" href="https://climate.metoffice.cloud/temperature.html">Example</a>). This works less well for precipitation:</p>
-<figure class="align-center" id="id2" style="width: 100%">
-<a class="reference internal image-reference" href="_images/precipitation_039.png"><img alt="_images/precipitation_039.png" src="_images/precipitation_039.png" style="width: 75%;" /></a>
-<figcaption>
-<p><span class="caption-text">Global mean monthly mean precipitation time-series from five datasets (with 39-month smoothing). (<a class="reference internal" href="visualizations/multi_field_raw_precip.html"><span class="doc">Details</span></a>)</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<p>There are major differences in mean, annual cycle, decadal variability and long-term trends between the datasets. Partly this is a difference in coverage - because precipitation is so much higher in the tropics, the datasets with the best coverage there have the highest global mean. But it’s also a difference in the way the data is processed and interpolated.</p>
-<p>To fully understand historical precipitation and its uncertainties, we need to build a consensus between these datasets. We need to understand where the differences are just artefacts of processing, and where they are real differences in the underlying data. We need to understand how to combine these datasets to get the best estimate of the true precipitation, and how to estimate the uncertainty in that estimate. To do this we must model the datasets and their differences, and modern machine learning (ML) offers an ideal toolkit for this: ML is ideally suited to modelling complex, non-linear relationships between variables.</p>
-<p>Here we are going to model <a class="reference internal" href="get_data/index.html"><span class="doc">five different gridded datasets of historical monthly average precipitation</span></a>. We will model not only the precipitation, but also other variables (sea-surface temperature, 2m temperature, and sea-level pressure).</p>
-<p>In order to model the data, we need to start by normalizing it. ML models work best when the data is normally distributed, and when the variables are on the same scale. We will use a normalization scheme based on the <a class="reference external" href="https://climatedataguide.ucar.edu/climate-data/standardized-precipitation-index-spi">Standardized Precipitation Index (SPI)</a>. SPI is calculated by fitting a <a class="reference external" href="https://en.wikipedia.org/wiki/Gamma_distribution">gamma distribution</a> to the precipitation data and then, for each point to be normalized, finding the quantile of the data point in that gamma distribution, and replacing the data point with the value which has the same quantile in a standard normal. Effectively this transforms the data, from its original distribution, to a standard normal distribution. (<a class="reference internal" href="normalization/index.html"><span class="doc">Details</span></a>).</p>
-<figure class="align-center" id="id3" style="width: 100%">
-<a class="reference internal image-reference" href="_images/monthly1.png"><img alt="_images/monthly1.png" src="_images/monthly1.png" style="width: 95%;" /></a>
-<figcaption>
-<p><span class="caption-text">Effect of normalization on precipitation data. Top fields are raw precipitation from ERA5, bottom fields are the same data after normalization. (<a class="reference internal" href="normalization/ERA5/validate_for_month.html"><span class="doc">Details</span></a>)</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<p>Normalization not only makes the data more suitable for ML, it also makes it easier to compare the datasets. The normalized data is on the same scale, and has the same distribution, so we can directly compare the five different datasets:</p>
-<figure class="align-center" id="id4" style="width: 100%">
-<a class="reference internal image-reference" href="_images/normalized_precip.png"><img alt="_images/normalized_precip.png" src="_images/normalized_precip.png" style="width: 95%;" /></a>
-<figcaption>
-<p><span class="caption-text">Normalized precipitation distribution for March 1983 from 5 datasets. (<a class="reference internal" href="visualizations/multi_field_normalized_precip.html"><span class="doc">Details</span></a>)</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<p>And the global mean time-series can now also be meaningfully compared:</p>
-<figure class="align-center" id="id5" style="width: 100%">
-<a class="reference internal image-reference" href="_images/precipitation_0391.png"><img alt="_images/precipitation_0391.png" src="_images/precipitation_0391.png" style="width: 95%;" /></a>
-<figcaption>
-<p><span class="caption-text">Global mean normalized precipitation time-series from five datasets (with 39-month smoothing). (<a class="reference internal" href="visualizations/normalized_precipitation_time_series.html"><span class="doc">Details</span></a>)</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<p>We can now see a clear consensus between the datasets over the effect of global warming, as well as large differences in the shorter-term variability. Many of these large differences can be confidently attributed to known inhomogeneities. This can be seen even more clearly by making latitude-time ‘stripes’ plots, modelled after the <a class="reference external" href="http://brohan.org/Stripes/">generalized temperature stripes</a>.</p>
-<figure class="align-center" id="id6" style="width: 100%">
-<a class="reference internal image-reference" href="_images/total_precipitation_sample_11x13.png"><img alt="_images/total_precipitation_sample_11x13.png" src="_images/total_precipitation_sample_11x13.png" style="width: 95%;" /></a>
-<figcaption>
-<p><span class="caption-text">Normalized precipitation stripes from ERA5 (with 11x13 smoothing). (<a class="reference internal" href="visualizations/precipitation_stripes.html"><span class="doc">Details</span></a>)</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<p>The stripes for ERA5 show the sudden and dramatic increase in precipitation in about 1980, concentrated in the Southern Hemisphere (where conventional observations are scarce). This is surely an inhomogeneity introduced by the introduction of satellite data. The <a class="reference internal" href="visualizations/precipitation_stripes.html"><span class="doc">stripes for the other datasets</span></a> show similar features, but with different magnitudes and timings.</p>
-<p>To quantify the inhomogeneities, we need to model the data. We will follow <a class="reference external" href="http://brohan.org/Proxy_20CR/">previous work</a> by building a Deep Convolutional Variational Autoencoder (DCVAE) to model the data. This model is a neural network which learns to compress the data into a small number of latent variables, and then reconstruct the data from those variables. The model is trained to minimize the difference between the input and output data, and to maximize the difference between the latent variables and a standard normal distribution. This means that the model learns to compress the data into the most important features, and to ignore the noise. The model can then be used to generate new data, to interpolate between data points, and to identify inhomogeneities.</p>
-<p>A key difference from previous work is that we need to be very flexible in what we model. We will want to model single precipitation datasets (for data assimilation, and inhomogeneity detection), multiple precipitation datasets (to quantify their consistency), and even combinations of precipitation, temperature, and pressure (to use inter-variable consistency as a check on precipitation changes). To handle this we will build a <a class="reference internal" href="ML_generic/index.html"><span class="doc">generic ML model</span></a> which can be easily adapted to different datasets and different variables.</p>
+<p>It’s not normally distributed, it has low space and time covariance, it’s very sensitive to orography (and so to data resolution), and its magnitude varies dramatically between regions and seasons. So let’s start from something easier - near-surface temperature anomaly, simply expressed:</p>
 <figure class="align-center" id="id7" style="width: 100%">
-<a class="reference internal image-reference" href="_images/comparison.webp"><img alt="_images/comparison.webp" src="_images/comparison.webp" style="width: 95%;" /></a>
+<a class="reference internal image-reference" href="https://brohan.org/Stripes/_images/HadCRUT5.png"><img alt="https://brohan.org/Stripes/_images/HadCRUT5.png" src="https://brohan.org/Stripes/_images/HadCRUT5.png" style="width: 95%;" />
+</a>
 <figcaption>
-<p><span class="caption-text">Validation plot for the generic model applied to three variables from ERA5.
-Left column: Target, centre column: Model output, right column:scatter plot. (<a class="reference internal" href="ML_generic/validation.html"><span class="doc">Details</span></a>)</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Traditional <a class="reference external" href="https://en.wikipedia.org/wiki/Warming_stripes/">climate stripes</a> - global-mean, annual-mean temperature anomalies (w.r.t. 1961-90) from the HadCRUT5 dataset. (<a class="reference external" href="https://brohan.org/Stripes/">Figure source</a>).</span><a class="headerlink" href="#id7" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>The model is trained on the normalized data, and works well at representing it.</p>
-<p>[To be continued].</p>
+<p>This is clear and powerful, but not very informative. It doesn’t show the spatial or seasonal structure of the data, and it doesn’t show any of the uncertainty or give insight into possible biases. To look at the data in more detail we can use the <a class="reference external" href="https://brohan.org/Stripes">Extended Stripes</a>:</p>
+<figure class="align-center" id="id8" style="width: 100%">
+<a class="reference internal image-reference" href="https://brohan.org/Stripes/_images/HadCRUT5_sample_3x3.png"><img alt="https://brohan.org/Stripes/_images/HadCRUT5_sample_3x3.png" src="https://brohan.org/Stripes/_images/HadCRUT5_sample_3x3.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Monthly temperature anomalies (w.r.t. 1961-90) from the HadCRUT5 dataset after regridding to a 0.25 degree latitude resolution. The vertical axis is latitude (South Pole at the bottom, North Pole at the top), and each pixel is from a randomly selected longitude and ensemble member. Grey areas show regions where HadCRUT5 has no data. (<a class="reference external" href="https://brohan.org/Stripes/comparisons2.html">Figure source</a>).</span><a class="headerlink" href="#id8" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>This version has sacrificed the beautiful simplicity of the original stripes, but it is <em>enormously</em> more informative. It shows the spatial and seasonal structure of the data, and it shows the places where observations are unavailable (the grey areas). This is starting to be useful for dataset construction and evaluation, but it’s still a bit noisy - in the extratropics there is a lot of high-frequency weather-driven variability, which makes it hard to see the underlying climate signal and any possible biases present. To get around this, one approach is to quantile-normalise the data before making the plot:</p>
+<figure class="align-center" id="id9" style="width: 100%">
+<a class="reference internal image-reference" href="_images/HadCRUT_normalized_stripes_T_sample_11x13.webp"><img alt="_images/HadCRUT_normalized_stripes_T_sample_11x13.webp" src="_images/HadCRUT_normalized_stripes_T_sample_11x13.webp" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Same as the plot above, except that the data have been standardized to be normally distributed on the range 0-1 (approximately) at each grid-point, for each calendar month.  (<a class="reference internal" href="normalization/index.html"><span class="doc">Normalization process</span></a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/visualizations/stripes/HadCRUT">Figure source</a>). This image has a slightly different colour map and spatial smoothing to the one above, so it looks a little different, but the underlying data are the same.</span><a class="headerlink" href="#id9" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Standardized data has three advantages - interesting structure in the data stands out more clearly (for example the super-El-Nino of 1878, and the widespread cold period shortly after 1900), standardization is a requirement for modelling the data with Machine Learning tools, and we can make similar standardized plots from different base datasets, which makes it easier to compare them. And this brings us back to precipitation:</p>
+<figure class="align-center" id="id10" style="width: 100%">
+<a class="reference internal image-reference" href="_images/TWCR_normalized_stripes_PRATE_sample_11x13.webp"><img alt="_images/TWCR_normalized_stripes_PRATE_sample_11x13.webp" src="_images/TWCR_normalized_stripes_PRATE_sample_11x13.webp" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Same as the plot above, but for precipitation rate from the Twentieth Century Reanalysis (20CRv3) dataset. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/visualizations/stripes/TWCR">Figure source</a>).</span><a class="headerlink" href="#id10" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The challenges of working with precipitation are immediately apparent. In the temperature plot, the data are dominated by strong signals (global warming, ENSO, the Early-20th-Century warming) with some contamination from biases and noise (the widespread cold at the beginning of the 20th Century, for example, is likely bias). In the precipitation plot, some signal is visible (the late-20th Century moistening, some ENSO features, …) but most of the visible signal is bias - the strong drying in the south is almost certainly a reflection of a sea-ice bias in the HadISST dataset, which is used as a boundary condition in 20CRv3, and the tropical shifts in the 19th Century are probably a result of model bias in the reanalysis showing up in places where there are too few pressure observations to constrain the reanalysis properly. (I’m not sure whether the shifts in the far north are real or not).</p>
+<p>We can also see the problem of pervasive bias by comparing <a class="reference internal" href="get_data/index.html"><span class="doc">multiple precipitation datasets</span></a>:</p>
+<figure class="align-center" id="id11" style="width: 100%">
+<a class="reference internal image-reference" href="_images/time_series_nomodel_None_area_precipitation_039.webp"><img alt="_images/time_series_nomodel_None_area_precipitation_039.webp" src="_images/time_series_nomodel_None_area_precipitation_039.webp" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Global mean standardized precipitation rate from a range of datasets, including reanalyses, gridded observations, and a satellite-based dataset. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/visualizations/time_series/precipitation">Figure source</a>).</span><a class="headerlink" href="#id11" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id12" style="width: 100%">
+<a class="reference internal image-reference" href="_images/time_series_nomodel_Europe_area_precipitation_039.webp"><img alt="_images/time_series_nomodel_Europe_area_precipitation_039.webp" src="_images/time_series_nomodel_Europe_area_precipitation_039.webp" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Same as the figure above, but a mean over the European region (35-65N, 15W-30E) instead of the global mean.</span><a class="headerlink" href="#id12" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id13" style="width: 100%">
+<a class="reference internal image-reference" href="_images/XGBoost.png"><img alt="_images/XGBoost.png" src="_images/XGBoost.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">A decision tree model can be trained to estimate precipitation from relatively reliable surface fields.</span><a class="headerlink" href="#id13" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id14" style="width: 100%">
+<a class="reference internal image-reference" href="_images/time_series_TWCR_to_TWCR_None_area_013.webp"><img alt="_images/time_series_TWCR_to_TWCR_None_area_013.webp" src="_images/time_series_TWCR_to_TWCR_None_area_013.webp" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Global mean standardized precipitation rate from 20CRv3, and as calculated from a decision tree model (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/time_series">Figure source</a>).</span><a class="headerlink" href="#id14" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+</div>
+<figure class="align-center" id="id15" style="width: 100%">
+<a class="reference internal image-reference" href="_images/time_series_TWCR_to_ERA5_None_area_013.webp"><img alt="_images/time_series_TWCR_to_ERA5_None_area_013.webp" src="_images/time_series_TWCR_to_ERA5_None_area_013.webp" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Same as the plot above, but using a model trained to predict ERA5 precipitation using 20CRv3 temperature, pressure, wind and humidity (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/time_series">Figure source</a>).</span><a class="headerlink" href="#id15" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
+</ul>
+</div>
 <section id="appendices">
-<h2>Appendices<a class="headerlink" href="#appendices" title="Permalink to this heading">¶</a></h2>
+<h2>Appendices<a class="headerlink" href="#appendices" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="get_data/index.html">Selecting, downloading, and handling the data</a></li>
@@ -108,7 +136,7 @@ Left column: Target, centre column: Model output, right column:scatter plot. (<a
 </div>
 </section>
 <section id="small-print">
-<h2>Small print<a class="headerlink" href="#small-print" title="Permalink to this heading">¶</a></h2>
+<h2>Small print<a class="headerlink" href="#small-print" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="how_to.html">How to reproduce or extend this work</a></li>
@@ -124,12 +152,23 @@ Left column: Target, centre column: Model output, right column:scatter plot. (<a
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="#">
-              <img class="logo" src="_static/MLP.webp" alt="Logo"/>
+              <img class="logo" src="_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
             </a></p>
 <h3><a href="#">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
+</ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="get_data/index.html">Selecting, downloading, and handling the data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization/index.html">Normalizing the data</a></li>
@@ -154,17 +193,17 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="get_data/index.html" title="Get the data to be used"
+          <a href="fit_model.html" title="Fitting a decision-tree model with XGBoost"
              >next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">ML for Precipitation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Machine Learning for Precipitation Datasets</a></li> 
+        <li class="nav-item nav-item-this"><a href="">A Homogenized Precipitation Dataset</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

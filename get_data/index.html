@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Get the data to be used &#8212; Machine Learning for Precipitation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css?v=34905f61" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="ERA5 data download and access" href="ERA5.html" />
-    <link rel="prev" title="Monthly DataSets of Historical Precipitation" href="../get_data.html" /> 
+    <link rel="prev" title="XGBoost model of ERA5 precipitation from TWCR surface variables" href="../xgb_model_fits/TWCR_to_ERA5.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -26,7 +26,7 @@
           <a href="ERA5.html" title="ERA5 data download and access"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../get_data.html" title="Monthly DataSets of Historical Precipitation"
+          <a href="../xgb_model_fits/TWCR_to_ERA5.html" title="XGBoost model of ERA5 precipitation from TWCR surface variables"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Get the data to be used</a></li> 
@@ -39,7 +39,7 @@
           <div class="body" role="main">
             
   <section id="get-the-data-to-be-used">
-<h1>Get the data to be used<a class="headerlink" href="#get-the-data-to-be-used" title="Permalink to this heading">¶</a></h1>
+<h1>Get the data to be used<a class="headerlink" href="#get-the-data-to-be-used" title="Link to this heading">¶</a></h1>
 <p>We are interested in historical monthly average precipitation over long timescales (decades to centuries). So we are going to look at various different sources of such data:</p>
 <ul>
 <li><dl>
@@ -86,7 +86,7 @@
 </ul>
 </div>
 <p>Convenience script to download all the data:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/bash</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 
 <span class="c1"># Run all the data downloads</span>
 
@@ -106,8 +106,6 @@
 <span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;GPCC: &#39;</span>
 <span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;In-situ, &#39;</span>
 <span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period</span><span class="o">.</span><span class="n">py</span> <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">echo</span> <span class="s1">&#39;Satellite&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC</span><span class="o">/</span><span class="n">with_satellite</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period</span><span class="o">.</span><span class="n">py</span> <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;Copernicus: &#39;</span>
 <span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;Microwave, &#39;</span>
@@ -135,14 +133,22 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/MLP.webp" alt="Logo"/>
+              <img class="logo" src="../_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
             </a></p>
 <h3><a href="../index.html">Table of Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../get_data.html">Monthly datasets of historical precipitation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Selecting, downloading, and handling the data</a></li>
@@ -168,7 +174,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -178,7 +184,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
           <a href="ERA5.html" title="ERA5 data download and access"
              >next</a> |</li>
         <li class="right" >
-          <a href="../get_data.html" title="Monthly DataSets of Historical Precipitation"
+          <a href="../xgb_model_fits/TWCR_to_ERA5.html" title="XGBoost model of ERA5 precipitation from TWCR surface variables"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Get the data to be used</a></li> 

@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Normalizing GPCP &#8212; Machine Learning for Precipitation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css?v=34905f61" />
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Assemble GPCP raw data into a set of tf.tensors" href="make_raw_tensors.html" />
     <link rel="prev" title="Assemble GPCC normalized data into a set of tf.tensors" href="../GPCC/make_normalized_tensors.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,11 +40,12 @@
           <div class="body" role="main">
             
   <section id="normalizing-gpcp">
-<h1>Normalizing GPCP<a class="headerlink" href="#normalizing-gpcp" title="Permalink to this heading">¶</a></h1>
+<h1>Normalizing GPCP<a class="headerlink" href="#normalizing-gpcp" title="Link to this heading">¶</a></h1>
 <figure class="align-center" id="id1" style="width: 95%">
-<a class="reference internal image-reference" href="../../_images/monthly4.png"><img alt="../../_images/monthly4.png" src="../../_images/monthly4.png" style="width: 95%;" /></a>
+<a class="reference internal image-reference" href="../normalize/SPI_monthly/GPCP_tf_MM/monthly.png"><img alt="../normalize/SPI_monthly/GPCP_tf_MM/monthly.png" src="../normalize/SPI_monthly/GPCP_tf_MM/monthly.png" style="width: 95%;" />
+</a>
 <figcaption>
-<p><span class="caption-text">Raw precipitation (top) and normalized equivalent (bottom) for a month.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Raw precipitation (top) and normalized equivalent (bottom) for a month.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <div class="toctree-wrapper compound">
@@ -60,14 +61,14 @@
 
 <span class="c1"># Make all the normalization fits</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="n">sDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">is_done</span><span class="p">(</span><span class="n">month</span><span class="p">):</span>
-    <span class="n">fn</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/normalization/SPI_monthly/GPCP_tf_MM/blended/shape_m</span><span class="si">%02d</span><span class="s2">.nc&quot;</span> <span class="o">%</span> <span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_done</span><span class="p">(</span><span class="n">month</span><span class="p">):</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/normalization/SPI_monthly/GPCP_tf_MM/blended/shape_m</span><span class="si">%02d</span><span class="s2">.nc&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span>
         <span class="n">month</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
@@ -78,7 +79,7 @@
 <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">is_done</span><span class="p">(</span><span class="n">month</span><span class="p">):</span>
         <span class="k">continue</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/fit_for_month.py --month=</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/fit_for_month.py --month=</span><span class="si">%02d</span><span class="s2"> --startyear=1950 --endyear=2014&quot;</span> <span class="o">%</span> <span class="p">(</span>
         <span class="n">sDir</span><span class="p">,</span>
         <span class="n">month</span><span class="p">,</span>
     <span class="p">)</span>
@@ -92,14 +93,22 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/MLP.webp" alt="Logo"/>
+              <img class="logo" src="../../_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
             </a></p>
 <h3><a href="../../index.html">Table of Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get_data.html">Monthly datasets of historical precipitation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../get_data/index.html">Selecting, downloading, and handling the data</a></li>
@@ -125,7 +134,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">

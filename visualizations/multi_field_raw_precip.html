@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Visualizations - multi-field raw precipitation &#8212; Machine Learning for Precipitation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css?v=34905f61" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Visualizations - multi-field normalized precipitation" href="multi_field_normalized_precip.html" />
     <link rel="prev" title="Visualizations" href="index.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,11 +40,12 @@
           <div class="body" role="main">
             
   <section id="visualizations-multi-field-raw-precipitation">
-<h1>Visualizations - multi-field raw precipitation<a class="headerlink" href="#visualizations-multi-field-raw-precipitation" title="Permalink to this heading">¶</a></h1>
+<h1>Visualizations - multi-field raw precipitation<a class="headerlink" href="#visualizations-multi-field-raw-precipitation" title="Link to this heading">¶</a></h1>
 <figure class="align-center" id="id1" style="width: 95%">
-<a class="reference internal image-reference" href="../_images/raw_precip.png"><img alt="../_images/raw_precip.png" src="../_images/raw_precip.png" style="width: 95%;" /></a>
+<a class="reference internal image-reference" href="../_images/raw_precip.png"><img alt="../_images/raw_precip.png" src="../_images/raw_precip.png" style="width: 95%;" />
+</a>
 <figcaption>
-<p><span class="caption-text">Fields of raw precipitation, from the different datasets, for an individual month.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Fields of raw precipitation, from the different datasets, for an individual month.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Script (<cite>plot_fields.py</cite>) to plot comparisons of the precipitation for a month from the different datasets. Takes arguments <cite>–year</cite> and <cite>–month</cite> to specify the month to plot.</p>
@@ -52,30 +53,30 @@
 
 <span class="c1"># Get the same field from all the datasets and plot the comparison</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">make_raw_tensors.ERA5.tensor_utils</span> <span class="kn">import</span> <span class="n">tensor_to_cube</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">make_raw_tensors.ERA5.tensor_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor_to_cube</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib</span>
-<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_agg</span> <span class="kn">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
-<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
-<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.backends.backend_agg</span><span class="w"> </span><span class="kn">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
 
 <span class="c1"># I don&#39;t need all the messages about a missing font (on Isambard)</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;matplotlib.font_manager&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
 
-<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">plots</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">plots</span>
 
-<span class="kn">import</span> <span class="nn">cmocean</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cmocean</span>
 
 <span class="n">sDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
 <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -89,7 +90,7 @@
 
 
 <span class="c1"># Go through data and get the desired month</span>
-<span class="k">def</span> <span class="nf">get_month</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_month</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
         <span class="n">dateStr</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
         <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dateStr</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
@@ -102,7 +103,7 @@
 <span class="c1"># Go through the raw sources and get the desired month from each</span>
 <span class="n">rawMonths</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="c1"># ERA5</span>
-<span class="kn">from</span> <span class="nn">visualizations.raw_time_series.precipitation</span> <span class="kn">import</span> <span class="n">ERA5Dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">visualizations.raw_time_series.precipitation</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERA5Dataset</span>
 
 <span class="n">rawDS</span> <span class="o">=</span> <span class="n">ERA5Dataset</span><span class="o">.</span><span class="n">getDataset</span><span class="p">(</span>
     <span class="s2">&quot;total_precipitation&quot;</span><span class="p">,</span>
@@ -113,7 +114,7 @@
 <span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">rawMonths</span><span class="p">[</span><span class="s2">&quot;ERA5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_month</span><span class="p">(</span><span class="n">rawDS</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
 <span class="c1"># TWCR</span>
-<span class="kn">from</span> <span class="nn">visualizations.raw_time_series.precipitation</span> <span class="kn">import</span> <span class="n">TWCRDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">visualizations.raw_time_series.precipitation</span><span class="w"> </span><span class="kn">import</span> <span class="n">TWCRDataset</span>
 
 <span class="n">rawDS</span> <span class="o">=</span> <span class="n">TWCRDataset</span><span class="o">.</span><span class="n">getDataset</span><span class="p">(</span>
     <span class="s2">&quot;PRATE&quot;</span><span class="p">,</span>
@@ -124,7 +125,7 @@
 <span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">rawMonths</span><span class="p">[</span><span class="s2">&quot;TWCR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_month</span><span class="p">(</span><span class="n">rawDS</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
 <span class="c1"># CRU</span>
-<span class="kn">from</span> <span class="nn">visualizations.raw_time_series.precipitation</span> <span class="kn">import</span> <span class="n">CRUDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">visualizations.raw_time_series.precipitation</span><span class="w"> </span><span class="kn">import</span> <span class="n">CRUDataset</span>
 
 <span class="n">rawDS</span> <span class="o">=</span> <span class="n">CRUDataset</span><span class="o">.</span><span class="n">getDataset</span><span class="p">(</span>
     <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span>
@@ -134,7 +135,7 @@
 <span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">rawMonths</span><span class="p">[</span><span class="s2">&quot;CRU&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_month</span><span class="p">(</span><span class="n">rawDS</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
 <span class="c1"># GPCC_in-situ</span>
-<span class="kn">from</span> <span class="nn">visualizations.raw_time_series.precipitation</span> <span class="kn">import</span> <span class="n">GPCC_in_situDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">visualizations.raw_time_series.precipitation</span><span class="w"> </span><span class="kn">import</span> <span class="n">GPCC_in_situDataset</span>
 
 <span class="n">rawDS</span> <span class="o">=</span> <span class="n">GPCC_in_situDataset</span><span class="o">.</span><span class="n">getDataset</span><span class="p">(</span>
     <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span>
@@ -144,7 +145,7 @@
 <span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">rawMonths</span><span class="p">[</span><span class="s2">&quot;GPCC_in-situ&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_month</span><span class="p">(</span><span class="n">rawDS</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
 <span class="c1"># GPCP</span>
-<span class="kn">from</span> <span class="nn">visualizations.raw_time_series.precipitation</span> <span class="kn">import</span> <span class="n">GPCPDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">visualizations.raw_time_series.precipitation</span><span class="w"> </span><span class="kn">import</span> <span class="n">GPCPDataset</span>
 
 <span class="n">rawDS</span> <span class="o">=</span> <span class="n">GPCPDataset</span><span class="o">.</span><span class="n">getDataset</span><span class="p">(</span>
     <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span>
@@ -233,14 +234,22 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/MLP.webp" alt="Logo"/>
+              <img class="logo" src="../_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
             </a></p>
 <h3><a href="../index.html">Table of Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../get_data.html">Monthly datasets of historical precipitation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../get_data/index.html">Selecting, downloading, and handling the data</a></li>
@@ -266,7 +275,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">

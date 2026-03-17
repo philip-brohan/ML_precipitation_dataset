@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Visualizations - raw precipitation time-series &#8212; Machine Learning for Precipitation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css?v=34905f61" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Visualizations - normalized temperature time-series" href="normalized_temperature_time_series.html" />
     <link rel="prev" title="Visualizations - multi-field normalized precipitation" href="multi_field_normalized_precip.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,17 +40,19 @@
           <div class="body" role="main">
             
   <section id="visualizations-raw-precipitation-time-series">
-<h1>Visualizations - raw precipitation time-series<a class="headerlink" href="#visualizations-raw-precipitation-time-series" title="Permalink to this heading">¶</a></h1>
+<h1>Visualizations - raw precipitation time-series<a class="headerlink" href="#visualizations-raw-precipitation-time-series" title="Link to this heading">¶</a></h1>
 <figure class="align-center" id="id1" style="width: 95%">
-<a class="reference internal image-reference" href="../_images/precipitation_001.png"><img alt="../_images/precipitation_001.png" src="../_images/precipitation_001.png" style="width: 95%;" /></a>
+<a class="reference internal image-reference" href="../_images/precipitation_001.png"><img alt="../_images/precipitation_001.png" src="../_images/precipitation_001.png" style="width: 95%;" />
+</a>
 <figcaption>
-<p><span class="caption-text">Global mean raw precipitation time-series. No smoothing.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Global mean raw precipitation time-series. No smoothing.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id2" style="width: 95%">
-<a class="reference internal image-reference" href="../_images/precipitation_039.png"><img alt="../_images/precipitation_039.png" src="../_images/precipitation_039.png" style="width: 95%;" /></a>
+<a class="reference internal image-reference" href="../_images/precipitation_039.png"><img alt="../_images/precipitation_039.png" src="../_images/precipitation_039.png" style="width: 95%;" />
+</a>
 <figcaption>
-<p><span class="caption-text">Same, but smoothed with a 39-month running mean.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Same, but smoothed with a 39-month running mean.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Script (<cite>get_series.py</cite>) collects the global means.</p>
@@ -58,16 +60,16 @@
 
 <span class="c1"># Get global mean series of normalized values and store as pickle</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 
 <span class="n">sDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
 <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -79,7 +81,7 @@
 <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
 <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;ERA5&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">ERA5Dataset</span> <span class="kn">import</span> <span class="n">getDataset</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ERA5Dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">getDataset</span>
 
     <span class="n">trainingData</span> <span class="o">=</span> <span class="n">getDataset</span><span class="p">(</span>
         <span class="s2">&quot;total_precipitation&quot;</span><span class="p">,</span>
@@ -89,7 +91,7 @@
         <span class="n">blur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;TWCR&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">TWCRDataset</span> <span class="kn">import</span> <span class="n">getDataset</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">TWCRDataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">getDataset</span>
 
     <span class="n">trainingData</span> <span class="o">=</span> <span class="n">getDataset</span><span class="p">(</span>
         <span class="s2">&quot;PRATE&quot;</span><span class="p">,</span>
@@ -99,7 +101,7 @@
         <span class="n">blur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;CRU&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">CRUDataset</span> <span class="kn">import</span> <span class="n">getDataset</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">CRUDataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">getDataset</span>
 
     <span class="n">trainingData</span> <span class="o">=</span> <span class="n">getDataset</span><span class="p">(</span>
         <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span>
@@ -108,7 +110,7 @@
         <span class="n">blur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;GPCC_in-situ&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">GPCC_in_situDataset</span> <span class="kn">import</span> <span class="n">getDataset</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">GPCC_in_situDataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">getDataset</span>
 
     <span class="n">trainingData</span> <span class="o">=</span> <span class="n">getDataset</span><span class="p">(</span>
         <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span>
@@ -117,7 +119,7 @@
         <span class="n">blur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;GPCP&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">GPCPDataset</span> <span class="kn">import</span> <span class="n">getDataset</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">GPCPDataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">getDataset</span>
 
     <span class="n">trainingData</span> <span class="o">=</span> <span class="n">getDataset</span><span class="p">(</span>
         <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span>
@@ -162,25 +164,25 @@
 
 <span class="c1"># Plot normalized time-series</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">astropy.convolution</span> <span class="kn">import</span> <span class="n">convolve</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.convolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">convolve</span>
 
 <span class="n">sDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib</span>
-<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_agg</span> <span class="kn">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
-<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
-<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
-<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.backends.backend_agg</span><span class="w"> </span><span class="kn">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
 
 <span class="c1"># I don&#39;t need all the messages about a missing font</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;matplotlib.font_manager&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -278,7 +280,7 @@
 <span class="n">ax_ts</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">plot_var</span><span class="p">(</span><span class="n">ndata</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_var</span><span class="p">(</span><span class="n">ndata</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
     <span class="n">ts</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">t</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">dk</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ndata</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
@@ -315,7 +317,7 @@
         <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Only label once per dataset</span>
 
 
-<span class="k">def</span> <span class="nf">csmooth</span><span class="p">(</span><span class="n">nmonths</span><span class="p">,</span> <span class="n">ndata</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">csmooth</span><span class="p">(</span><span class="n">nmonths</span><span class="p">,</span> <span class="n">ndata</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">nmonths</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Want residual from smoothing</span>
         <span class="n">n2</span> <span class="o">=</span> <span class="n">csmooth</span><span class="p">(</span><span class="n">nmonths</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ndata</span> <span class="o">-</span> <span class="n">n2</span> <span class="o">+</span> <span class="mf">0.5</span>
@@ -343,12 +345,12 @@
 <p>The data are taken from the <cite>tf.tensor</cite> datasets of raw data created during the normalization process. There is a separate script for each dataset to present these as <cite>tf.data.DataSets</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create raw ERA5 dataset for analysis</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
 
 
 <span class="c1"># Load a pre-prepared tensor from a file</span>
-<span class="k">def</span> <span class="nf">load_tensor</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_tensor</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
     <span class="n">sict</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
     <span class="n">imt</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">parse_tensor</span><span class="p">(</span><span class="n">sict</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
     <span class="n">imt</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">imt</span><span class="p">,</span> <span class="p">[</span><span class="mi">721</span><span class="p">,</span> <span class="mi">1440</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
@@ -356,9 +358,9 @@
 
 
 <span class="c1"># Get a list of filenames containing tensors</span>
-<span class="k">def</span> <span class="nf">getFileNames</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span> <span class="n">endyear</span><span class="o">=</span><span class="mi">2050</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">getFileNames</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span> <span class="n">endyear</span><span class="o">=</span><span class="mi">2050</span><span class="p">):</span>
     <span class="n">inFiles</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/raw_datasets/ERA5/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span> <span class="n">variable</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/raw_datasets/ERA5/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span> <span class="n">variable</span><span class="p">))</span>
     <span class="p">)</span>
     <span class="n">inFiles</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">fn</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">inFiles</span> <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">fn</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="n">startyear</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">fn</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">endyear</span><span class="p">)</span>
@@ -367,7 +369,7 @@
 
 
 <span class="c1"># Get a dataset - all the tensors for a given and variable</span>
-<span class="k">def</span> <span class="nf">getDataset</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span> <span class="n">endyear</span><span class="o">=</span><span class="mi">2050</span><span class="p">,</span> <span class="n">blur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">getDataset</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">startyear</span><span class="o">=</span><span class="mi">1850</span><span class="p">,</span> <span class="n">endyear</span><span class="o">=</span><span class="mi">2050</span><span class="p">,</span> <span class="n">blur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="c1"># Get a list of years to include</span>
     <span class="n">inFiles</span> <span class="o">=</span> <span class="n">getFileNames</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">startyear</span><span class="o">=</span><span class="n">startyear</span><span class="p">,</span> <span class="n">endyear</span><span class="o">=</span><span class="n">endyear</span><span class="p">)</span>
 
@@ -376,7 +378,7 @@
 
     <span class="c1"># Convert from list of file names to Dataset of source file contents</span>
     <span class="n">fnFiles</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/raw_datasets/ERA5/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCRATCH&quot;</span><span class="p">),</span> <span class="n">variable</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/MLP/raw_datasets/ERA5/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PDIR&quot;</span><span class="p">),</span> <span class="n">variable</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">inFiles</span>
     <span class="p">]</span>
     <span class="n">ts_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">fnFiles</span><span class="p">))</span>
@@ -408,17 +410,26 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/MLP.webp" alt="Logo"/>
+              <img class="logo" src="../_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
             </a></p>
 <h3><a href="../index.html">Table of Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../get_data.html">Monthly datasets of historical precipitation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../normalization/index.html">Normalizing the data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Visualizations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils/index.html">Utility functions for plotting and re-gridding</a></li>
@@ -440,7 +451,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">

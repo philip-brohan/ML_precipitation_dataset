@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Fitting a decision-tree model with XGBoost &#8212; Machine Learning for Precipitation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css?v=34905f61" />
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Fitting an XGBoost model to the TWCR data" href="xgb_model_fits/TWCR_to_TWCR.html" />
+    <link rel="prev" title="A Homogenized Precipitation Dataset" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="xgb_model_fits/TWCR_to_TWCR.html" title="Fitting an XGBoost model to the TWCR data"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="A Homogenized Precipitation Dataset"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ML for Precipitation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Fitting a decision-tree model with XGBoost</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="fitting-a-decision-tree-model-with-xgboost">
+<h1>Fitting a decision-tree model with XGBoost<a class="headerlink" href="#fitting-a-decision-tree-model-with-xgboost" title="Link to this heading">¶</a></h1>
+<p>The script fits an XGBoost regression model. The settings below describe the hyperparameters passed to XGBoost and the cross‑validation choices used to select the number of boosting rounds, together with the effect of changing each setting.</p>
+<section id="hyperparameters">
+<h2>Hyperparameters<a class="headerlink" href="#hyperparameters" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">objective</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">reg:squarederror</span></code></p></li>
+<li><p>Effect: Determines the loss optimized during training. Changing the objective (for example to a robust regression loss or a classification objective) changes what the model learns and can improve robustness to outliers or change the task.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">booster</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">gbtree</span></code></p></li>
+<li><p>Effect: Chooses the model family. <code class="docutils literal notranslate"><span class="pre">gbtree</span></code> builds decision trees and captures non‑linear interactions; <code class="docutils literal notranslate"><span class="pre">gblinear</span></code> fits a linear model that is faster for very high‑dimensional sparse data but cannot model non‑linear relationships.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">eta</span></code> (learning rate)</dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">0.1</span></code></p></li>
+<li><p>Effect: Controls the step size at each boosting round. Smaller values (e.g. <code class="docutils literal notranslate"><span class="pre">0.01</span></code>) slow convergence and generally improve generalization (but require more rounds); larger values (e.g. <code class="docutils literal notranslate"><span class="pre">0.3</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>) speed training but increase risk of unstable convergence and overfitting.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">max_depth</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">10</span></code></p></li>
+<li><p>Effect: Maximum depth of each tree. Increasing depth allows modeling more complex interactions but raises overfitting risk; decreasing depth regularizes the model and reduces variance.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">subsample</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">0.8</span></code></p></li>
+<li><p>Effect: Fraction of training rows sampled per tree. Lower values add randomness, reduce overfitting and tree correlation, but increase bias; <code class="docutils literal notranslate"><span class="pre">1.0</span></code> disables row subsampling.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">colsample_bytree</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">0.8</span></code></p></li>
+<li><p>Effect: Fraction of features sampled per tree. Lower values reduce feature correlation across trees and help generalization when many features are irrelevant; higher values reduce bias but can increase overfitting.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">min_child_weight</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">50</span></code></p></li>
+<li><p>Effect: Minimum sum of instance weights (roughly a minimum leaf sample size). Larger values make trees more conservative (fewer, larger leaves) and reduce overfitting; smaller values allow small leaves and finer fits, increasing overfit risk on noisy data.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">lambda</span></code> (L2 regularization)</dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">5.0</span></code></p></li>
+<li><p>Effect: L2 penalty on leaf weights. Larger values smooth predictions, reduce variance and combat overfitting; very large values can cause underfitting.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">alpha</span></code> (L1 regularization)</dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p>Effect: L1 penalty on leaf weights. Encourages sparsity in learned weights and can improve robustness; increasing <code class="docutils literal notranslate"><span class="pre">alpha</span></code> increases sparsity and regularization.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">seed</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">42</span></code></p></li>
+<li><p>Effect: Controls randomness (fold splits, sampling). Changing the seed yields different stochastic realizations; keep it fixed for reproducibility or vary it for ensembles.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">verbosity</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p>Effect: Controls logging level. <code class="docutils literal notranslate"><span class="pre">0</span></code> is silent; higher values print more training diagnostics.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">tree_method</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">hist</span></code></p></li>
+<li><p>Effect: Chooses the tree construction algorithm. <code class="docutils literal notranslate"><span class="pre">hist</span></code> is efficient on CPU for large datasets; <code class="docutils literal notranslate"><span class="pre">gpu_hist</span></code> enables GPU acceleration if available; <code class="docutils literal notranslate"><span class="pre">exact</span></code> is more precise but much slower for large data.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>These hyperparameters trade off bias vs variance, speed vs accuracy, and CPU vs GPU usage. They interact: for example, reducing <code class="docutils literal notranslate"><span class="pre">eta</span></code> typically requires increasing allowed boosting rounds; stronger regularization (larger <code class="docutils literal notranslate"><span class="pre">lambda</span></code>/<code class="docutils literal notranslate"><span class="pre">alpha</span></code> or higher <code class="docutils literal notranslate"><span class="pre">min_child_weight</span></code>) permits deeper trees without as much overfitting.</p>
+</section>
+<section id="crossvalidation-specification">
+<h2>Cross‑validation specification<a class="headerlink" href="#crossvalidation-specification" title="Link to this heading">¶</a></h2>
+<p>The script runs <code class="docutils literal notranslate"><span class="pre">xgboost.cv</span></code> on the training DMatrix to select the number of boosting rounds. Each option below is taken from the script and the effect of changing it is noted.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">params</span></code> (passed through)</dt><dd><ul class="simple">
+<li><p>The same parameter dictionary used for training is used inside each CV fold; changing those parameters changes the learner behaviour and the CV‑estimated optimal number of rounds.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">num_boost_round</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">2000</span></code></p></li>
+<li><p>Effect: Upper bound on boosting rounds considered by CV. Larger values allow more rounds (useful with small <code class="docutils literal notranslate"><span class="pre">eta</span></code>) but increase compute; with early stopping this acts as a safe maximum.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">nfold</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">5</span></code></p></li>
+<li><p>Effect: Number of CV folds. Increasing <code class="docutils literal notranslate"><span class="pre">nfold</span></code> (e.g. to 10) gives a more stable generalization estimate but multiplies compute; decreasing <code class="docutils literal notranslate"><span class="pre">nfold</span></code> speeds CV but reduces reliability. For temporally correlated data, standard k‑fold can leak information—use blocked or grouped CV instead.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metrics</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">(&quot;rmse&quot;,)</span></code></p></li>
+<li><p>Effect: Metric(s) used to evaluate performance on each fold. Changing the metric (for example to MAE) changes which model/rounds are selected; pick a metric aligned with modeling goals.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">20</span></code></p></li>
+<li><p>Effect: Number of rounds without improvement on the test metric before CV stops. Larger values are more patient but cost more compute; smaller values stop earlier and save compute but risk premature stopping due to noise.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">as_pandas</span></code></dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p>Effect: Returns CV results as a pandas DataFrame for easy inspection; setting <code class="docutils literal notranslate"><span class="pre">False</span></code> returns a dict.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">seed</span></code> (for CV)</dt><dd><ul class="simple">
+<li><p>Current: <code class="docutils literal notranslate"><span class="pre">42</span></code></p></li>
+<li><p>Effect: Controls randomness in fold assignment and sampling. Changing it yields different fold splits and possibly different best rounds.</p></li>
+</ul>
+</dd>
+<dt>CV result handling</dt><dd><ul class="simple">
+<li><p>The script sets <code class="docutils literal notranslate"><span class="pre">best_rounds</span> <span class="pre">=</span> <span class="pre">int(cvres[&quot;test-rmse-mean&quot;].idxmin()</span> <span class="pre">+</span> <span class="pre">1)</span></code>.</p></li>
+<li><p>Effect: Chooses the boosting round index with minimum test RMSE mean (zero‑based index + 1) for final training. You may prefer a more conservative selection (for example adding a safety margin or using a one‑standard‑error rule).</p></li>
+</ul>
+</dd>
+<dt>Notes and trade‑offs</dt><dd><ul class="simple">
+<li><p>CV gives an empirical choice of boosting rounds but increases computational cost versus a single validation set.</p></li>
+<li><p>For time‑series or grouped data, use CV schemes that prevent leakage (time blocks, group folds) or use a held‑out validation set respecting the data structure.</p></li>
+<li><p>Hyperparameter changes interact with CV: e.g. smaller <code class="docutils literal notranslate"><span class="pre">eta</span></code> increases required rounds and CV cost; stronger regularization often reduces the optimal number of rounds.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
+            </a></p>
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ERA5_homogeneity.html">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization/index.html">Normalizing the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualizations/index.html">Visualizations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">Utility functions for plotting and re-gridding</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="how_to.html">How to reproduce or extend this work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Authors and acknowledgements</a></li>
+</ul>
+<h3><a href="https://github.com/philip-brohan/ML_precipitation_dataset">Get a copy</a></h3>
+
+<ul>
+    <li><a href="https://github.com/philip-brohan/ML_precipitation_dataset" rel="nofollow">Github repository</a></li>
+</ul>
+
+<h3>Found a bug, or have a suggestion?</h3>
+
+Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues/new">raise an issue</a>.
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="xgb_model_fits/TWCR_to_TWCR.html" title="Fitting an XGBoost model to the TWCR data"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="A Homogenized Precipitation Dataset"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ML for Precipitation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Fitting a decision-tree model with XGBoost</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    </div>
+  </body>
+</html>

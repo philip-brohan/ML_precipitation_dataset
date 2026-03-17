@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>How homogenous is ERA5? &#8212; Machine Learning for Precipitation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css?v=34905f61" />
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="XGBoost model of ERA5 precipitation from TWCR surface variables" href="xgb_model_fits/TWCR_to_ERA5.html" />
+    <link rel="prev" title="How homogenous is 20CRv3?" href="20CRv3_homogeneity.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="xgb_model_fits/TWCR_to_ERA5.html" title="XGBoost model of ERA5 precipitation from TWCR surface variables"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="20CRv3_homogeneity.html" title="How homogenous is 20CRv3?"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ML for Precipitation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">How homogenous is ERA5?</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="how-homogenous-is-era5">
+<h1>How homogenous is ERA5?<a class="headerlink" href="#how-homogenous-is-era5" title="Link to this heading">¶</a></h1>
+<section id="total-precipitation">
+<h2>Total precipitation<a class="headerlink" href="#total-precipitation" title="Link to this heading">¶</a></h2>
+<figure class="align-center" style="width: 100%">
+<a class="reference internal image-reference" href="_images/total_precipitation.webp"><img alt="_images/total_precipitation.webp" src="_images/total_precipitation.webp" style="width: 95%;" />
+</a>
+</figure>
+</section>
+<section id="m-temperature">
+<h2>2m temperature<a class="headerlink" href="#m-temperature" title="Link to this heading">¶</a></h2>
+<figure class="align-center" style="width: 100%">
+<a class="reference internal image-reference" href="_images/2m_temperature.webp"><img alt="_images/2m_temperature.webp" src="_images/2m_temperature.webp" style="width: 95%;" />
+</a>
+</figure>
+</section>
+<section id="mean-sea-level-pressure">
+<h2>Mean sea level pressure<a class="headerlink" href="#mean-sea-level-pressure" title="Link to this heading">¶</a></h2>
+<figure class="align-center" style="width: 100%">
+<a class="reference internal image-reference" href="_images/mean_sea_level_pressure.webp"><img alt="_images/mean_sea_level_pressure.webp" src="_images/mean_sea_level_pressure.webp" style="width: 95%;" />
+</a>
+</figure>
+</section>
+<section id="m-u-component-of-wind">
+<h2>10m u component of wind<a class="headerlink" href="#m-u-component-of-wind" title="Link to this heading">¶</a></h2>
+<figure class="align-center" style="width: 100%">
+<a class="reference internal image-reference" href="_images/10m_u_component_of_wind.webp"><img alt="_images/10m_u_component_of_wind.webp" src="_images/10m_u_component_of_wind.webp" style="width: 95%;" />
+</a>
+</figure>
+</section>
+<section id="m-v-component-of-wind">
+<h2>10m v component of wind<a class="headerlink" href="#m-v-component-of-wind" title="Link to this heading">¶</a></h2>
+<figure class="align-center" style="width: 100%">
+<a class="reference internal image-reference" href="_images/10m_v_component_of_wind.webp"><img alt="_images/10m_v_component_of_wind.webp" src="_images/10m_v_component_of_wind.webp" style="width: 95%;" />
+</a>
+</figure>
+</section>
+<section id="m-relative-humidity">
+<h2>2m relative humidity<a class="headerlink" href="#m-relative-humidity" title="Link to this heading">¶</a></h2>
+<figure class="align-center" style="width: 100%">
+<a class="reference internal image-reference" href="_images/2m_relative_humidity.webp"><img alt="_images/2m_relative_humidity.webp" src="_images/2m_relative_humidity.webp" style="width: 95%;" />
+</a>
+</figure>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
+            </a></p>
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fit_model.html">Details of the model specification and fitting process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="20CRv3_homogeneity.html">Inhomogeneities in the 20CRv3 surface fields</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Inhomogeneities in the ERA5 surface fields</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization/index.html">Normalizing the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualizations/index.html">Visualizations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">Utility functions for plotting and re-gridding</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="how_to.html">How to reproduce or extend this work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Authors and acknowledgements</a></li>
+</ul>
+<h3><a href="https://github.com/philip-brohan/ML_precipitation_dataset">Get a copy</a></h3>
+
+<ul>
+    <li><a href="https://github.com/philip-brohan/ML_precipitation_dataset" rel="nofollow">Github repository</a></li>
+</ul>
+
+<h3>Found a bug, or have a suggestion?</h3>
+
+Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues/new">raise an issue</a>.
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="xgb_model_fits/TWCR_to_ERA5.html" title="XGBoost model of ERA5 precipitation from TWCR surface variables"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="20CRv3_homogeneity.html" title="How homogenous is 20CRv3?"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ML for Precipitation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">How homogenous is ERA5?</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    </div>
+  </body>
+</html>
