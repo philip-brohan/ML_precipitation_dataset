@@ -236,6 +236,8 @@ else:
     ax_ts.legend(handles, labels, loc="upper left", ncol=6)
 
 ns = ""
+if args.nomodel:
+    ns = "nomodel_"
 if args.nosat:
     ns = "ns_"
 if args.spectrum:

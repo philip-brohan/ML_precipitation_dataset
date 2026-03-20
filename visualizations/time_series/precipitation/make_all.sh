@@ -33,12 +33,15 @@ $SCRIPT_DIR/plot_series.py --nmonths=1  --ymin=0.44 --ymax=0.55 --rchoice=area
 $SCRIPT_DIR/plot_series.py --nmonths=13 --ymin=0.475 --ymax=0.52 --rchoice=area
 $SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.48 --ymax=0.52 --rchoice=area
 $SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.48 --ymax=0.52 --rchoice=area --nosat
+$SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.48 --ymax=0.52 --rchoice=area --nomodel
 $SCRIPT_DIR/plot_series.py --nmonths=1  --ymin=0.44 --ymax=0.55 --rchoice=area --mask_file=CRU
 $SCRIPT_DIR/plot_series.py --nmonths=13 --ymin=0.475 --ymax=0.52 --rchoice=area --mask_file=CRU
 $SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.48 --ymax=0.535 --rchoice=area --mask_file=CRU
 $SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.48 --ymax=0.53 --rchoice=area --mask_file=CRU --nosat
+$SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.48 --ymax=0.53 --rchoice=area --mask_file=CRU --nomodel
 $SCRIPT_DIR/plot_series.py --nmonths=1  --ymin=0.2 --ymax=0.8 --rchoice=area --mask_file=Europe
 $SCRIPT_DIR/plot_series.py --nmonths=13 --ymin=0.42 --ymax=0.58 --rchoice=area --mask_file=Europe
 $SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.45 --ymax=0.55 --rchoice=area --mask_file=Europe
 $SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.45 --ymax=0.55 --rchoice=area --mask_file=Europe --nosat
+$SCRIPT_DIR/plot_series.py --nmonths=39 --ymin=0.45 --ymax=0.55 --rchoice=area --mask_file=Europe --nomodel
 
