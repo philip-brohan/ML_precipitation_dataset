@@ -39,6 +39,7 @@ parser.add_argument(
     required=True,
 )
 parser.add_argument("--no_pressure", action="store_true")
+parser.add_argument("--no_pressure_sd", action="store_true")
 parser.add_argument("--no_temperature", action="store_true")
 parser.add_argument("--no_uwind", action="store_true")
 parser.add_argument("--no_vwind", action="store_true")
@@ -130,6 +131,7 @@ source, target, feature_names = get_source_and_target(
     end_month=args.month,
     no_temperature=args.no_temperature,
     no_pressure=args.no_pressure,
+    no_pressure_sd=args.no_pressure_sd,
     no_uwind=args.no_uwind,
     no_vwind=args.no_vwind,
     no_humidity=args.no_humidity,

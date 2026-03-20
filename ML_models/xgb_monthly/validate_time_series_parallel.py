@@ -20,6 +20,7 @@ parser.add_argument(
     required=True,
 )
 parser.add_argument("--no_pressure", action="store_true")
+parser.add_argument("--no_pressure_sd", action="store_true")
 parser.add_argument("--no_temperature", action="store_true")
 parser.add_argument("--no_uwind", action="store_true")
 parser.add_argument("--no_vwind", action="store_true")
@@ -110,6 +111,8 @@ for year in range(args.start_year, args.end_year + 1):
             print("--mlabel=%s " % args.mlabel, end="")
             if args.no_pressure:
                 print("--no_pressure ", end="")
+            if args.no_pressure_sd:
+                print("--no_pressure_sd ", end="")
             if args.no_temperature:
                 print("--no_temperature ", end="")
             if args.no_uwind:
