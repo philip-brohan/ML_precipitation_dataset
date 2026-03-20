@@ -12,9 +12,7 @@
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Normalizing ERA5" href="ERA5/index.html" />
-    <link rel="prev" title="Land mask download" href="../get_data/land_mask.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -22,12 +20,6 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="ERA5/index.html" title="Normalizing ERA5"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="../get_data/land_mask.html" title="Land mask download"
-             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Normalization</a></li> 
       </ul>
@@ -40,103 +32,74 @@
             
   <section id="normalization">
 <h1>Normalization<a class="headerlink" href="#normalization" title="Link to this heading">¶</a></h1>
-<figure class="align-center" id="id1" style="width: 95%">
-<a class="reference internal image-reference" href="../normalize/SPI_monthly/ERA5_tf_MM/monthly.png"><img alt="../normalize/SPI_monthly/ERA5_tf_MM/monthly.png" src="../normalize/SPI_monthly/ERA5_tf_MM/monthly.png" style="width: 95%;" />
+<p>We are not going to analyse or model the raw precipitation data (in m/s). First, we’re going to normalize it.</p>
+<figure class="align-center" id="id17" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/normalisation_monthly_TWCR_PRATE.webp"><img alt="../_images/normalisation_monthly_TWCR_PRATE.webp" src="../_images/normalisation_monthly_TWCR_PRATE.webp" style="width: 95%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Raw ERA5 precipitation (top) and normalized equivalent (bottom) for one month.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Raw 20CRv3 precipitation (top) and normalized equivalent (bottom) for one month. The top panel is green where there is lots of precipitation, the bottom panel is green where there is more precipitation than expected for that location and time of year. The data are the same in the two cases, but the normalized data is more informative, spatially homogenous, and normally distributed - better for almost every purpose. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/normalize/SPI_monthly/TWCR_tf_MM/plot_distribution_monthly.py">Figure source</a>).</span><a class="headerlink" href="#id17" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
+<section id="why-normalize">
+<h2>Why normalize?<a class="headerlink" href="#why-normalize" title="Link to this heading">¶</a></h2>
+<p>Raw precipitation varies enormously between times and places. This makes it difficult to analyse and model, and to compare between times and places.</p>
+<figure class="align-center" id="id18" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/multi_field_raw_precip.png"><img alt="../_images/multi_field_raw_precip.png" src="../_images/multi_field_raw_precip.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Raw precipitation fields for one month from <a class="reference internal" href="../get_data/index.html"><span class="doc">five different datasets</span></a>. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/visualizations/multi-field/raw_precip/plot_fields.py">Figure source</a>). This image uses a standard red-blue colour scheme, but you’ll have to look closely to see the red pixels (there’s a tropical storm off Madagascar). The massive heterogeneity in the data makes it difficult to see much.</span><a class="headerlink" href="#id18" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Massive spatial heterogeneity also means that a global average is not very meaningful.</p>
+<figure class="align-center" id="id19" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/raw_time_series_precipitation_039.png"><img alt="../_images/raw_time_series_precipitation_039.png" src="../_images/raw_time_series_precipitation_039.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Global mean precipitation from the five datasets - smoothed with a 39-month running mean to make it easier to see the trends. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/visualizations/raw_time_series/precipitation/plot_series.py">Figure source</a>).</span><a class="headerlink" href="#id19" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>So before we do anything else, we normalize the data.</p>
 <p>The normalization scheme used is modelled on the <a class="reference external" href="https://climatedataguide.ucar.edu/climate-data/standardized-precipitation-index-spi">Standardized Precipitation Index (SPI)</a>. SPI is calculated by fitting a gamma distribution to the precipitation data and then, for each point to be normalized, finding the quantile of the data point in that gamma distribution, and replacing the data point with the value which has the same quantile in a standard normal. Effectively this transforms the data, from its original distribution to a standard normal distribution. A different gamma distribution is fitted for each calendar month, and for each grid point.</p>
-<p>SPI is designed for fitting precipitation data, but the scheme works for many variables, and we’ve used it to normalize temperature and pressure data as well.</p>
+<p>SPI is designed for fitting precipitation data, but the scheme works for many variables, and we’ve used it to normalize temperature, pressure, wind and humidity as well.</p>
 <p>The gamma distribution fitted is defined by three parameters: the shape, scale and location. The shape and scale are the parameters of the gamma distribution, and the location is the minimum value of the data. The shape and scale are the parameters which are used to calculate the quantile of the data point in the gamma distribution. The location is used to shift the data to the left, so that the gamma distribution can be used to model the data.</p>
-<p>Each dataset used in normalized independently:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ERA5/index.html"> ERA5</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TWCR/index.html"> 20CR</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CRU/index.html"> CRU</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GPCC/index.html"> GPCC</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GPCP/index.html"> GPCP</a></li>
+<p>So the Process of normalization is as follows:</p>
+<ul class="simple">
+<li><p>Assemble the raw data as <a class="reference external" href="https://zarr.dev/">zarr files</a> setup for efficient access as <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor">TensorFlow tf.tensors</a></p></li>
+<li><p>From the raw data, estimate the gamma distribution parameters for each calendar month and grid point.</p></li>
+<li><p>Use the fitted gamma distribution parameters to transform the raw data to normalized data, and assemble this as <code class="docutils literal notranslate"><span class="pre">zarr</span> <span class="pre">files</span></code> of <code class="docutils literal notranslate"><span class="pre">tf.tensors</span></code> for efficient access in analysis and modelling.</p></li>
 </ul>
-</div>
-<p>Script to make all the normalization parameters for all datasets:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-
-<span class="c1"># Make normalization constants for all the datasets</span>
-<span class="c1"># Requires pre-made raw tensors</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">CRU_tf_MM</span><span class="o">/</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC_tf_MM</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">HadCRUT_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">HadISST_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">GPCP_tf_MM</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_fits</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Precursor script to assemble the raw data as sets of <cite>tf.tensors</cite>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-
-<span class="c1"># Make all the raw tensors</span>
-<span class="c1"># Requires downloaded data</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">CRU</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="mi">2</span><span class="n">m_temperature</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">sea_surface_temperature</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">mean_sea_level_pressure</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">total_precipitation</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="mi">10</span><span class="n">m_u_component_of_wind</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="mi">10</span><span class="n">m_u_component_of_wind</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="mi">2</span><span class="n">m_dewpoint_temperature</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="mi">2</span><span class="n">m_relative_humidity</span><span class="p">)</span>
-
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl339</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">prate</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl340</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">prate</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl341</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">prate</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl339</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">t2m</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl340</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">t2m</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl341</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">t2m</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl339</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">prmsl</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl340</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">prmsl</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl341</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">prmsl</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl339</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">uwnd</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl340</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">uwnd</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl341</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">uwnd</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl339</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">vwnd</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl340</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">vwnd</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl341</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">vwnd</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl339</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">rh</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl340</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">rh</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GC5</span><span class="o">-</span><span class="n">Central</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">dl341</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">rh</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">TMP2m</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">SST</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">PRMSL</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">PRATE</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">UGRD10m</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">VGRD10m</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">variable</span><span class="o">=</span><span class="n">RH2m</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">HadCRUT</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">HadISST</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="p">(</span><span class="n">cd</span> <span class="n">GPCP</span><span class="o">/</span><span class="n">blended</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">make_all_tensors</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>Each dataset used is normalized independently:</p>
+<ul class="simple">
+<li><p>20CRv3: <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_raw_tensors/ERA5">Assemble raw data</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/normalize/SPI_monthly/ERA5_tf_MM">estimate normalisation parameters</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_normalized_tensors/ERA5_tf_MM">assemble normalized data</a>.</p></li>
+<li><p>ERA5: <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_raw_tensors/TWCR">Assemble raw data</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/normalize/SPI_monthly/TWCR_tf_MM">estimate normalisation parameters</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_normalized_tensors/TWCR_tf_MM">assemble normalized data</a>.</p></li>
+<li><p>CRU: <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_raw_tensors/CRU">Assemble raw data</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/normalize/SPI_monthly/CRU_tf_MM">estimate normalisation parameters</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_normalized_tensors/CRU_tf_MM">assemble normalized data</a>.</p></li>
+<li><p>GPCC: <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_raw_tensors/GPCC">Assemble raw data</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/normalize/SPI_monthly/GPCC_tf_MM">estimate normalisation parameters</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_normalized_tensors/GPCC_tf_MM">assemble normalized data</a>.</p></li>
+<li><p>GPCP: <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_raw_tensors/GPCP">Assemble raw data</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/normalize/SPI_monthly/GPCP_tf_MM">estimate normalisation parameters</a>, <a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_normalized_tensors/GPCP_tf_MM">assemble normalized data</a>.</p></li>
+</ul>
+<p>.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_raw_tensors/make_all_raw_tensors.sh">Script to assemble the raw data for all datasets</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/normalize/SPI_monthly/normalize_all.sh">Script to make all the normalization parameters for all datasets</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/make_normalized_tensors/make_all_normalized_tensors.sh">Script to assemble the normalized data for all datasets</a>.</p></li>
+</ul>
+</section>
+<section id="normalized-data">
+<h2>Normalized data<a class="headerlink" href="#normalized-data" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id20" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/multi_field_normalized_precip.png"><img alt="../_images/multi_field_normalized_precip.png" src="../_images/multi_field_normalized_precip.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Same figure as above, but showing the normalized precipitation fields. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/visualizations/multi-field/normalized_precip/plot_fields.py">Figure source</a>).</span><a class="headerlink" href="#id20" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id21" style="width: 95%">
+<a class="reference internal image-reference" href="../_images/time_series_nomodel_None_area_precipitation_039.webp"><img alt="../_images/time_series_nomodel_None_area_precipitation_039.webp" src="../_images/time_series_nomodel_None_area_precipitation_039.webp" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Same figure as above, but showing the global-average normalized precipitation time-series. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/tree/f30502ac9296f4b88c18562c1e635a4572b0c375/visualizations/time_series/precipitation">Figure source</a>).</span><a class="headerlink" href="#id21" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
 </section>
 
 
@@ -151,6 +114,9 @@
             </a></p>
 <h3><a href="../index.html">Table of Contents</a></h3>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_data/index.html">Selecting, downloading, and handling the data</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../fit_model.html">Details of the model specification and fitting process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
 </ul>
@@ -160,13 +126,6 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../get_data/index.html">Selecting, downloading, and handling the data</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Normalizing the data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../visualizations/index.html">Visualizations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../utils/index.html">Utility functions for plotting and re-gridding</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../how_to.html">How to reproduce or extend this work</a></li>
@@ -191,12 +150,6 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
-        <li class="right" >
-          <a href="ERA5/index.html" title="Normalizing ERA5"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="../get_data/land_mask.html" title="Land mask download"
-             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Normalization</a></li> 
       </ul>

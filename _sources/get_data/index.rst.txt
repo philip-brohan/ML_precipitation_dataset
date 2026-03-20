@@ -33,14 +33,9 @@ That gives us five different datasets, each with its own strengths and weaknesse
 
 We also want a land-sea mask (for plotting only). We will use a land-surface only variable from ERA5-land for this (we only need one month). If we needed it to model the data it would be necessary to choose a land-mask that matched the data resolution and grid, but for plotting purposes we can use anything.
 
-.. toctree::
-   :titlesonly:
-   :maxdepth: 1
+* Download the land mask <https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/get_data/land_mask/get_land_mask_from_ERA5_land.py>`_.
 
-   Download the land mask <land_mask>
+* `Convenience script to download all the data <https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/get_data/download_all_data.sh>`_.
 
-Convenience script to download all the data:
-
-.. literalinclude:: ../../get_data/download_all_data.sh
 
 

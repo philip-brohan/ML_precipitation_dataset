@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="ERA5 data download and access" href="ERA5.html" />
-    <link rel="prev" title="XGBoost model of ERA5 precipitation from TWCR surface variables" href="../xgb_model_fits/TWCR_to_ERA5.html" /> 
+    <link rel="prev" title="A Homogenized Precipitation Dataset" href="../index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -26,7 +26,7 @@
           <a href="ERA5.html" title="ERA5 data download and access"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../xgb_model_fits/TWCR_to_ERA5.html" title="XGBoost model of ERA5 precipitation from TWCR surface variables"
+          <a href="../index.html" title="A Homogenized Precipitation Dataset"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Get the data to be used</a></li> 
@@ -80,52 +80,10 @@
 </ul>
 </div>
 <p>We also want a land-sea mask (for plotting only). We will use a land-surface only variable from ERA5-land for this (we only need one month). If we needed it to model the data it would be necessary to choose a land-mask that matched the data resolution and grid, but for plotting purposes we can use anything.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="land_mask.html">Download the land mask</a></li>
+<ul class="simple">
+<li><p>Download the land mask &lt;<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/get_data/land_mask/get_land_mask_from_ERA5_land.py">https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/get_data/land_mask/get_land_mask_from_ERA5_land.py</a>&gt;`_.</p></li>
+<li><p><a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/get_data/download_all_data.sh">Convenience script to download all the data</a>.</p></li>
 </ul>
-</div>
-<p>Convenience script to download all the data:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-
-<span class="c1"># Run all the data downloads</span>
-
-<span class="n">echo</span> <span class="s1">&#39;CMORPH&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">CMORPH</span><span class="o">/</span><span class="n">satellite</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period</span><span class="o">.</span><span class="n">py</span>  <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="s1">&#39;CRU&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">CRU</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period</span><span class="o">.</span><span class="n">py</span> <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="s1">&#39;ERA5&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">ERA5</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period_ERA5</span><span class="o">.</span><span class="n">py</span> <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="s1">&#39;TWCR&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period</span><span class="o">.</span><span class="n">py</span> <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">TWCR</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_land_mask</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;GPCC: &#39;</span>
-<span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;In-situ, &#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">GPCC</span><span class="o">/</span><span class="n">in_situ</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period</span><span class="o">.</span><span class="n">py</span> <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;Copernicus: &#39;</span>
-<span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;Microwave, &#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">Copernicus</span><span class="o">/</span><span class="n">satellite_microwave</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period</span><span class="o">.</span><span class="n">py</span> <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">echo</span> <span class="s1">&#39;Land observations&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="o">./</span><span class="n">Copernicus</span><span class="o">/</span><span class="n">land_surface_observations</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data_for_period</span><span class="o">.</span><span class="n">py</span> <span class="o">|</span> <span class="n">parallel</span> <span class="o">-</span><span class="n">j</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;HadCRUT&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">HadCRUT</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_members</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;HadISST&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">HadISST</span><span class="o">/</span><span class="n">v1</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_data</span><span class="o">.</span><span class="n">sh</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;GPCP&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">GPCP</span><span class="o">/</span><span class="n">blended</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_means</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-
-<span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s1">&#39;land mask&#39;</span>
-<span class="p">(</span><span class="n">cd</span> <span class="n">land_mask</span> <span class="o">&amp;&amp;</span> <span class="o">./</span><span class="n">get_land_mask_from_ERA5_land</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-</pre></div>
-</div>
 </section>
 
 
@@ -139,6 +97,9 @@
               <img class="logo" src="../_static/MLP.webp" alt="Logo of Machine Learning for Precipitation"/>
             </a></p>
 <h3><a href="../index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Selecting, downloading, and handling the data</a></li>
+</ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../fit_model.html">Details of the model specification and fitting process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
@@ -149,13 +110,6 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../xgb_model_fits/TWCR_to_ERA5.html">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Selecting, downloading, and handling the data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../normalization/index.html">Normalizing the data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../visualizations/index.html">Visualizations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../utils/index.html">Utility functions for plotting and re-gridding</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../how_to.html">How to reproduce or extend this work</a></li>
@@ -184,7 +138,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
           <a href="ERA5.html" title="ERA5 data download and access"
              >next</a> |</li>
         <li class="right" >
-          <a href="../xgb_model_fits/TWCR_to_ERA5.html" title="XGBoost model of ERA5 precipitation from TWCR surface variables"
+          <a href="../index.html" title="A Homogenized Precipitation Dataset"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">ML for Precipitation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Get the data to be used</a></li> 

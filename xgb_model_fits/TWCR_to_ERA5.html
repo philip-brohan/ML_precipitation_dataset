@@ -13,7 +13,7 @@
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Get the data to be used" href="../get_data/index.html" />
+    <link rel="next" title="How to reproduce and extend this work" href="../how_to.html" />
     <link rel="prev" title="How homogenous is ERA5?" href="../ERA5_homogeneity.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
@@ -23,7 +23,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../get_data/index.html" title="Get the data to be used"
+          <a href="../how_to.html" title="How to reproduce and extend this work"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../ERA5_homogeneity.html" title="How homogenous is ERA5?"
@@ -41,14 +41,14 @@
   <section id="xgboost-model-of-era5-precipitation-from-twcr-surface-variables">
 <h1>XGBoost model of ERA5 precipitation from TWCR surface variables<a class="headerlink" href="#xgboost-model-of-era5-precipitation-from-twcr-surface-variables" title="Link to this heading">¶</a></h1>
 <figure class="align-center" id="id4" style="width: 100%">
-<a class="reference internal image-reference" href="../_images/test_train1.webp"><img alt="../_images/test_train1.webp" src="../_images/test_train1.webp" style="width: 95%;" />
+<a class="reference internal image-reference" href="../_images/test_train.webp"><img alt="../_images/test_train.webp" src="../_images/test_train.webp" style="width: 95%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Validation plots for an XGBoost model trained to predict precipitation from a set of surface variables (temperature, humidity, pressure, latitude, longitude, calendar month). Left scatter plot shows performance on the training dataset, right scatter plot shows performance on the test dataset. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/validate_2.py">Figure source</a>).</span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id5" style="width: 100%">
-<a class="reference internal image-reference" href="../_images/monthly1.webp"><img alt="../_images/monthly1.webp" src="../_images/monthly1.webp" style="width: 95%;" />
+<a class="reference internal image-reference" href="../_images/monthly.webp"><img alt="../_images/monthly.webp" src="../_images/monthly.webp" style="width: 95%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Precipitation field for one month as reconstructed by the model. (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/validate_month.py">Figure source</a>).</span><a class="headerlink" href="#id5" title="Link to this image">¶</a></p>
@@ -62,7 +62,7 @@
 </figcaption>
 </figure>
 <figure class="align-center" id="id7" style="width: 100%">
-<a class="reference internal image-reference" href="../_images/3_stripes_sample_11x131.webp"><img alt="../_images/3_stripes_sample_11x131.webp" src="../_images/3_stripes_sample_11x131.webp" style="width: 95%;" />
+<a class="reference internal image-reference" href="../_images/3_stripes_sample_11x13.webp"><img alt="../_images/3_stripes_sample_11x13.webp" src="../_images/3_stripes_sample_11x13.webp" style="width: 95%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Extended-stripes plots of precipitation. Top row - target (ERA5 precipitation), middle row - model prediction, bottom row - difference (<a class="reference external" href="https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/stripes/stripes_triple.py">Figure source</a>).</span><a class="headerlink" href="#id7" title="Link to this image">¶</a></p>
@@ -82,6 +82,9 @@
             </a></p>
 <h3><a href="../index.html">Table of Contents</a></h3>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_data/index.html">Selecting, downloading, and handling the data</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../fit_model.html">Details of the model specification and fitting process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TWCR_to_TWCR.html">Validation of the model fit with 20CRv3 data</a></li>
 </ul>
@@ -91,13 +94,6 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Validation of the model fit to ERA5 precipitation using 20CRv3 surface variables</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../get_data/index.html">Selecting, downloading, and handling the data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../normalization/index.html">Normalizing the data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../ML_generic/index.html">A flexible Machine Learning model for data transformations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../visualizations/index.html">Visualizations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../utils/index.html">Utility functions for plotting and re-gridding</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../how_to.html">How to reproduce or extend this work</a></li>
@@ -123,7 +119,7 @@ Please <a href="https://github.com/philip-brohan/ML_precipitation_dataset/issues
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../get_data/index.html" title="Get the data to be used"
+          <a href="../how_to.html" title="How to reproduce and extend this work"
              >next</a> |</li>
         <li class="right" >
           <a href="../ERA5_homogeneity.html" title="How homogenous is ERA5?"
