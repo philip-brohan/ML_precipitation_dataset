@@ -82,6 +82,20 @@ def csmooth(nmonths, ndata):
         return convolve(ndata, filter, boundary="extend", preserve_nan=True)
 
 
+# Reduce ensemble data to an ensemble mean if needed
+def reduce_ensemble(ndata):
+    keys = list(ndata.keys())
+    dates = sorted(list(dict.fromkeys([k[:6] for k in keys])))  # unique dates in order
+    reduced = {}
+    for d in dates:
+        dkeys = [k for k in keys if k[:6] == d]
+        if len(dkeys) == 1:
+            reduced[d] = ndata[dkeys[0]]
+        else:
+            reduced[d] = np.mean([ndata[k] for k in dkeys])
+    return reduced
+
+
 # Load the model data
 sDir = "%s/ML_models/xgb_monthly" % os.getenv("PDIR")
 with open(
@@ -89,7 +103,7 @@ with open(
     % (sDir, args.label, args.mask_file, args.rchoice, "None"),
     "rb",
 ) as dfile:
-    model_ndata = pickle.load(dfile)
+    model_ndata = reduce_ensemble(pickle.load(dfile))
 
 # Load the target data
 with open(
@@ -97,7 +111,7 @@ with open(
     % (sDir, args.target, args.mask_file, args.rchoice, args.target),
     "rb",
 ) as dfile:
-    target_ndata = pickle.load(dfile)
+    target_ndata = reduce_ensemble(pickle.load(dfile))
 
 # Reformat data into three lists: date, pred, targ
 pred_list = []
@@ -107,7 +121,7 @@ dlist = sorted(
     list(dict.fromkeys(list(model_ndata.keys()) + list(target_ndata.keys())))
 )  # unique dates in order
 for i in range(len(dlist)):
-    date_list.append(datetime.strptime(dlist[i][:6], "%Y%m"))  # convert to datetime
+    date_list.append(datetime.strptime(dlist[i], "%Y%m"))  # convert to datetime
     if dlist[i] in model_ndata:
         pred_list.append(model_ndata[dlist[i]])  # pred
     else:
