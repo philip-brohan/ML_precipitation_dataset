@@ -1,0 +1,15 @@
+name: sphinx
+
+# Sphinx-only environment for building the documentation.
+
+channels:
+  - conda-forge
+dependencies:
+
+  - python
+  - sphinx=9.1.0
+
+variables:
+  PYTHONPATH: /home/users/philip.brohan/Projects/ML_precipitation_dataset
+# Project directory
+  PDIR: /data/scratch/philip.brohan/MLP

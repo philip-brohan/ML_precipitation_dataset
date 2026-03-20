@@ -2,9 +2,6 @@
 
 # Run all the data downloads
 
-echo 'CMORPH'
-(cd ./CMORPH/satellite && ./get_data_for_period.py  | parallel -j 1)
-
 echo 'CRU'
 (cd ./CRU/in_situ && ./get_data_for_period.py | parallel -j 1)
 
@@ -18,18 +15,6 @@ echo 'TWCR'
 echo -n 'GPCC: '
 echo -n 'In-situ, '
 (cd ./GPCC/in_situ && ./get_data_for_period.py | parallel -j 1)
-
-echo -n 'Copernicus: '
-echo -n 'Microwave, '
-(cd ./Copernicus/satellite_microwave && ./get_data_for_period.py | parallel -j 1)
-echo 'Land observations'
-(cd ./Copernicus/land_surface_observations && ./get_data_for_period.py | parallel -j 1)
-
-echo -n 'HadCRUT'
-(cd HadCRUT && ./get_members.py)
-
-echo -n 'HadISST'
-(cd HadISST/v1 && ./get_data.sh)
 
 echo -n 'GPCP'
 (cd GPCP/blended && ./get_means.py)
