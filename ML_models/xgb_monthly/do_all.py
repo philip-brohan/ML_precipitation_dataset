@@ -174,7 +174,7 @@ else:
 
 # Train the model if not already done
 if not os.path.exists("%s/%s.ubj" % (opdir, args.source)):
-    cmd = "srun --time=30 --mem=32G --cpus-per-task=4 ./fit_model.py "
+    cmd = "srun --time=90 --mem=32G --cpus-per-task=4 ./fit_model.py "
     cmd += "--mlabel=%s/%s " % (
         args.label,
         args.source,
@@ -189,7 +189,7 @@ else:
 # Make validation plots
 # Make test:train validation plot
 if not os.path.exists("%s/test_train.webp" % (opdir,)):
-    cmd = "srun --time=15 --mem=32G --cpus-per-task=4 ./validate_2.py "
+    cmd = "srun --time=30 --mem=32G --cpus-per-task=4 ./validate_2.py "
     cmd += "--mlabel1 %s/%s " % (args.label, args.source)
     cmd += "--label1 %s/%s_train " % (args.label, args.source)
     cmd += "--mlabel2 %s/%s " % (args.label, args.source)
