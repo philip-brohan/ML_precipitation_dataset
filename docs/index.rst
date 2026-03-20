@@ -41,7 +41,16 @@ Standardized data has three advantages - interesting structure in the data stand
  
 The challenges of working with precipitation are immediately apparent. In the temperature plot, the data are dominated by strong signals (global warming, ENSO, the Early-20th-Century warming) with some contamination from biases and noise (the widespread cold at the beginning of the 20th Century, for example, is likely bias). In the precipitation plot, some signal is visible (the late-20th Century moistening, some ENSO features, ...) but most of the visible signal is bias - the strong drying in the south is almost certainly a reflection of a sea-ice bias in the HadISST dataset, which is used as a boundary condition in 20CRv3, and the tropical shifts in the 19th Century are probably a result of model bias in the reanalysis showing up in places where there are too few pressure observations to constrain the reanalysis properly. (I'm not sure whether the shifts in the far north are real or not).
 
-We can also see the problem of pervasive bias by comparing :doc:`multiple precipitation datasets </get_data/index>`:
+To look at biases in more detail, we can look, not just at 20CRv3, but at a range of decent datasets. We will compare five different datasets - two reanalyses, two gridded observational datasets, and a blended satellite-based dataset. 
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   Selecting, downloading, and handling the data <get_data/index>
+   Normalizing each dataset <normalization/index>
+
+We can then see the problem of pervasive bias by comparing global mean precipitation time-series from all the datasets:
 
 .. figure:: images/time_series_nomodel_None_area_precipitation_039.webp
    :width: 95%
@@ -128,18 +137,6 @@ Conclusions
 * Unfortunately, even relatively reliable surface variables (temperature, pressure, ...) have significant inhomogeneities in the reanalysis datasets, especially early in the record, they can't be treated as a reliable source before about 1950.
 * Subtracting the modelled precipitation from the original data can be used to estimate inhomogeneities, and subtracting these estimated inhomogeneities from the original data produces a homogenized version of the ERA5 precipitation record. This is far from perfect, but it does remove some of the most egregious inhomogeneities, and it is a step towards a more reliable precipitation dataset.
 * A desirable next step would be to use a similar approach to homogenize other variables (temperature, pressure, sea-ice, ...) and so to make a more homogenous long-term reanalysis.
-
-----------
-
-.. toctree::
-   :titlesonly:
-   :maxdepth: 1
-
-   Selecting, downloading, and handling the data <get_data/index>
-   Normalizing the data <normalization/index>
-   Visualizations <visualizations/index>
-   Utility functions for plotting and re-gridding <utils/index>
-
 
 
 Small print
