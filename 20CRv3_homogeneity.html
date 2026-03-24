@@ -40,6 +40,8 @@
             
   <section id="how-homogenous-is-20crv3">
 <h1>How homogenous is 20CRv3?<a class="headerlink" href="#how-homogenous-is-20crv3" title="Link to this heading">¶</a></h1>
+<p>20CRv3 is designed with long-term homogeneity in mind, and ideally we’d expect a homogenous dataset all the way back to 1850 and before. But realistically there are going to be limitations. One problem is model bias - in recent years, where observations are plentiful, the reanalysis follows the observations closely, but longer ago, where there are very few observations, the reanalysis is more of a model simulation, and so model bias is likely to be more important. Another problem is that the boundary conditions for the reanalysis (sea-surface temperature, sea-ice, surface pressure) are likely to be less reliable early on, and this will lead to inhomogeneities in the reanalysis fields.</p>
+<p>We can look at the homogeneity of 20CRv3 by making <a class="reference internal" href="normalization/index.html"><span class="doc">normalized</span></a> extended-stripes plots of the <a class="reference internal" href="get_data/index.html"><span class="doc">variables of interest</span></a>:</p>
 <section id="prate">
 <h2>PRATE<a class="headerlink" href="#prate" title="Link to this heading">¶</a></h2>
 <figure class="align-center" style="width: 100%">
@@ -81,6 +83,7 @@
 <a class="reference internal image-reference" href="_images/RH2m.png"><img alt="_images/RH2m.png" src="_images/RH2m.png" style="width: 95%;" />
 </a>
 </figure>
+<p>In these figures, we can see a mixture of real signals (climate change, ENSO, weather variability) and inhomogeneities (the strong cooling and drying in the Southern Ocean, large tropical warming in the mid-20th century, …). Both real signals and inhomogeneities are present throughout the dataset, but the inhomogeneities dominate before about 1950.</p>
 </section>
 </section>
 
@@ -97,6 +100,7 @@
 <h3><a href="index.html">Table of Contents</a></h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization/index.html">Normalizing each dataset</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="fit_model.html">Details of the model specification and fitting process</a></li>

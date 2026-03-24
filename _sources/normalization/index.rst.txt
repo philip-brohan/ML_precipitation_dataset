@@ -13,7 +13,7 @@ We are not going to analyse or model the raw precipitation data (in m/s). First,
 Why normalize?
 --------------
 
-Raw precipitation varies enormously between times and places. This makes it difficult to analyse and model, and to compare between times and places. 
+Raw precipitation varies enormously between times and places. This makes it difficult to analyse and model, and to compare between times and places. Even plotting it has challenges:
 
 .. figure:: ../images/multi_field_raw_precip.png
    :width: 95%

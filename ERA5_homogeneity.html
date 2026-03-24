@@ -40,6 +40,7 @@
             
   <section id="how-homogenous-is-era5">
 <h1>How homogenous is ERA5?<a class="headerlink" href="#how-homogenous-is-era5" title="Link to this heading">¶</a></h1>
+<p><a class="reference internal" href="20CRv3_homogeneity.html"><span class="doc">20CRv3 is reasonably homogenous back to about 1950</span></a>- ERA5 only goes back to 1940, but we can’t expect it to be homogenous, because it assimilates a much larger and more changeable set of observations. We can look at the homogeneity of ERA5 by making <a class="reference internal" href="normalization/index.html"><span class="doc">normalized</span></a> extended-stripes plots of the <a class="reference internal" href="get_data/index.html"><span class="doc">variables of interest</span></a>:</p>
 <section id="total-precipitation">
 <h2>Total precipitation<a class="headerlink" href="#total-precipitation" title="Link to this heading">¶</a></h2>
 <figure class="align-center" style="width: 100%">
@@ -81,6 +82,7 @@
 <a class="reference internal image-reference" href="_images/2m_relative_humidity.webp"><img alt="_images/2m_relative_humidity.webp" src="_images/2m_relative_humidity.webp" style="width: 95%;" />
 </a>
 </figure>
+<p>Unsurprisingly, ERA5 shows strong inhomogeneities: Two big changes occur in about 1980 and about 1998. The former produces a global change in precipitation, and is probably caused by the assimilation of <a class="reference external" href="https://en.wikipedia.org/wiki/Microwave_sounding_unit">MSU satellite observations</a>; the second is concentrated in the tropics and is probably caused by the assimilation of <a class="reference external" href="https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission">TRMM satellite observations</a>.</p>
 </section>
 </section>
 
@@ -97,6 +99,7 @@
 <h3><a href="index.html">Table of Contents</a></h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="get_data/index.html">Selecting, downloading, and handling the data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization/index.html">Normalizing each dataset</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="fit_model.html">Details of the model specification and fitting process</a></li>
