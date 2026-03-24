@@ -8,11 +8,11 @@ If you are familiar with GitHub, you already know what to do (fork or clone `the
 
 As well as downloading the software, some setup is necessary to run it successfully:
 
-These scripts need to know where to put their output files. They rely on an environment variable ``SCRATCH`` - set this variable to a directory with plenty of free disc space.
+These scripts need to know where to put their output files. They rely on an environment variable ``PDIR`` - set this variable to a directory with plenty of free disc space.
 
 These scripts will only work in a environment with the appropriate software and libraries available. I use `conda <https://docs.conda.io/en/latest/>`_ to manage the required environment - which is specified in a yaml file:
 
-.. literalinclude:: ../environment/MLP.yml
+* `YAML file specifying the conda environment, including all the required software and libraries <https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/environment/MLP2.yml>`_.
 
 Install `anaconda or miniconda <https://docs.conda.io/en/latest/>`_, `create and activate the environment in that yaml file <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-envs>`_, and all the scripts in this repository should run successfully.
 

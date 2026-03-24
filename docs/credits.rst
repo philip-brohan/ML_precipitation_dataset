@@ -11,22 +11,18 @@ All blame should go to the maintainer; credit is more widely distributed:
   
 * This work follows on from `previous work on climate modelling and data assimilation with ML <https://brohan.org/Proxy_20CR/>`_.
  
-* The `TensorFlow <https://www.tensorflow.org/>`_ library is used throughout.
+* The `XGBoost <https://xgboost.readthedocs.io/en/stable/>`_ library is used to train the decision tree models.
+* The `TensorFlow <https://www.tensorflow.org/>`_ library is used for efficient data handling.
   
 * Training data used came from: 
 
   * The `ERA5 reanalysis <https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5>`_ 
-  * The `20th Century Reanalysis (version 2c) <https://www.esrl.noaa.gov/psd/data/20thC_Rean/>`_ 
-  * `HadCRUT5 <https://www.metoffice.gov.uk/hadobs/hadcrut5/>`_
-  * `HadISST <https://www.metoffice.gov.uk/hadobs/hadisst/>`_
+  * The `20th Century Reanalysis (version 3) <https://www.esrl.noaa.gov/psd/data/20thC_Rean/>`_ 
   * `CRU TS <https://crudata.uea.ac.uk/cru/data/hrg/>`_
   * `GPCC <https://www.esrl.noaa.gov/psd/data/gridded/data.gpcc.html>`_
-  * `GCPC <https://www.esrl.noaa.gov/psd/data/gridded/data.gpcc.html>`_
-  * `CMORPH <https://www.cpc.ncep.noaa.gov/products/janowiak/cmorph_description.html>`_
+  * `GPCP <https://www.esrl.noaa.gov/psd/data/gridded/data.gpcp.html>`_
   
 * Much of the data used was obtained from the Copernicus `Climate Change Service Climate Data Store <https://cds.climate.copernicus.eu>`_. 
-    
-* This work used the Isambard UK National Tier-2 HPC Service operated by GW4 and the UK Met Office, and funded by EPSRC (EP/P020224/1).
 
 * This work benefited from AI assistance: Both `Github Copilot <https://github.com/features/copilot>`_ and `ChatGPT <https://chat.openai.com/>`_ were used to help write the code and documentation. In spite of this, the authors and maintainer are responsible for the entirety of the result.
 
@@ -36,4 +32,4 @@ All blame should go to the maintainer; credit is more widely distributed:
 
 * The code and documentation use `git <https://git-scm.com/>`_ and `GitHub <https://github.com/>`_. The documentation is written with `sphinx <https://www.sphinx-doc.org/en/master/index.html>`_.
 
-Note that appearance on this list does not mean that the person or organisation named endorses this work, agrees with any of it, or even knows of its existence.
+Note that appearance on this list does not mean that the person or organization named endorses this work, agrees with any of it, or even knows of its existence.

@@ -1,7 +1,13 @@
 Fitting a decision-tree model with XGBoost
 ==========================================
 
-The script fits an XGBoost regression model. The settings below describe the hyperparameters passed to XGBoost and the cross‑validation choices used to select the number of boosting rounds, together with the effect of changing each setting.
+We want to create a model that can estimate precipitation from other surface fields. We will use the XGBoost library to fit a decision tree regression model. We can extract, from the normalized data, a set of input values (temperature, pressure, humidity, wind) and a target value (precipitation) for a particular month, latitude and longitude. If we do this for many latitude and longitude points, for each of many months, we can create a training dataset with many thousands of input::target pairs. We can then use this training dataset to fit the model.
+If we have 100 years of data, that's 1200 months - the data grids are 1440x721, so that's 1,038,240 grid points per month, and therefore 1,245,888,000 potential input::target pairs in the training dataset. We don't need that many, so we sub-sample - typically taking only 5000 random points per month, and choosing only a 20-year training period (for example 1950-1969). This gives us a training dataset with 1,200,000 input::target pairs, which is more than enough to fit a model. Repeating this process, with a different random sample of lat::lon points, and maybe a different range of years, gives us a test dataset that we can use to validate the model.
+
+* `Script to assemble training data from the normalized datasets <https://github.com/philip-brohan/ML_precipitation_dataset/blob/main/ML_models/xgb_monthly/make_dmatrix.py>`_
+* `Script to fit the model and select the number of boosting rounds with cross-validation <https://github.com/philip-brohan/ML_precipitation_dataset/blob/main/ML_models/xgb_monthly/fit_model.py>`_
+
+The script fits a decision tree regression model. The settings below describe the hyperparameters passed to XGBoost and the cross‑validation choices used to select the number of boosting rounds, together with the effect of changing each setting.
 
 Hyperparameters
 ---------------
@@ -54,10 +60,6 @@ Hyperparameters
   - Current: ``hist``
   - Effect: Chooses the tree construction algorithm. ``hist`` is efficient on CPU for large datasets; ``gpu_hist`` enables GPU acceleration if available; ``exact`` is more precise but much slower for large data.
 
-Summary
--------
-These hyperparameters trade off bias vs variance, speed vs accuracy, and CPU vs GPU usage. They interact: for example, reducing ``eta`` typically requires increasing allowed boosting rounds; stronger regularization (larger ``lambda``/``alpha`` or higher ``min_child_weight``) permits deeper trees without as much overfitting.
-
 Cross‑validation specification
 ------------------------------
 
@@ -94,7 +96,30 @@ CV result handling
   - The script sets ``best_rounds = int(cvres["test-rmse-mean"].idxmin() + 1)``.
   - Effect: Chooses the boosting round index with minimum test RMSE mean (zero‑based index + 1) for final training. You may prefer a more conservative selection (for example adding a safety margin or using a one‑standard‑error rule).
 
-Notes and trade‑offs
-  - CV gives an empirical choice of boosting rounds but increases computational cost versus a single validation set.
-  - For time‑series or grouped data, use CV schemes that prevent leakage (time blocks, group folds) or use a held‑out validation set respecting the data structure.
-  - Hyperparameter changes interact with CV: e.g. smaller ``eta`` increases required rounds and CV cost; stronger regularization often reduces the optimal number of rounds.
+There's plenty of scope for improving the model by tuning these hyperparameters and CV settings, but we have done only very limited hyperparameter tuning so far.
+
+Validation
+----------
+
+The most straightforward validation of the model is to compare the modelled precipitation with the target precipitation. We can do this both for the training period (to check that the model can learn the training data) and for a test period (to check that the model generalizes to unseen data). 
+
+* `Script do do basic validation of the model <https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/validate_2.py>`_
+
+.. figure:: images/T_to_T_test_train.webp
+   :width: 95%
+   :align: center
+   :figwidth: 100%
+
+   Modelled vs target precipitation for the training (left) and test (right) datasets for one example model (`Figure source <https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/validate_2.py>`_). Note that part of the reason for the less-good fit of the test dataset is that the test dataset is drawn from a different time period than the training dataset, and data inhomogeneities mean that a model for one period will not work perfectly for another - this isn't a model deficiency - it's what we are using the model to discover.
+
+It's also interesting to look at the spatial pattern of the predicted precipitation:
+
+* `Script to compare spatial modeled and target precipitation for one month <https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/validate_month.py>`_
+
+.. figure:: images/T_to_T_monthly.webp
+   :width: 95%
+   :align: center
+   :figwidth: 100%
+
+   Spatial pattern of the predicted precipitation from one example model for one month (`Figure source <https://github.com/philip-brohan/ML_precipitation_dataset/blob/f30502ac9296f4b88c18562c1e635a4572b0c375/ML_models/xgb_monthly/validate_month.py>`_).
+
