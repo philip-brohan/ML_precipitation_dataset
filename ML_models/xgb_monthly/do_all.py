@@ -424,7 +424,7 @@ else:
     print("Adjusted stripes sample none already made")
 if not os.path.exists("%s/stripes/adjusted_stripes_sample_11x13.webp" % (opdir,)):
     cmd = (
-        "srun --time=15 --mem=16G --cpus-per-task=4 ./stripes/stripes_triple_adjusted.py --label=%s --convolve=11x13 --startyear=%04d --endyear=%04d"
+        "srun --time=15 --mem=16G --cpus-per-task=4 ./stripes/stripes_triple_adjusted.py --label=%s --convolve=11x13 --startyear=%04d --endyear=%04d  --vmin=0.25 --vmax=0.75"
         % (args.label, args.start_year, args.end_year)
     )
     print(cmd)
@@ -465,7 +465,7 @@ else:
 for nmonths in [1, 13, 39]:
     for mask in [None, "CRU", "Europe"]:
         if not os.path.exists(
-            "%s/series/adjusted_%s_area_%03d.webp" % (opdir, mask, nmonths)
+            "%s/series/%s_area_%03d_adjusted.webp" % (opdir, mask, nmonths)
         ):
             cmd = (
                 "srun --time=15 --mem=32G --cpus-per-task=4 ./time_series/plot_ts_adjusted.py --label=%s  --target=%s --nmonths=%d --rchoice=area"
